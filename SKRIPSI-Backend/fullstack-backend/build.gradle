@@ -21,6 +21,10 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'io.minio:minio:8.5.7'
+	compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+	implementation group: 'jakarta.validation', name: 'jakarta.validation-api'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
 }
 
 tasks.named('test') {

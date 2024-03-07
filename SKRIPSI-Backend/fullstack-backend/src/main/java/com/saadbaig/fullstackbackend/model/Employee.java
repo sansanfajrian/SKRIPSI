@@ -1,5 +1,4 @@
 package com.saadbaig.fullstackbackend.model;
-
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,14 +13,16 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
 
 @Data
 @Getter
@@ -29,27 +30,38 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(value = { AuditingEntityListener.class, AuditLoggingListener.class })
-@Table(name = "user")
+@Table(name = "employee")
 @Entity
-public class User {
-
+public class Employee {
     @Id
-    @Column(columnDefinition = "BINARY(16)", name = "user_id")
-    @NotNull(message = "user id cannot be null")
+    @Column(columnDefinition = "BINARY(16)", name = "id")
+    @NotNull(message = "attendance id cannot be null")
     private UUID id;
 
-    @Size(max = 255, message = "Maximum character for username is 255")
-    @Column
-    private String username;
-
-    @Size(max = 255, message = "Maximum character for name is 255")
-    @Column
+    @Column(length = 255)
     private String name;
 
-    @Column(length = 100)
+    @Column(length = 255)
     private String email;
 
+    @Column
+    private String gender;
+
+    @Column
+    private String image;
+
+    @Column(name = "birth_date")
+    private Date birthDate;
+
+    @Column(name = "hire_date")
+    private Date hireDate;
+
+    @ManyToOne
+    @JoinColumn(name = "shift_id")
+    private Shift shift;
+
     @Column(length = 50)
+    // @CreatedBy
     private String createdBy;
 
     @CreatedDate
@@ -64,36 +76,4 @@ public class User {
     @Column
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private Date lastModifiedTime;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

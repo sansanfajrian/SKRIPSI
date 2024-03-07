@@ -1,5 +1,4 @@
 package com.saadbaig.fullstackbackend.model;
-
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,9 +13,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,25 +29,35 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(value = { AuditingEntityListener.class, AuditLoggingListener.class })
-@Table(name = "user")
+@Table(name = "attendance")
 @Entity
-public class User {
-
+public class Attendance {
     @Id
-    @Column(columnDefinition = "BINARY(16)", name = "user_id")
-    @NotNull(message = "user id cannot be null")
+    @Column(columnDefinition = "BINARY(16)", name = "id")
+    @NotNull(message = "attendance id cannot be null")
     private UUID id;
 
-    @Size(max = 255, message = "Maximum character for username is 255")
-    @Column
+    @Column(length = 50)
     private String username;
 
-    @Size(max = 255, message = "Maximum character for name is 255")
-    @Column
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 
-    @Column(length = 100)
-    private String email;
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    @ManyToOne
+    @JoinColumn(name = "shift_id")
+    private Shift shift;
+
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    @Column(name = "in_time")
+    private Long inTime;
 
     @Column(length = 50)
     private String createdBy;
@@ -64,36 +74,4 @@ public class User {
     @Column
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private Date lastModifiedTime;
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }
