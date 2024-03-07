@@ -25,6 +25,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
 	implementation group: 'jakarta.validation', name: 'jakarta.validation-api'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
+	implementation 'com.sipios:spring-search:0.2.6'
 }
 
 tasks.named('test') {

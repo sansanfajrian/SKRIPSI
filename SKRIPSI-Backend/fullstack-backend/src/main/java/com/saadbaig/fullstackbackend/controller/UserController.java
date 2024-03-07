@@ -1,11 +1,11 @@
 package com.saadbaig.fullstackbackend.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,79 +13,50 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saadbaig.fullstackbackend.model.User;
-import com.saadbaig.fullstackbackend.repository.UserRepository;
+import com.saadbaig.fullstackbackend.dto.UserDTO;
+import com.saadbaig.fullstackbackend.service.UserService;
 
 
 @RestController
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin("*")
+@RequestMapping("/users")
 public class UserController {
 
+
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    // @Autowired
-    // private MinioClient minioClient;
-
-    @PostMapping("/user")
-    User newUser(@RequestBody User newUser) {
-        try {
-            // Convert String data to InputStream
-            InputStream dataStream = new ByteArrayInputStream(newUser.toString().getBytes());
-
-            // minioClient.putObject(
-            //         PutObjectArgs.builder()
-            //                 .bucket("bucket-sansan")
-            //                 .object(newUser.getUsername() + ".json") // Use a unique identifier for each user
-            //                 .stream(dataStream, dataStream.available(), -1) // Use available() to get the length of the stream
-            //                 .build()
-            // );
-
-            // Return the saved user after successful MinIO upload
-            return userRepository.save(newUser);
-        } catch (Exception e) {
-            // Handle MinIO upload exception
-            e.printStackTrace();
-            
-            // Handle the case where MinIO upload fails - you might want to throw an exception or return a specific response
-            return null; // Adjust this accordingly based on your error handling strategy
-        }
+    @GetMapping
+    ResponseEntity<List<UserDTO>> getAllUsers(Pageable page) {
+        List<UserDTO> getAllUsers = userService.getAllUser(page);
+        return ResponseEntity.ok(getAllUsers);
     }
 
-    @GetMapping("/users")
-    List<User> getAllUsers() {
-        return userRepository.findAll();
+    @PostMapping
+    ResponseEntity <UserDTO> createUsers(@RequestBody UserDTO userDTO){
+        UserDTO createUser = userService.createUser(userDTO);
+        return ResponseEntity.ok(createUser);
     }
 
-    @GetMapping("/user/{id}")
-    User getUserById(@PathVariable UUID id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
+    @GetMapping("/{id}")
+    ResponseEntity<UserDTO> get(@PathVariable("id") UUID id) {
+        UserDTO getUser = userService.getUser(id);
+        
+        return ResponseEntity.ok(getUser);
     }
 
-    @PutMapping("/user/{id}")
-    User updateUser(@RequestBody User newUser, @PathVariable UUID id) {
-        return userRepository.findById(id)
-                .map(user -> {
-                    user.setUsername(newUser.getUsername());
-                    user.setName(newUser.getName());
-                    user.setEmail(newUser.getEmail());
-                    return userRepository.save(user);
-                }).orElseThrow(() ->new UserNotFoundException(id));
+    @PutMapping("/{id}")
+    ResponseEntity <UserDTO> editUsers(@PathVariable("id") UUID id, @RequestBody UserDTO userDTO){
+        UserDTO editUser = userService.editUser(id, userDTO);
+        return ResponseEntity.ok(editUser);
     }
 
-    @DeleteMapping("/user/{id}")
-    String deleteUser(@PathVariable UUID id) {
-        if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id);
-        }
-        userRepository.deleteById(id);
-        return "User with the id " + id + " has been successfully deleted.";
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> deleteUsers(@PathVariable("id") UUID id){
+        userService.deleteUser(id);
+        return ResponseEntity.ok().build();
     }
-
-
-
-
 }
