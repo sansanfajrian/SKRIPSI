@@ -1,4 +1,5 @@
 package com.saadbaig.fullstackbackend.model;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -37,9 +38,6 @@ public class Attendance {
     @NotNull(message = "attendance id cannot be null")
     private UUID id;
 
-    @Column(length = 50)
-    private String username;
-
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
@@ -56,8 +54,23 @@ public class Attendance {
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @Column(name = "in_time")
-    private Long inTime;
+    @Column(name = "inTime")
+    private LocalTime inTime;
+
+    @Column
+    private String inTimeStatus;
+
+    @Column(name = "outTime")
+    private LocalTime outTime;
+
+    @Column
+    private String outTimeStatus;
+
+    @Column
+    private String notes;
+
+    @Column
+    private String image;
 
     @Column(length = 50)
     private String createdBy;

@@ -1,7 +1,6 @@
 package com.saadbaig.fullstackbackend.dto.Employee;
 
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -27,5 +26,7 @@ public class EmployeeRequestDTO {
 
     private Date hireDate;
 
-    private List<UUID> shiftId;
+    private UUID shiftId;
+
+    private UUID departmentId;
 }

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.saadbaig.fullstackbackend.dto.Employee.EmployeeDTO;
 import com.saadbaig.fullstackbackend.dto.Employee.EmployeeRequestDTO;
+import com.saadbaig.fullstackbackend.model.Department;
 import com.saadbaig.fullstackbackend.model.Employee;
+import com.saadbaig.fullstackbackend.model.Shift;
 import com.saadbaig.fullstackbackend.repository.EmployeeRepository;
 
 @Service
@@ -58,6 +60,9 @@ public class EmployeeService {
     }
 
     private Employee convertToEntity(EmployeeRequestDTO requestDTO) {
-        return modelMapper.map(requestDTO, Employee.class);
+        var modelData = modelMapper.map(requestDTO, Employee.class);
+        modelData.setShift(Shift.builder().id(requestDTO.getShiftId()).build());
+        modelData.setDepartment(Department.builder().id(requestDTO.getDepartmentId()).build());
+        return modelData;
     }
 }

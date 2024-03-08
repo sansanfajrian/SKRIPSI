@@ -1,5 +1,5 @@
 package com.saadbaig.fullstackbackend.model;
-import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.UUID;
 
@@ -39,10 +39,10 @@ public class Shift {
     private UUID id;
 
     @Column(name = "startTime")
-    private Timestamp startTime;
+    private LocalTime startTime;
 
     @Column(name = "endTime")
-    private Timestamp endTime;
+    private LocalTime endTime;
 
     @Column(length = 50)
     private String createdBy;

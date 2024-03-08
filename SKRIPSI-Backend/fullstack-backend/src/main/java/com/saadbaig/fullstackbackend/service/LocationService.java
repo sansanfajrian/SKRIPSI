@@ -6,11 +6,13 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.saadbaig.fullstackbackend.dto.LocationDTO;
 import com.saadbaig.fullstackbackend.model.Location;
 import com.saadbaig.fullstackbackend.repository.LocationRepository;
 
+@Service
 public class LocationService {
     @Autowired
     private LocationRepository locationRepository;

@@ -1,5 +1,5 @@
 package com.saadbaig.fullstackbackend.dto;
-import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class ShiftDTO {
     private UUID id;
 
-    private Timestamp startTime;
+    private LocalTime startTime;
 
-    private Timestamp endTime;
+    private LocalTime endTime;
 }

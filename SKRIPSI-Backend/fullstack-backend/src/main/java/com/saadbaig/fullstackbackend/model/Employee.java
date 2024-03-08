@@ -60,6 +60,10 @@ public class Employee {
     @JoinColumn(name = "shift_id")
     private Shift shift;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     @Column(length = 50)
     // @CreatedBy
     private String createdBy;

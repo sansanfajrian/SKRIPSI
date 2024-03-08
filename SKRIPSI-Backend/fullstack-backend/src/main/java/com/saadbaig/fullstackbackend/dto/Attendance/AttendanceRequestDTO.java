@@ -1,5 +1,5 @@
 package com.saadbaig.fullstackbackend.dto.Attendance;
-import java.util.List;
+import java.time.LocalTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -14,15 +14,19 @@ import lombok.NoArgsConstructor;
 public class AttendanceRequestDTO {
     private UUID id;
 
-    private String username;
+    private UUID employeeId;
 
-    private List<UUID> employeeId;
+    private UUID departmentId;
 
-    private List<UUID> departmentId;
+    private UUID shiftId;
 
-    private List<UUID> shiftId;
+    private UUID locationId;
 
-    private List<UUID> locationId;
+    private LocalTime inTime;
 
-    private Long inTime;
+    private LocalTime outTime;
+
+    private String notes;
+
+    private String image;
 }

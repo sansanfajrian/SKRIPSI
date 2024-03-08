@@ -12,6 +12,10 @@ import org.springframework.stereotype.Service;
 import com.saadbaig.fullstackbackend.dto.Attendance.AttendanceDTO;
 import com.saadbaig.fullstackbackend.dto.Attendance.AttendanceRequestDTO;
 import com.saadbaig.fullstackbackend.model.Attendance;
+import com.saadbaig.fullstackbackend.model.Department;
+import com.saadbaig.fullstackbackend.model.Employee;
+import com.saadbaig.fullstackbackend.model.Location;
+import com.saadbaig.fullstackbackend.model.Shift;
 import com.saadbaig.fullstackbackend.repository.AttendanceRepository;
 
 @Service
@@ -39,6 +43,18 @@ public class AttendanceService {
         Attendance attendance = convertToEntity(requestDTO);
         attendance.setId(UUID.randomUUID());
         attendance = attendanceRepository.save(attendance);
+        if(attendance.getInTime().compareTo(attendance.getShift().getStartTime()) > 0){
+            attendance.setInTimeStatus("Late");
+        } else{
+            attendance.setInTimeStatus("On Time");
+        }
+
+        if(attendance.getOutTime().compareTo(attendance.getShift().getEndTime()) > 0){
+            attendance.setOutTimeStatus("Overtime");
+        } else{
+            attendance.setOutTimeStatus("On Time");
+        }
+        attendance = attendanceRepository.save(attendance);
         return modelMapper.map(attendance, AttendanceDTO.class);
     }
 
@@ -58,6 +74,11 @@ public class AttendanceService {
     }
 
     private Attendance convertToEntity(AttendanceRequestDTO requestDTO) {
-        return modelMapper.map(requestDTO, Attendance.class);
+        var modelData = modelMapper.map(requestDTO, Attendance.class);
+        modelData.setEmployee(Employee.builder().id(requestDTO.getEmployeeId()).build());
+        modelData.setShift(Shift.builder().id(requestDTO.getShiftId()).build());
+        modelData.setDepartment(Department.builder().id(requestDTO.getDepartmentId()).build());
+        modelData.setLocation(Location.builder().id(requestDTO.getLocationId()).build());
+        return modelData;
     }
 }
