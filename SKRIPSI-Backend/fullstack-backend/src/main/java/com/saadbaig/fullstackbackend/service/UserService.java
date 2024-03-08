@@ -37,16 +37,18 @@ public class UserService {
     }
 
     public UserDTO getUser(UUID id){
-        User user = userRepo.findById(id).get();
+        User user = userRepo.findById(id).orElse(null);
         return modelMapper.map(user, UserDTO.class);
     }
 
     public UserDTO editUser(UUID id, UserDTO userDTO){
-        User user = userRepo.findById(id).get();
-        user.setName(userDTO.getName());
-        user.setUsername(userDTO.getUsername());
-        user.setEmail(userDTO.getEmail());
-        user = userRepo.save(user);
+        User user = userRepo.findById(id).orElse(null);
+        if(user != null){
+            user.setName(userDTO.getName());
+            user.setUsername(userDTO.getUsername());
+            user.setEmail(userDTO.getEmail());
+            user = userRepo.save(user);
+        }
         return modelMapper.map(user, UserDTO.class);
     }
 

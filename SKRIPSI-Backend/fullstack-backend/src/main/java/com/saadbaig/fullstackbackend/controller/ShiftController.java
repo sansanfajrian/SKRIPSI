@@ -1,5 +1,4 @@
 package com.saadbaig.fullstackbackend.controller;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -16,46 +15,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.saadbaig.fullstackbackend.dto.UserDTO;
-import com.saadbaig.fullstackbackend.service.UserService;
+import com.saadbaig.fullstackbackend.dto.ShiftDTO;
+import com.saadbaig.fullstackbackend.service.ShiftService;
 
 
 @RestController
 @CrossOrigin("*")
-@RequestMapping("/users")
-public class UserController {
-
+@RequestMapping("/shifts")
+public class ShiftController {
     @Autowired
-    private UserService userService;
+    private ShiftService shiftService;
 
     @GetMapping
-    ResponseEntity<List<UserDTO>> getAllUsers(Pageable page) {
-        List<UserDTO> getAllUsers = userService.getAllUser(page);
-        return ResponseEntity.ok(getAllUsers);
+    ResponseEntity<List<ShiftDTO>> getAllShift(Pageable page) {
+        List<ShiftDTO> getAllShifts = shiftService.getAllShift(page);
+        return ResponseEntity.ok(getAllShifts);
     }
 
     @PostMapping
-    ResponseEntity <UserDTO> createUsers(@RequestBody UserDTO userDTO){
-        UserDTO createUser = userService.createUser(userDTO);
-        return ResponseEntity.ok(createUser);
+    ResponseEntity <ShiftDTO> createShift(@RequestBody ShiftDTO shiftDTO){
+        ShiftDTO createShift = shiftService.createShift(shiftDTO);
+        return ResponseEntity.ok(createShift);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<UserDTO> get(@PathVariable("id") UUID id) {
-        UserDTO getUser = userService.getUser(id);
+    ResponseEntity<ShiftDTO> get(@PathVariable("id") UUID id) {
+        ShiftDTO getShift = shiftService.getShift(id);
         
-        return ResponseEntity.ok(getUser);
+        return ResponseEntity.ok(getShift);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity <UserDTO> editUsers(@PathVariable("id") UUID id, @RequestBody UserDTO userDTO){
-        UserDTO editUser = userService.editUser(id, userDTO);
-        return ResponseEntity.ok(editUser);
+    ResponseEntity <ShiftDTO> editShift(@PathVariable("id") UUID id, @RequestBody ShiftDTO shiftDTO){
+        ShiftDTO editShift = shiftService.editShift(id, shiftDTO);
+        return ResponseEntity.ok(editShift);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteUsers(@PathVariable("id") UUID id){
-        userService.deleteUser(id);
+    ResponseEntity<?> deleteShift(@PathVariable("id") UUID id){
+        shiftService.deleteShift(id);
         return ResponseEntity.ok().build();
     }
 }
