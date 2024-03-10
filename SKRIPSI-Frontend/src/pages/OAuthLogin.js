@@ -7,7 +7,7 @@ const OAuthLogin = () => {
 
   useEffect(() => {
     // Redirect to OAuth login page
-    window.location.href = "http://localhost:3000/login"; // Replace 'provider' with your OAuth provider's name
+    window.location.href = "http://localhost:8080/login"; // Replace 'provider' with your OAuth provider's name
   }, []);
 
   useEffect(() => {
