@@ -1,34 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+
+const OAUTH_CONFIG = {
+  BACKEND_BASE_URL: "http://localhost:8080",
+  INIT_URI: "/login/oauth2/google/init",
+  REDIRECT_URI: "http://localhost:3001/login/oauth2/google"
+}
 
 const OAuthLogin = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-
   useEffect(() => {
-    // Redirect to OAuth login page
-    window.location.href = "http://localhost:3000/login"; // Replace 'provider' with your OAuth provider's name
+    window.location.href = `${OAUTH_CONFIG.BACKEND_BASE_URL}${OAUTH_CONFIG.INIT_URI}?redirect_uri=${OAUTH_CONFIG.REDIRECT_URI}`;
   }, []);
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
-
-    if (code) {
-      setLoading(false); // Set loading to false once the code parameter is detected
-      navigate("/home"); // Redirect to Home component
-    }
-  }, [navigate]);
-
-  return (
-    <div>
-      {loading ? (
-        <div>Redirecting to OAuth login...</div>
-      ) : (
-        <div>Redirecting to Home...</div>
-      )}
-    </div>
-  );
 };
 
 export default OAuthLogin;
