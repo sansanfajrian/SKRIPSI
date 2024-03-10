@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 const OAUTH_CONFIG = {
   BACKEND_BASE_URL: "http://localhost:8080",
   CODE_URI: "/login/oauth2/google/code",
-  REDIRECT_URI: "http://localhost:3001/login/oauth2/google"
+  REDIRECT_URI: "http://localhost:3000/login/oauth2/google"
 }
 
 const OAuthLogin = () => {
