@@ -3,6 +3,7 @@ import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import Navbar from "./layout/navbar";
 import Home from "./pages/Home";
+import OAuthLogin from "./pages/OAuthLogin"; // Import OAuthLogin component
 import AddUser from "./users/AddUser";
 import EditUser from "./users/EditUser";
 import ViewUser from "./users/ViewUser";
@@ -13,9 +14,10 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route exact path="/" element={<Home />} />
+          <Route exact path="/" element={<OAuthLogin />} /> {/* Route for OAuth login */}
+          <Route exact path="/home" element={<Home />} /> {/* Route for Home */}
           <Route exact path="/adduser" element={<AddUser />} />
-          <Route exit path="/edituser/:id" element={<EditUser/>}/>
+          <Route exit path="/edituser/:id" element={<EditUser />} />
           <Route exact path="/viewuser/:id" element={<ViewUser />} />
         </Routes>
       </Router>

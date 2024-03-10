@@ -14,6 +14,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -49,6 +51,21 @@ public class User {
     @Column(length = 100)
     private String email;
 
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "account_non_expired")
+    private boolean accountNonExpired;
+
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
+
+    @Column(name = "account_non_locked")
+    private boolean accountNonLocked;
+
+    @Column(name = "credentials_non_expired")
+    private boolean credentialsNonExpired;
+
     @Column(length = 50)
     private String createdBy;
 
@@ -64,6 +81,10 @@ public class User {
     @Column
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private Date lastModifiedTime;
+
+    @OneToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     public UUID getId() {
         return id;
