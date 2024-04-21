@@ -5,3 +5,4 @@ SKRIPSI-Frontend/.gitignores
 .gitattributes
 .gitattributes
 node_modules/
+.mvn/
