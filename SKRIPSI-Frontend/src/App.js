@@ -1,28 +1,61 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Navbar from "./layout/navbar";
-import Home from "./pages/Home";
-import OAuthLogin from "./pages/OAuthLogin"; // Import OAuthLogin component
-import OAuth2LoginSuccess from "./pages/OAuth2LoginSuccess";
-import AddUser from "./users/AddUser";
-import EditUser from "./users/EditUser";
-import ViewUser from "./users/ViewUser";
+import Header from "./NavbarComponent/Header";
+import AddProject from "./ProjectComponent/AddProject";
+import AssignProjectToEmployee from "./ProjectComponent/AssignProjectToEmployee";
+import AssignProjectToManager from "./ProjectComponent/AssignProjectToManager";
+import UpdateProjectStatus from "./ProjectComponent/UpdateProjectStatus";
+import ViewAllEmployeeProjects from "./ProjectComponent/ViewAllEmployeeProjects";
+import ViewAllManagerProjects from "./ProjectComponent/ViewAllManagerProjects";
+import ViewAllProjects from "./ProjectComponent/ViewAllProjects";
+import ChangePassword from "./UserComponent/ChangePassword";
+import UserLoginForm from "./UserComponent/UserLoginForm";
+import UserRegister from "./UserComponent/UserRegister";
+import ViewAllEmployees from "./UserComponent/ViewAllEmployees";
+import ViewAllManagers from "./UserComponent/ViewAllManagers";
+import AboutUs from "./page/AboutUs";
+import ContactUs from "./page/ContactUs";
+import HomePage from "./page/HomePage";
 
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route exact path="/" element={<OAuthLogin />} /> {/* Route for OAuth login */}
-          <Route exact path="/login/oauth2/google" element={<OAuth2LoginSuccess />} />
-          <Route exact path="/home" element={<Home />} /> {/* Route for Home */}
-          <Route exact path="/adduser" element={<AddUser />} />
-          <Route exit path="/edituser/:id" element={<EditUser />} />
-          <Route exact path="/viewuser/:id" element={<ViewUser />} />
-        </Routes>
-      </Router>
+    <div>
+      <Header />
+      <Routes>
+        <Route path="/" element={<UserLoginForm />} />
+        <Route path="/home" element={<HomePage />} />
+        <Route path="contact" element={<ContactUs />} />
+        <Route path="about" element={<AboutUs />} />
+        <Route path="user/admin/register" element={<UserRegister />} />
+        <Route path="user/employee/register" element={<UserRegister />} />
+        <Route path="user/manager/register" element={<UserRegister />} />
+        <Route path="user/admin/manager/all" element={<ViewAllManagers />} />
+        <Route path="user/employee/all" element={<ViewAllEmployees />} />
+        <Route path="/user/login" element={<UserLoginForm />} />
+        <Route path="/user/admin/project/add" element={<AddProject />} />
+        <Route path="/user/admin/project/all" element={<ViewAllProjects />} />
+        <Route
+          path="/user/manager/project/all"
+          element={<ViewAllManagerProjects />}
+        />
+        <Route
+          path="/user/employee/project/all"
+          element={<ViewAllEmployeeProjects />}
+        />
+        <Route
+          path="/project/assign/manager"
+          element={<AssignProjectToManager />}
+        />
+        <Route
+          path="/project/assign/employee"
+          element={<AssignProjectToEmployee />}
+        />
+        <Route
+          path="/employee/project/status/update"
+          element={<UpdateProjectStatus />}
+        />
+        <Route path="/user/change/password" element={<ChangePassword />} />
+      </Routes>
     </div>
   );
 }
