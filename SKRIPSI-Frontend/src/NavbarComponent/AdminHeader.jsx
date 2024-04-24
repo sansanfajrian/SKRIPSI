@@ -20,9 +20,8 @@ const AdminHeader = () => {
     });
     sessionStorage.removeItem("active-admin");
     sessionStorage.removeItem("admin-jwtToken");
-    
+    navigate("/user/login");
     window.location.reload(true);
-    navigate("/home");
   };
 
   return (

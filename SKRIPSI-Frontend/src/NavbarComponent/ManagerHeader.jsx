@@ -20,8 +20,8 @@ const ManagerHeader = () => {
     });
     sessionStorage.removeItem("active-manager");
     sessionStorage.removeItem("manager-jwtToken");
+    navigate("/user/login");
     window.location.reload(true);
-    navigate("home");
   };
 
   return (

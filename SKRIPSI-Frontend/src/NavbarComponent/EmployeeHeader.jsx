@@ -20,8 +20,8 @@ const EmployeeHeader = () => {
     });
     sessionStorage.removeItem("active-employee");
     sessionStorage.removeItem("employee-jwtToken");
+    navigate("/user/login");
     window.location.reload(true);
-    navigate("home");
   };
 
   return (

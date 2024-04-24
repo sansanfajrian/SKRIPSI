@@ -8,8 +8,7 @@ const UserLoginForm = () => {
 
   const [loginRequest, setLoginRequest] = useState({
     emailId: "",
-    password: "",
-    role: "",
+    password: ""
   });
 
   const handleUserInput = (e) => {
@@ -67,7 +66,13 @@ const UserLoginForm = () => {
                  progress: undefined,
                });
                setTimeout(() => {
-                 window.location.href = "/user/admin/project/all";
+                if (res.user.role === "admin") {
+                  window.location.href = "/user/admin/project/all";
+                } else if (res.user.role === "employee") {
+                  window.location.href = "/user/employee/project/all";
+                } else if (res.user.role === "manager") {
+                  window.location.href = "/user/manager/project/all";
+                }
                }, 1000); // Redirect after 3 seconds
              } else {
                toast.error(res.responseMessage, {
@@ -121,21 +126,6 @@ const UserLoginForm = () => {
           </div>
           <div className="card-body">
             <form>
-              <div class="mb-3 text-color">
-                <label for="role" class="form-label">
-                  <b>User Role</b>
-                </label>
-                <select
-                  onChange={handleUserInput}
-                  className="form-control"
-                  name="role"
-                >
-                  <option value="0">Select Role</option>
-                  <option value="admin"> Admin </option>
-                  <option value="employee"> Employee </option>
-                  <option value="manager"> Manager </option>
-                </select>
-              </div>
 
               <div className="mb-3 text-color">
                 <label for="emailId" class="form-label">

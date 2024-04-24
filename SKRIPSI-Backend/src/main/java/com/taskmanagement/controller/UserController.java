@@ -177,16 +177,17 @@ public class UserController {
 		} catch (Exception ex) {
 			LOG.error("Autthentication Failed!!!");
 			response.setSuccess(true);
-			response.setResponseMessage("Failed to Login");
+			response.setResponseMessage("Failed to authenticate!");
 			return new ResponseEntity<UserLoginResponseDto>(response, HttpStatus.BAD_REQUEST);
 		}
 
 		UserDetails userDetails = customUserDetailsService.loadUserByUsername(userLoginRequest.getEmailId());
 
 		for (GrantedAuthority grantedAuthory : userDetails.getAuthorities()) {
-			if (grantedAuthory.getAuthority().equals(userLoginRequest.getRole())) {
-				jwtToken = jwtUtil.generateToken(userDetails.getUsername());
-			}
+			// if (grantedAuthory.getAuthority().equals(userLoginRequest.getRole())) {
+			// 	jwtToken = jwtUtil.generateToken(userDetails.getUsername());
+			// }
+			jwtToken = jwtUtil.generateToken(userDetails.getUsername());
 		}
 
 		// user is authenticated
@@ -200,14 +201,14 @@ public class UserController {
 			response.setUser(useLoginResponse);
 
 			response.setSuccess(true);
-			response.setResponseMessage("Logged in Successful..!!!");
+			response.setResponseMessage("Logged in Successful!");
 			return new ResponseEntity<UserLoginResponseDto>(response, HttpStatus.OK);
 		
 		}
 
 		else {
 			response.setSuccess(true);
-			response.setResponseMessage("Failed to Log in..!!!");
+			response.setResponseMessage("Failed to Get JWT Token!");
 			return new ResponseEntity<UserLoginResponseDto>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		
 		}
