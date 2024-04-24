@@ -32,8 +32,8 @@ const Header = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-              {/* <li className="nav-item">
+            {/* <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+               <li className="nav-item">
                 <Link
                   to="/about"
                   className="nav-link active"
@@ -51,8 +51,8 @@ const Header = () => {
                 >
                   <b className="text-color">Contact Us</b>
                 </Link>
-              </li> */}
-            </ul>
+              </li> }
+            </ul> */}
 
             <RoleNav />
           </div>
