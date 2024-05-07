@@ -57,8 +57,8 @@ public class ProjectController {
 		 // Get today's date
         LocalDate today = LocalDate.now();
 
-        // Define the desired format yyyy-mm-dd
-        String desiredFormat = "YYYY-MM-DD"; // Change this format as needed
+        // Define the desired format yyyy-MM-dd
+        String desiredFormat = "yyyy-MM-dd"; // Change this format as needed
 
         // Create a DateTimeFormatter with the desired format
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(desiredFormat);
@@ -357,7 +357,7 @@ public class ProjectController {
 
 		 // Get today's date
         LocalDate today = LocalDate.now();
-        String desiredFormat = "YYYY-MM-DD";
+        String desiredFormat = "yyyy-MM-dd";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(desiredFormat);
         String formattedTodaysDate = today.format(formatter);
 		

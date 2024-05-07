@@ -3,7 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-const ChangePassword = () => {
+const ForgotPassword = () => {
   const [user, setUser] = useState({});
   const [sessionUserName, setSessionUserName] = useState("");
   const [sessionJWTName, setSessionJWTName] = useState("");
@@ -109,7 +109,8 @@ const ChangePassword = () => {
           {/* /.login-logo */}
           <div className="card">
             <div className="card-body login-card-body">
-              <p className="login-box-msg">You are only one step a way from your new password, recover your password now.</p>
+              <p className="login-box-msg">You forgot your password? Here you can easily retrieve a new password.</p> 
+              <form>
                 <div className="input-group mb-3">
                   
                   {/* User Email */}
@@ -118,47 +119,10 @@ const ChangePassword = () => {
                     className="form-control"
                     value={user.emailId}
                     required
-                    readOnly
                   />
                   <div className="input-group-append">
                     <div className="input-group-text">
                       <span className="fas fa-envelope" />
-                    </div>
-                  </div>
-                </div>
-
-                
-                {/* User Contact */}
-                <div className="input-group mb-3">
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={user.contact}
-                    required
-                    readOnly
-                  />
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span className="fas fa-phone" />
-                    </div>
-                  </div>
-                </div>
-                
-              <form>
-                {/* User Password */}
-                <div className="input-group mb-3">
-                  <input
-                    type="password"
-                    className="form-control"
-                    placeholder="Your New Password"
-                    id="password"
-                    name="password"
-                    onChange={handleUserInput}
-                    value={loginRequest.password}
-                  />
-                  <div className="input-group-append">
-                    <div className="input-group-text">
-                      <span className="fas fa-lock" />
                     </div>
                   </div>
                 </div>
@@ -177,6 +141,9 @@ const ChangePassword = () => {
               <p className="mt-3 mb-1">
                 <a href="/user/login">Login</a>
               </p>
+              <p class="mb-0">
+                <a href="user/admin/register" class="text-center">Register a new membership</a>
+              </p>
             </div>
             {/* /.login-card-body */}
           </div>
@@ -187,4 +154,4 @@ const ChangePassword = () => {
   );
 };
 
-export default ChangePassword;
+export default ForgotPassword;

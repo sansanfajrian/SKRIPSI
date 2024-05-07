@@ -94,105 +94,130 @@ const AssignProjectToEmployee = () => {
   };
 
   return (
-    <div>
-      <div className="mt-2 d-flex aligns-items-center justify-content-center">
-        <div
-          className="card form-card border-color custom-bg"
-          style={{ width: "25rem" }}
-        >
-          <div className="card-header bg-color text-center custom-bg-text">
-            <h5 className="card-title">Assign Project To Employee</h5>
-          </div>
-          <div className="card-body text-color">
-            <div className="mb-3 mt-1">
-              <label htmlFor="quantity" className="form-label">
-                <b>Project Name</b>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                value={project.name}
-                required
-                readOnly
-              />
-            </div>
+    <div className="content-wrapper">
 
-            <div className="mb-3">
-              <label htmlFor="description" className="form-label">
-                <b>Project Description</b>
-              </label>
-              <textarea
-                className="form-control"
-                id="description"
-                rows="3"
-                value={project.description}
-              />
-            </div>
+      <section className="content-header">
+      </section>
 
-            <div className="mb-3 mt-1">
-              <label htmlFor="quantity" className="form-label">
-                <b>Project Created Date</b>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                value={project.createdDate}
-                required
-                readOnly
-              />
-            </div>
+      <section className="content">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-12">
+              <div
+                className="card form-card ms-2 me-2 mb-5 custom-bg border-color"
+                style={{
+                  height: "45rem",
+                }}
+              >
+                <div className="card-header">
+                  <div className="container-fluid">
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <h1>Assign Project To Employee</h1>
+                      </div>
+                      <div className="col-sm-6">
+                        <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'transparent'}}>
+                          <li className="breadcrumb-item" ><a href="#">Home</a></li>
+                          <li className="breadcrumb-item" ><a href="/user/manager/project/all">All Project</a></li>
+                          <li className="breadcrumb-item active">Assign Project To Employee</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="card-body">
+                  <div className="mb-3">
+                    <label htmlFor="quantity" className="form-label">
+                      Project Name
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={project.name}
+                      required
+                      readOnly
+                    />
+                  </div>
 
-            <div className="mb-3 mt-1">
-              <label htmlFor="quantity" className="form-label">
-                <b>Project Deadline Date</b>
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                value={project.deadlineDate}
-                required
-                readOnly
-              />
-            </div>
+                  <div className="mb-3">
+                    <label htmlFor="description" className="form-label">
+                      Project Description
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="description"
+                      rows="3"
+                      readOnly
+                      value={project.description}
+                    />
+                  </div>
 
-            <form>
-              <div class="col">
-                <label htmlFor="quantity" className="form-label">
-                  <b>Assign Project To Emplooyee</b>
-                </label>
-                <select
-                  name="employeeId"
-                  onChange={handleUserInput}
-                  className="form-control"
-                  required
-                >
-                  <option value="">Select Employee</option>
+                  <div className="mb-3">
+                    <label htmlFor="quantity" className="form-label">
+                      Project Created Date
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={project.createdDate}
+                      required
+                      readOnly
+                    />
+                  </div>
 
-                  {allEmployees.map((employeee) => {
-                    return (
-                      <option value={employeee.id}>
-                        {" "}
-                        {employeee.firstName + " " + employeee.lastName}{" "}
-                      </option>
-                    );
-                  })}
-                </select>
+                  <div className="mb-3">
+                    <label htmlFor="quantity" className="form-label">
+                      Project Deadline Date
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={project.deadlineDate}
+                      required
+                      readOnly
+                    />
+                  </div>
+
+                  <form>
+                    <div class="mb-3">
+                      <label htmlFor="quantity" className="form-label">
+                        Assign Project To Emplooyee 
+                      </label>
+                      <select
+                        name="employeeId"
+                        onChange={handleUserInput}
+                        className="form-control"
+                        required
+                      >
+                        <option value="">Select Employee</option>
+
+                        {allEmployees.map((employeee) => {
+                          return (
+                            <option value={employeee.id}>
+                              {" "}
+                              {employeee.firstName + " " + employeee.lastName}{" "}
+                            </option>
+                          );
+                        })}
+                      </select>
+                    </div>
+
+                    <button
+                      type="submit"
+                      class="btn float-right"
+                      onClick={assignProject}
+                      style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                    >
+                      Update
+                    </button>
+                    <ToastContainer />
+                  </form>
+                </div>
               </div>
-
-              <div class="col">
-                <button
-                  type="submit"
-                  class="btn bg-color btn-sm custom-bg-text mt-4"
-                  onClick={assignProject}
-                >
-                  Update
-                </button>
-                <ToastContainer />
-              </div>
-            </form>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

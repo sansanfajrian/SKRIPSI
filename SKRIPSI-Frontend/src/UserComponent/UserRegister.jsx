@@ -3,6 +3,10 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import 'admin-lte/dist/css/adminlte.min.css';
+import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
+import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
+import 'admin-lte/dist/js/adminlte.min.js';
 
 const UserRegister = () => {
   const [user, setUser] = useState({
@@ -103,171 +107,219 @@ const UserRegister = () => {
   };
 
   return (
-    <div>
-      <div className="mt-2 d-flex aligns-items-center justify-content-center ms-2 me-2 mb-2">
-        <div
-          className="card form-card border-color text-color custom-bg"
-          style={{ width: "50rem" }}
-        >
-          <div className="card-header bg-color custom-bg-text text-center">
-            <h5 className="card-title">Register {user.role}</h5>
+    <div class="wrapper">
+      <div className="d-flex aligns-items-center justify-content-center" style={{backgroundColor:"#e9ecef"}}>
+      {/* <div className="hold-transition register-page*/}
+
+        <div className="register-box my-2">
+          <div className="register-logo">
+            <b style={{ color:'purple' }}>Monitoring</b> Project
           </div>
-          <div className="card-body">
-            <form className="row g-3" onSubmit={saveUser}>
-              <div className="col-md-6 mb-3 text-color">
-                <label htmlFor="title" className="form-label">
-                  <b> First Name</b>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="firstName"
-                  name="firstName"
-                  onChange={handleUserInput}
-                  value={user.firstName}
-                />
-              </div>
-              <div className="col-md-6 mb-3 text-color">
-                <label htmlFor="description" className="form-label">
-                  <b>Last Name</b>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="lastName"
-                  name="lastName"
-                  onChange={handleUserInput}
-                  value={user.lastName}
-                />
-              </div>
+          <div className="card">
+            <div className="card-body register-card-body">
+              <p className="login-box-msg">Register a new membership</p>
+              <form className="row g-3" onSubmit={saveUser}>
 
-              <div className="col-md-6 mb-3 text-color">
-                <b>
-                  <label className="form-label">Email Id</label>
-                </b>
-                <input
-                  type="email"
-                  className="form-control"
-                  id="emailId"
-                  name="emailId"
-                  onChange={handleUserInput}
-                  value={user.emailId}
-                />
+                {/* FirstName */}
+                <div className="col-md-6 mb-3 text-color">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="First Name"
+                      id="firstName"
+                      name="firstName"
+                      onChange={handleUserInput}
+                      value={user.firstName}
+                      required
+                    />
+                </div>
+
+                {/* LastName */}
+                <div className="col-md-6 mb-3 text-color">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Last Name"
+                    id="lastName"
+                    name="lastName"
+                    onChange={handleUserInput}
+                    value={user.lastName}
+                    required
+                  />
+                </div>
+                
+                {/* Email ID */}
+                <div className="input-group mb-3">
+                  <input
+                    type="email"
+                    className="form-control"
+                    id="emailId"
+                    name="emailId"
+                    placeholder="Email ID"
+                    onChange={handleUserInput}
+                    value={user.emailId}
+                    required
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-envelope" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Password */} 
+                <div className="input-group mb-3">
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Password"
+                    id="password"
+                    name="password"
+                    onChange={handleUserInput}
+                    value={user.password}
+                    required
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-lock" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Gender */}
+                <div className="input-group mb-3">
+                  <select
+                    onChange={handleUserInput}
+                    className="form-control"
+                    name="sex"
+                    required
+                  >
+                    <option value="0">Select Sex</option>
+
+                    {genders.map((gender) => {
+                      return <option value={gender}> {gender} </option>;
+                    })}
+                  </select>
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-caret-down" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Number */}
+                <div className="input-group mb-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Contact Number"
+                    id="contact"
+                    name="contact"
+                    onChange={handleUserInput}
+                    value={user.contact}
+                    required
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-phone" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Age */}
+                <div className="input-group mb-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="Age"
+                    id="age"
+                    name="age"
+                    onChange={handleUserInput}
+                    value={user.age}
+                    required
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-user" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Street */}
+                <div className="input-group mb-3">
+                  <textarea
+                    className="form-control"
+                    id="street"
+                    placeholder="Street"
+                    name="street"
+                    rows="3"
+                    onChange={handleUserInput}
+                    value={user.street}
+                    required
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-map" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* City */}
+                <div className="input-group mb-3">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="City"
+                    id="city"
+                    name="city"
+                    onChange={handleUserInput}
+                    value={user.city}
+                    required
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-building" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pincode */}
+                <div className="input-group mb-3">
+                  <input
+                    type="number"
+                    className="form-control"
+                    id="pincode"
+                    placeholder="Pincode"
+                    name="pincode"
+                    onChange={handleUserInput}
+                    value={user.pincode}
+                    required
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-inbox" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="d-flex aligns-items-center justify-content-center">
+                    <button type="submit" className="btn btn-primary btn-block">Register</button>
+                  </div>
+              </form>
+              <div className="social-auth-links text-center">
+                <p>- OR -</p>
+                <a href="#" className="btn btn-block btn-danger">
+                  <i className="fab fa-google-plus mr-2" />
+                  Sign up using Google+
+                </a>
               </div>
-
-              <div className="col-md-6 mb-3 text-color">
-                <label htmlFor="quantity" className="form-label">
-                  <b>Password</b>
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  name="password"
-                  onChange={handleUserInput}
-                  value={user.password}
-                />
-              </div>
-
-              <div className="col-md-6 mb-3 text-color">
-                <label htmlFor="sex" className="form-label">
-                  <b>User Gender</b>
-                </label>
-                <select
-                  onChange={handleUserInput}
-                  className="form-control"
-                  name="sex"
-                >
-                  <option value="0">Select Sex</option>
-
-                  {genders.map((gender) => {
-                    return <option value={gender}> {gender} </option>;
-                  })}
-                </select>
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label htmlFor="contact" className="form-label">
-                  <b>Contact No</b>
-                </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="contact"
-                  name="contact"
-                  onChange={handleUserInput}
-                  value={user.contact}
-                />
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label htmlFor="contact" className="form-label">
-                  <b>Age</b>
-                </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="age"
-                  name="age"
-                  onChange={handleUserInput}
-                  value={user.age}
-                />
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label htmlFor="description" className="form-label">
-                  <b> Street</b>
-                </label>
-                <textarea
-                  className="form-control"
-                  id="street"
-                  name="street"
-                  rows="3"
-                  onChange={handleUserInput}
-                  value={user.street}
-                />
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label htmlFor="price" className="form-label">
-                  <b>City</b>
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="city"
-                  name="city"
-                  onChange={handleUserInput}
-                  value={user.city}
-                />
-              </div>
-
-              <div className="col-md-6 mb-3">
-                <label htmlFor="pincode" className="form-label">
-                  <b>Pincode</b>
-                </label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="pincode"
-                  name="pincode"
-                  onChange={handleUserInput}
-                  value={user.pincode}
-                />
-              </div>
-
-              <div className="d-flex aligns-items-center justify-content-center">
-                <input
-                  type="submit"
-                  className="btn bg-color custom-bg-text"
-                  value="Register User"
-                />
-              </div>
-
-              <ToastContainer />
-            </form>
-          </div>
+              <a href="/user/login" className="text-center">I already have a membership</a>
+            </div>
+            {/* /.form-box */}
+          </div>{/* /.card */}
         </div>
+
+
       </div>
     </div>
   );

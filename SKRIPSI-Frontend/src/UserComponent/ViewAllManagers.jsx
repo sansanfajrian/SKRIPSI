@@ -81,78 +81,99 @@ const ViewAllManagers = () => {
 
 
   return (
-    <div className="mt-3">
-      <div
-        className="card form-card ms-2 me-2 mb-5 custom-bg border-color "
-        style={{
-          height: "45rem",
-        }}
-      >
-        <div className="card-header custom-bg-text text-center bg-color">
-          <h2>All Managers</h2>
-        </div>
-        <div
-          className="card-body"
-          style={{
-            overflowY: "auto",
-          }}
-        >
-          <div className="table-responsive">
-            <table className="table table-hover text-color text-center">
-              <thead className="table-bordered border-color bg-color custom-bg-text">
-                <tr>
-                  <th scope="col">First Name</th>
-                  <th scope="col">Last Name</th>
-                  <th scope="col">Email Id</th>
-                  <th scope="col">Phone No</th>
-                  <th scope="col">Address</th>
-                  <th scope="col">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allManagers.map((manager) => {
-                  return (
-                    <tr>
-                      <td>
-                        <b>{manager.firstName}</b>
-                      </td>
+    <div className="content-wrapper">
 
-                      <td>
-                        <b>{manager.lastName}</b>
-                      </td>
-                      <td>
-                        <b>{manager.emailId}</b>
-                      </td>
-                      <td>
-                        <b>{manager.contact}</b>
-                      </td>
+      <section className="content-header">
+      </section>
 
-                      <td>
-                        <b>
-                          {manager.street +
-                            " " +
-                            manager.city +
-                            " " +
-                            manager.pincode}
-                        </b>
-                      </td>
-                      <td>
-                        <button
-                          onClick={() => deleteManager(manager.id)}
-                          className="btn btn-sm bg-color custom-bg-text"
-                        >
-                          Remove
-                        </button>
-                        <ToastContainer />
-                      </td>
+      <section class="content">
+        <div className="container-fluid">
+          <div
+            className="card form-card ms-2 me-2 mb-5 custom-bg border-color "
+            style={{
+              height: "45rem",
+            }}
+          >
+            <div className="card-header">
+                  <div className="container-fluid">
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <h1>All Managers</h1>
+                      </div>
+                      <div className="col-sm-6">
+                        <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'transparent'}}>
+                          <li className="breadcrumb-item" ><a href="#">Home</a></li>
+                          <li className="breadcrumb-item active">View Managers</li>
+                        </ol>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            <div
+              className="card-body"
+              style={{
+                overflowY: "auto",
+              }}
+            >
+              <div className="table-responsive">
+                <table className="table table-bordered table-hover">
+                  <thead className="table-bordered border-color bg-color custom-bg-text">
+                    <tr className="text-center">
+                      <th scope="col">First Name</th>
+                      <th scope="col">Last Name</th>
+                      <th scope="col">Email Id</th>
+                      <th scope="col">Phone No</th>
+                      <th scope="col">Address</th>
+                      <th scope="col">Action</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    {allManagers.map((manager) => {
+                      return (
+                        <tr>
+                          <td>
+                            <b>{manager.firstName}</b>
+                          </td>
+
+                          <td>
+                            <b>{manager.lastName}</b>
+                          </td>
+                          <td>
+                            <b>{manager.emailId}</b>
+                          </td>
+                          <td className="text-center">
+                            <b>{manager.contact}</b>
+                          </td>
+
+                          <td>
+                            <b>
+                              {manager.street +
+                                " " +
+                                manager.city +
+                                " " +
+                                manager.pincode}
+                            </b>
+                          </td>
+                          <td className="text-center">
+                            <button
+                              onClick={() => deleteManager(manager.id)}
+                              className="btn btn-sm bg-color custom-bg-text"
+                              style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                            >
+                              Remove
+                            </button>
+                            <ToastContainer />
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

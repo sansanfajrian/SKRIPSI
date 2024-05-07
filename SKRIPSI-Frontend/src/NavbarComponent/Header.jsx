@@ -1,24 +1,20 @@
 import { Link } from "react-router-dom";
-import logo from "../images/task_logo.png";
 import RoleNav from "./RoleNav";
+import logo from "../images/task_logo.png";
 
 const Header = () => {
   return (
     <div>
-      <nav className="navbar  navbar-expand-lg custom-bg text-color">
+      <nav className="main-header navbar navbar-expand navbar-white navbar-light">
         <div className="container-fluid text-color">
-          <img
-            src={logo}
-            width="65"
-            height="auto"
-            className="d-inline-block align-top"
-            alt=""
-          />
-          <Link to="/" className="navbar-brand ms-1">
-            <i>
-              <b className="text-color">Monitoring Project</b>
-            </i>
-          </Link>
+            <ul className="navbar-nav">
+                <li className="nav-item">
+                    <a className="nav-link" data-widget="pushmenu" href="#nothing" role="button"><i className="fas fa-bars" /></a>
+                </li>
+                <Link to="/" className="navbar-brand ms-1">
+                  <img src={logo} width="120" height="auto" alt="Logo Tujuh Sembilan" className="brand-image" style={{opacity: '.8'}} />
+                </Link>
+            </ul>
 
           <button
             className="navbar-toggler"
@@ -53,8 +49,6 @@ const Header = () => {
                 </Link>
               </li> }
             </ul> */}
-
-            <RoleNav />
           </div>
         </div>
       </nav>

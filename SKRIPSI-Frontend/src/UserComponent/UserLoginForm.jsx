@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import 'admin-lte/dist/css/adminlte.min.css';
+import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
+import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
+import 'admin-lte/dist/js/adminlte.min.js';
 
 const UserLoginForm = () => {
   let navigate = useNavigate();
@@ -34,10 +38,15 @@ const UserLoginForm = () => {
 
              if (res.jwtToken !== null) {
                console.log("JWT TOKEN not null, positive response");
+               console.log("Testing" + res.user.role);
                if (res.user.role === "admin") {
                  sessionStorage.setItem(
                    "active-admin",
                    JSON.stringify(res.user)
+                 );
+                 sessionStorage.setItem(
+                   "username",
+                   JSON.stringify(res.user.firstName)
                  );
                  sessionStorage.setItem("admin-jwtToken", res.user.jwtToken);
                } else if (res.user.role === "employee") {
@@ -45,11 +54,19 @@ const UserLoginForm = () => {
                    "active-employee",
                    JSON.stringify(res.user)
                  );
+                 sessionStorage.setItem(
+                   "username",
+                   JSON.stringify(res.user.firstName)
+                 );
                  sessionStorage.setItem("employee-jwtToken", res.user.jwtToken);
                } else if (res.user.role === "manager") {
                  sessionStorage.setItem(
                    "active-manager",
                    JSON.stringify(res.user)
+                 );
+                 sessionStorage.setItem(
+                   "username",
+                   JSON.stringify(res.user.firstName)
                  );
                  sessionStorage.setItem("manager-jwtToken", res.user.jwtToken);
                }
@@ -115,56 +132,86 @@ const UserLoginForm = () => {
    };
 
   return (
-    <div>
-      <div className="mt-2 d-flex aligns-items-center justify-content-center">
-        <div
-          className="card form-card border-color custom-bg"
-          style={{ width: "25rem" }}
-        >
-          <div className="card-header bg-color text-center custom-bg-text">
-            <h4 className="card-title">User Login</h4>
-          </div>
-          <div className="card-body">
-            <form>
+    <div class="wrapper">
+      <div className="hold-transition login-page">
 
-              <div className="mb-3 text-color">
-                <label for="emailId" class="form-label">
-                  <b>Email Id</b>
-                </label>
-                <input
-                  type="email"
-                  className="form-control"
-                  id="emailId"
-                  name="emailId"
-                  onChange={handleUserInput}
-                  value={loginRequest.emailId}
-                />
+        <div className="login-box">
+          <div className="login-logo">
+            <b style={{ color: 'purple' }}>Monitoring</b> Project
+          </div>
+          <div className="card">
+            <div className="card-body login-card-body">
+              <p className="login-box-msg">Login to start your session</p>
+              <form>
+                <div className="input-group mb-3">
+                  <input
+                    type="email"
+                    className="form-control"
+                    placeholder="Email ID"
+                    id="emailId"
+                    name="emailId"
+                    onChange={handleUserInput}
+                    value={loginRequest.emailId}
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-envelope" />
+                    </div>
+                  </div>
+                </div>
+                <div className="input-group mb-3">
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Password"
+                    id="password"
+                    name="password"
+                    onChange={handleUserInput}
+                    value={loginRequest.password}
+                    autoComplete="on"
+                  />
+                  <div className="input-group-append">
+                    <div className="input-group-text">
+                      <span className="fas fa-lock" />
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-8">
+                    <div className="icheck-primary">
+                      <input type="checkbox" id="remember" />
+                      <label htmlFor="remember">
+                        Remember Me
+                      </label>
+                    </div>
+                  </div>
+                  <div className="col-4">
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-block"
+                      onClick={loginAction}
+                    >Login
+                    </button>
+                  </div>
+                </div>
+                <ToastContainer />
+              </form>
+              <div className="social-auth-links text-center mb-3">
+                <p>- OR -</p>
+                <a href="#" className="btn btn-block btn-danger">
+                  <i className="fab fa-google-plus mr-2" /> Sign in using Google+
+                </a>
               </div>
-              <div className="mb-3 text-color">
-                <label for="password" className="form-label">
-                  <b>Password</b>
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  name="password"
-                  onChange={handleUserInput}
-                  value={loginRequest.password}
-                  autoComplete="on"
-                />
-              </div>
-              <button
-                type="submit"
-                className="btn bg-color custom-bg-text"
-                onClick={loginAction}
-              >
-                Login
-              </button>
-              <ToastContainer />
-            </form>
+              <p className="mb-1">
+                <a href="/user/forgot/password">I forgot my password</a>
+              </p>
+              <p className="mb-0">
+                <a href="/user/admin/register" className="text-center">Register a new membership</a>
+              </p>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   );
