@@ -11,14 +11,16 @@ import 'admin-lte/dist/js/adminlte.min.js';
 
 function App() {
   return (
-    <div className="wrapper">
+    <div style={{height: "100%"}}>
+      <div className="wrapper">
 
-      <div className="preloader flex-column justify-content-center align-items-center">
-        <img className="animation__shake" src={logo} alt="Tujuh Sembilan" height="auto" width="auto" />
+        <div className="preloader flex-column justify-content-center align-items-center">
+          <img className="animation__shake" src={logo} alt="Tujuh Sembilan" height="auto" width="auto" />
+        </div>
+        
+        <RoleNav />
+        <Content />
       </div>
-      
-      <RoleNav />
-      <Content />
     </div>
   );
 }

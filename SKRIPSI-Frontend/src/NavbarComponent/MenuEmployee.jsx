@@ -65,7 +65,7 @@ const MenuEmployee = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/user/change/password" className="nav-link">
+                <Link to="/user/change/menu-password" className="nav-link">
                   <i className="nav-icon fas fa-key" />
                   <p>
                     Change Password

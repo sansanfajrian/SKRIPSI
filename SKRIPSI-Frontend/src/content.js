@@ -7,10 +7,12 @@ import UpdateProjectStatus from "./ProjectComponent/UpdateProjectStatus";
 import ViewAllEmployeeProjects from "./ProjectComponent/ViewAllEmployeeProjects";
 import ViewAllManagerProjects from "./ProjectComponent/ViewAllManagerProjects";
 import ViewAllProjects from "./ProjectComponent/ViewAllProjects";
+import MenuChangePassword from "./UserComponent/MenuChangePassword";
 import ChangePassword from "./UserComponent/ChangePassword";
 import ForgotPassword from "./UserComponent/ForgotPassword";
 import UserLoginForm from "./UserComponent/UserLoginForm";
 import UserRegister from "./UserComponent/UserRegister";
+import ManagerEmployeeRegister from "./UserComponent/ManagerEmployeeRegister";
 import ViewAllEmployees from "./UserComponent/ViewAllEmployees";
 import ViewAllManagers from "./UserComponent/ViewAllManagers";
 import AboutUs from "./page/AboutUs";
@@ -29,6 +31,8 @@ export default function Content() {
         <Route path="user/admin/register" element={<UserRegister />} />
         <Route path="user/employee/register" element={<UserRegister />} />
         <Route path="user/manager/register" element={<UserRegister />} />
+        <Route path="user/employee/menu-register" element={<ManagerEmployeeRegister />} />
+        <Route path="user/manager/menu-register" element={<ManagerEmployeeRegister />} />
         <Route path="user/admin/manager/all" element={<ViewAllManagers />} />
         <Route path="user/employee/all" element={<ViewAllEmployees />} />
         <Route path="/user/login" element={<UserLoginForm />} />
@@ -54,6 +58,7 @@ export default function Content() {
           path="/employee/project/status/update"
           element={<UpdateProjectStatus />}
         />
+        <Route path="/user/change/menu-password" element={<MenuChangePassword />} />
         <Route path="/user/change/password" element={<ChangePassword />} />
         <Route path="/user/forgot/password" element={<ForgotPassword />} />
       </Routes>

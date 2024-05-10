@@ -63,7 +63,7 @@ const MenuManager = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/user/employee/register" className="nav-link">
+                <Link to="/user/employee/menu-register" className="nav-link">
                   <i className="nav-icon far fa-user" />
                   <p>
                     Register Employee
@@ -79,7 +79,7 @@ const MenuManager = () => {
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/user/change/password" className="nav-link">
+                <Link to="/user/change/menu-password" className="nav-link">
                   <i className="nav-icon fas fa-key" />
                   <p>
                     Change Password

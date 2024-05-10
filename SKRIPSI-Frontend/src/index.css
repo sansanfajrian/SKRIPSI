@@ -56,3 +56,30 @@ code {
 .card:hover .product-card {
   transform: scale(1.02);
 }
+
+h6 {
+  overflow: hidden;
+  text-align: center;
+}
+
+h6::before,
+h6::after {
+  content: "";
+  display: inline-block;
+  height: 1px;
+  position: relative;
+  vertical-align: middle;
+  width: 50%;
+}
+
+h6::before {
+  right: 0.5em;
+  margin-left: -50%;
+  background-color: #bcbcbc;
+}
+
+h6::after {
+  left: 0.5em;
+  margin-right: -50%;
+  background-color: #bcbcbc;
+}
