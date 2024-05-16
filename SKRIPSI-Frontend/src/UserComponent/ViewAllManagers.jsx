@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { ToastContainer, toast } from "react-toastify";
+import $ from 'jquery';
+import 'datatables.net-bs4';
 
 const ViewAllManagers = () => {
   const [allManagers, setAllManagers] = useState([]);
+
+  const tableRef = useRef(null);
 
   useEffect(() => {
     const getAllManager = async () => {
@@ -13,6 +17,19 @@ const ViewAllManagers = () => {
         setAllManagers(allManager.users);
       }
     };
+
+    setTimeout(() => {
+      $(tableRef.current).DataTable(
+        {
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            autoWidth: true,
+            responsive: true,
+        }
+      )
+    },200);
 
     getAllManager();
   }, []);
@@ -116,7 +133,7 @@ const ViewAllManagers = () => {
               }}
             >
               <div className="table-responsive">
-                <table className="table table-bordered table-hover">
+                <table ref={tableRef} className="table table-bordered table-hover">
                   <thead className="table-bordered border-color bg-color custom-bg-text">
                     <tr className="text-center">
                       <th scope="col">First Name</th>

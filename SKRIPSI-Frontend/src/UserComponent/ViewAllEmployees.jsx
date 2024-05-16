@@ -1,18 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { ToastContainer, toast } from "react-toastify";
+import $ from 'jquery';
+import 'datatables.net-bs4';
 
 const ViewAllEmployees = () => {
   const [allEmployees, setAllEmployees] = useState([]);
 
+  const tableRef = useRef(null);
+
   useEffect(() => {
-    const getAllEmployee = async () => {
+      const getAllEmployee = async () => {
       const allEmployee = await retrieveAllEmployees();
       if (allEmployee) {
         setAllEmployees(allEmployee.users);
       }
     };
+
+    setTimeout(() => {
+      $(tableRef.current).DataTable(
+        {
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            autoWidth: true,
+            responsive: true,
+        }
+      )
+    },200);
 
     getAllEmployee();
   }, []);
@@ -115,7 +132,7 @@ const ViewAllEmployees = () => {
               }}
             >
               <div className="table-responsive">
-                <table className="table table-bordered table-hover">
+                <table ref={tableRef} className="table table-bordered table-hover">
                   <thead className="table-bordered border-color bg-color custom-bg-text">
                     <tr className="text-center">
                       <th scope="col">First Name</th>

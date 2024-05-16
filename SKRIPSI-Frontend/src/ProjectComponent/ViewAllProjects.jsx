@@ -1,30 +1,53 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import $ from 'jquery';
+import 'datatables.net-bs4';
 
 const ViewAllProjects = () => {
+
   const [allProjects, setAllProjects] = useState([]);
 
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
 
+  const tableRef = useRef(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
+    
     const getAllProject = async () => {
       const allProject = await retrieveAllProject();
       if (allProject) {
         setAllProjects(allProject.projects);
       }
+      
     };
-
+    
     getAllProject();
+
+    setTimeout(() => {
+      $(tableRef.current).DataTable(
+        {
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            autoWidth: true,
+            responsive: true,
+        }
+      )
+    }, 500);
+
   }, []);
 
   const retrieveAllProject = async () => {
     const response = await axios.get("http://localhost:8080/api/project/fetch");
     console.log(response.data);
+    setAllProjects(response.data);
+    console.log("Apa Ini"+allProjects);
     return response.data;
   };
 
@@ -73,6 +96,7 @@ const ViewAllProjects = () => {
   const assignToManager = (project) => {
     navigate("/project/assign/manager", { state: project });
   };
+
 
   return (
     <div className="content-wrapper">
@@ -166,7 +190,7 @@ const ViewAllProjects = () => {
                   </div>
                 </div>
                 <div className="table-responsive">
-                  <table id='pagination' className="table table-bordered table-hover">
+                  <table ref={tableRef} className="table table-bordered table-hover">
                     <thead className="table-bordered bg-color custom-bg-text border-color">
                       <tr className="text-center">
                         <th scope="col">Project Name</th>

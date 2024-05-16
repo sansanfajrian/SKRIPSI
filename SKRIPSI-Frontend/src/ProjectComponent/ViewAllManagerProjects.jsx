@@ -1,7 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import $ from 'jquery';
+import 'datatables.net-bs4';
 
 const ViewAllManagerProjects = () => {
   const manager = JSON.parse(sessionStorage.getItem("active-manager"));
@@ -12,6 +14,8 @@ const ViewAllManagerProjects = () => {
 
   const navigate = useNavigate();
 
+  const tableRef = useRef(null);
+
   useEffect(() => {
     const getAllProject = async () => {
       const allProject = await retrieveAllProject();
@@ -19,6 +23,19 @@ const ViewAllManagerProjects = () => {
         setAllProjects(allProject.projects);
       }
     };
+
+    setTimeout(() => {
+      $(tableRef.current).DataTable(
+        {
+            paging: true,
+            lengthChange: false,
+            searching: false,
+            ordering: false,
+            autoWidth: true,
+            responsive: true,
+        }
+      )
+    },200);
 
     getAllProject();
   }, []);
@@ -122,7 +139,7 @@ const ViewAllManagerProjects = () => {
                 
               </div>
               <div className="table-responsive">
-                <table className="table table-bordered table-hover">
+                <table ref={tableRef} className="table table-bordered table-hover">
                     <thead className="table-bordered bg-color custom-bg-text border-color">
                     <tr className="text-center">
                       <th scope="col">Project Name</th>
