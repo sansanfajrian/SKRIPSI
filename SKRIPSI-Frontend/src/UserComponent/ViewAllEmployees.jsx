@@ -18,21 +18,29 @@ const ViewAllEmployees = () => {
       }
     };
 
-    setTimeout(() => {
-      $(tableRef.current).DataTable(
-        {
-            paging: true,
-            lengthChange: false,
-            searching: false,
-            ordering: false,
-            autoWidth: true,
-            responsive: true,
-        }
-      )
-    },200);
+    // setTimeout(() => {
+    //   $(tableRef.current).DataTable(
+    //     {
+    //         paging: true,
+    //         lengthChange: false,
+    //         searching: false,
+    //         ordering: false,
+    //         autoWidth: true,
+    //         responsive: true,
+    //     }
+    //   )
+    // },200);
 
     getAllEmployee();
   }, []);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 5;
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  const records = allEmployees.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(allEmployees.length / recordsPerPage);
+  const numbers = [...Array(npage +1).keys()].slice(1);
 
   const retrieveAllEmployees = async () => {
     const response = await axios.get(
@@ -170,13 +178,22 @@ const ViewAllEmployees = () => {
                                 employee.pincode}
                             </b>
                           </td>
-                          <td className="text-center">
+                          <td className="text-center" width="10%">
+                            <button
+                              onClick={""}
+                              className="btn btn-sm bg-color custom-bg-text mx-1"
+                              style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
+                              title="Edit Employee"
+                            >
+                              <i className="nav-icon fas fa-edit" />
+                            </button>
                             <button
                               onClick={() => deleteEmployee(employee.id)}
                               className="btn btn-sm bg-color custom-bg-text"
-                              style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                              style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold"}}
+                              title="Remove Employee"
                             >
-                              Remove
+                              <i className="nav-icon fas fa-trash" />
                             </button>
                             <ToastContainer />
                           </td>
@@ -187,11 +204,45 @@ const ViewAllEmployees = () => {
                 </table>
               </div>
             </div>
+            <div class="card-footer">
+                <nav className="float-right">
+                  <ul className='pagination'>
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={prePage}>Prev</a>
+                    </li>
+                    {numbers.map((n, i) => (
+                      <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
+                        <a href='#' className='page-link' onClick={() => changeCPage(n)}>{n}</a>
+                      </li>
+                    ))}
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={nextPage}>Next</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
           </div>
         </div>
       </section>
     </div>
   );
+
+  function prePage(){
+    if(currentPage !== 1){
+      setCurrentPage(currentPage - 1);
+    }
+  }
+
+  function changeCPage(id){
+    setCurrentPage(id);
+  }
+
+  function nextPage(){
+    if(currentPage !== npage){
+      setCurrentPage(currentPage + 1);
+    }
+  }
+
 };
 
 export default ViewAllEmployees;

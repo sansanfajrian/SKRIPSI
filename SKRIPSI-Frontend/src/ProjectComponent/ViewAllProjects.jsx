@@ -28,20 +28,28 @@ const ViewAllProjects = () => {
     
     getAllProject();
 
-    setTimeout(() => {
-      $(tableRef.current).DataTable(
-        {
-            paging: true,
-            lengthChange: false,
-            searching: false,
-            ordering: false,
-            autoWidth: true,
-            responsive: true,
-        }
-      )
-    }, 500);
+    // setTimeout(() => {
+    //   $(tableRef.current).DataTable(
+    //     {
+    //         paging: true,
+    //         lengthChange: false,
+    //         searching: false,
+    //         ordering: false,
+    //         autoWidth: true,
+    //         responsive: true,
+    //     }
+    //   )
+    // }, 500);
 
   }, []);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 5;
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  const records = allProjects.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(allProjects.length / recordsPerPage);
+  const numbers = [...Array(npage +1).keys()].slice(1);
 
   const retrieveAllProject = async () => {
     const response = await axios.get("http://localhost:8080/api/project/fetch");
@@ -190,7 +198,7 @@ const ViewAllProjects = () => {
                   </div>
                 </div>
                 <div className="table-responsive">
-                  <table ref={tableRef} className="table table-bordered table-hover">
+                  <table className="table table-bordered table-hover">
                     <thead className="table-bordered bg-color custom-bg-text border-color">
                       <tr className="text-center">
                         <th scope="col">Project Name</th>
@@ -208,9 +216,9 @@ const ViewAllProjects = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {allProjects.map((project) => {
+                      {records.map((project, i) => {
                         return (
-                          <tr>
+                          <tr key={i}>
                             <td>
                               <b>{project.name}</b>
                             </td>
@@ -245,18 +253,38 @@ const ViewAllProjects = () => {
                             <td className="text-center">
                               <b>{project.projectStatus}</b>
                             </td>
-                            <td className="text-center">
+                            <td className="text-center" width="10%">
                               {(() => {
                                 if (project.assignedToManager === "Not Assigned") {
                                 
                                     return (
-                                      <button
-                                        onClick={() => assignToManager(project)}
-                                        className="btn btn-sm"
-                                        style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
-                                      >
-                                        <b>Assign To Manager</b>
-                                      </button>
+                                      <div>
+                                        <button
+                                          onClick={() => assignToManager(project)}
+                                          className="btn btn-sm"
+                                          style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                                          title="Assign to Manager"
+                                          
+                                        >
+                                          <i className="flex nav-icon fas fa-people-arrows" />
+                                        </button>
+                                        <button
+                                          onClick={""}
+                                          className="btn btn-sm bg-color custom-bg-text mx-1"
+                                          style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
+                                          title="Edit Project"
+                                        >
+                                          <i className="nav-icon fas fa-edit" />
+                                        </button>
+                                        <button
+                                          onClick={""}
+                                          className="btn btn-sm bg-color custom-bg-text"
+                                          style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold", width:30}}
+                                          title="Remove Project"
+                                        >
+                                          <i className="nav-icon fas fa-trash" />
+                                        </button>
+                                      </div>
                                     );
                                   
                                 }
@@ -269,7 +297,25 @@ const ViewAllProjects = () => {
                       })}
                     </tbody>
                   </table>
+                  
                 </div>
+              </div>
+              <div class="card-footer">
+                <nav className="float-right">
+                  <ul className='pagination'>
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={prePage}>Prev</a>
+                    </li>
+                    {numbers.map((n, i) => (
+                      <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
+                        <a href='#' className='page-link' onClick={() => changeCPage(n)}>{n}</a>
+                      </li>
+                    ))}
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={nextPage}>Next</a>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
             </div>
@@ -281,6 +327,23 @@ const ViewAllProjects = () => {
       
     </div>
   );
+  
+  function prePage(){
+    if(currentPage !== 1){
+      setCurrentPage(currentPage - 1);
+    }
+  }
+
+  function changeCPage(id){
+    setCurrentPage(id);
+  }
+
+  function nextPage(){
+    if(currentPage !== npage){
+      setCurrentPage(currentPage + 1);
+    }
+  }
+
 };
 
 export default ViewAllProjects;

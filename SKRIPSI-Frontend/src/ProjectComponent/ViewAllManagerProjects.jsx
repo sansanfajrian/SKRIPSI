@@ -24,21 +24,29 @@ const ViewAllManagerProjects = () => {
       }
     };
 
-    setTimeout(() => {
-      $(tableRef.current).DataTable(
-        {
-            paging: true,
-            lengthChange: false,
-            searching: false,
-            ordering: false,
-            autoWidth: true,
-            responsive: true,
-        }
-      )
-    },200);
+    // setTimeout(() => {
+    //   $(tableRef.current).DataTable(
+    //     {
+    //         paging: true,
+    //         lengthChange: false,
+    //         searching: false,
+    //         ordering: false,
+    //         autoWidth: true,
+    //         responsive: true,
+    //     }
+    //   )
+    // },200);
 
     getAllProject();
   }, []);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 5;
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  const records = allProjects.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(allProjects.length / recordsPerPage);
+  const numbers = [...Array(npage +1).keys()].slice(1);
 
   const retrieveAllProject = async () => {
     const response = await axios.get(
@@ -198,13 +206,16 @@ const ViewAllManagerProjects = () => {
                             {(() => {
                               if (project.assignedToEmployee === "Not Assigned") {
                                 return (
-                                  <button
-                                    onClick={() => assignToEmployee(project)}
-                                    className="btn btn-sm"
-                                    style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
-                                  >
-                                    <b>Assign To Employee</b>
-                                  </button>
+                                  <div>
+                                    <button
+                                      onClick={() => assignToEmployee(project)}
+                                      className="btn btn-sm"
+                                      style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                                      title="Assign to Employee"
+                                    >
+                                      <b>Assign to Employee</b>
+                                    </button>
+                                  </div>
                                 );
                               }
                             })()}
@@ -216,11 +227,45 @@ const ViewAllManagerProjects = () => {
                 </table>
               </div>
             </div>
+            <div class="card-footer">
+                <nav className="float-right">
+                  <ul className='pagination'>
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={prePage}>Prev</a>
+                    </li>
+                    {numbers.map((n, i) => (
+                      <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
+                        <a href='#' className='page-link' onClick={() => changeCPage(n)}>{n}</a>
+                      </li>
+                    ))}
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={nextPage}>Next</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
           </div>
         </div>
       </section>
     </div>
   );
+
+  function prePage(){
+    if(currentPage !== 1){
+      setCurrentPage(currentPage - 1);
+    }
+  }
+
+  function changeCPage(id){
+    setCurrentPage(id);
+  }
+
+  function nextPage(){
+    if(currentPage !== npage){
+      setCurrentPage(currentPage + 1);
+    }
+  }
+
 };
 
 export default ViewAllManagerProjects;
