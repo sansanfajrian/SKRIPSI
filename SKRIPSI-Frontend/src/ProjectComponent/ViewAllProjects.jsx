@@ -105,6 +105,9 @@ const ViewAllProjects = () => {
     navigate("/project/assign/manager", { state: project });
   };
 
+  const editProject = (project) => {
+    navigate("/user/admin/project/edit", { state: project });
+  };
 
   return (
     <div className="content-wrapper">
@@ -269,7 +272,7 @@ const ViewAllProjects = () => {
                                           <i className="flex nav-icon fas fa-people-arrows" />
                                         </button>
                                         <button
-                                          onClick={""}
+                                          onClick={() => editProject(project)}
                                           className="btn btn-sm bg-color custom-bg-text mx-1"
                                           style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
                                           title="Edit Project"
@@ -287,6 +290,37 @@ const ViewAllProjects = () => {
                                       </div>
                                     );
                                   
+                                } else {
+                                  return (
+                                    <div>
+                                      <button
+                                        onClick={""}
+                                        className="btn btn-sm"
+                                        style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                                        title="Assign to Manager"
+                                        disabled
+                                        
+                                      >
+                                        <i className="flex nav-icon fas fa-people-arrows" />
+                                      </button>
+                                      <button
+                                        onClick={() => editProject(project)}
+                                        className="btn btn-sm bg-color custom-bg-text mx-1"
+                                        style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
+                                        title="Edit Project"
+                                      >
+                                        <i className="nav-icon fas fa-edit" />
+                                      </button>
+                                      <button
+                                        onClick={""}
+                                        className="btn btn-sm bg-color custom-bg-text"
+                                        style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold", width:30}}
+                                        title="Remove Project"
+                                      >
+                                        <i className="nav-icon fas fa-trash" />
+                                      </button>
+                                    </div>
+                                  );
                                 }
                               })()}
                             </td>

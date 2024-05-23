@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Routes } from "react-router-dom";
 import AddProject from "./ProjectComponent/AddProject";
+import EditProject from "./ProjectComponent/EditProject";
 import AssignProjectToEmployee from "./ProjectComponent/AssignProjectToEmployee";
 import AssignProjectToManager from "./ProjectComponent/AssignProjectToManager";
 import UpdateProjectStatus from "./ProjectComponent/UpdateProjectStatus";
@@ -37,6 +38,7 @@ export default function Content() {
         <Route path="user/employee/all" element={<ViewAllEmployees />} />
         <Route path="/user/login" element={<UserLoginForm />} />
         <Route path="/user/admin/project/add" element={<AddProject />} />
+        <Route path="/user/admin/project/edit" element={<EditProject />} />
         <Route path="/user/admin/project/all" element={<ViewAllProjects />} />
         <Route
           path="/user/manager/project/all"
