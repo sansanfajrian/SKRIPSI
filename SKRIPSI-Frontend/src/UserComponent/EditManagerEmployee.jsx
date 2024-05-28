@@ -2,18 +2,17 @@ import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import 'admin-lte/dist/css/adminlte.min.css';
 import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
 import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
 import 'admin-lte/dist/js/adminlte.min.js';
 
-const ManagerEmployeeRegister = () => {
+const EditManagerEmployee = () => {
   const [user, setUser] = useState({
     firstName: "",
     lastName: "",
     emailId: "",
-    password: "",
     contact: "",
     street: "",
     city: "",
@@ -22,6 +21,18 @@ const ManagerEmployeeRegister = () => {
     age: "",
     sex: "",
   });
+
+  const location = useLocation();
+  const userData = location.state;
+
+  const [list, setList] = useState(userData)
+  
+  useEffect(() => {
+
+    let {firstName, lastName, emailId, contact, street, city, pincode, role, age, sex} = list
+    setUser({firstName, lastName, emailId, contact, street, city, pincode, role, age, sex})
+  
+  }, []); 
 
   const navigate = useNavigate();
   let menuName = null;
@@ -89,7 +100,7 @@ const ManagerEmployeeRegister = () => {
           });
 
           setTimeout(() => {
-            window.location.reload(true);
+            navigate("/user/login");
           }, 1000); // Redirect after 3 seconds
         } else {
           console.log("Didn't got success response");
@@ -129,7 +140,7 @@ const ManagerEmployeeRegister = () => {
                     <div className="container-fluid">
                       <div className="row">
                         <div className="col-sm-6">
-                          <h1>Register {menuName}</h1>
+                          <h1>Edit Data {menuName}</h1>
                         </div>
                         <div className="col-sm-6">
                           <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'transparent'}}>
@@ -142,7 +153,7 @@ const ManagerEmployeeRegister = () => {
                   </div>
 
                   <div className="card-body register-card-body">
-                    <p className="login-box-msg">Register a new {user.role}</p>
+                    <p className="login-box-msg">Edit {user.role}</p>
                     <form className="row g-3" onSubmit={saveUser}>
 
                       {/* FirstName */}
@@ -192,31 +203,13 @@ const ManagerEmployeeRegister = () => {
                         </div>
                       </div>
 
-                      {/* Password */} 
-                      <div className="col-md-6 input-group mb-3">
-                        <input
-                          type="password"
-                          className="form-control"
-                          placeholder="Password"
-                          id="password"
-                          name="password"
-                          onChange={handleUserInput}
-                          value={user.password}
-                          required
-                        />
-                        <div className="input-group-append">
-                          <div className="input-group-text">
-                            <span className="fas fa-lock" />
-                          </div>
-                        </div>
-                      </div>
-
                       {/* Gender */}
                       <div className="col-md-6 input-group mb-3">
                         <select
                           onChange={handleUserInput}
                           className="form-control"
                           name="sex"
+                          value={user.sex}
                           required
                         >
                           <option value="0">Select Sex</option>
@@ -331,7 +324,7 @@ const ManagerEmployeeRegister = () => {
                       </div>
 
                       <div className="d-flex aligns-items-end justify-content-end">
-                          <button type="submit" className="btn btn-primary float-right">Register</button>
+                          <button type="submit" className="btn float-right" style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}>Save Data</button>
                         </div>
                     </form>
                   </div>
@@ -345,4 +338,4 @@ const ManagerEmployeeRegister = () => {
   );
 };
 
-export default ManagerEmployeeRegister;
+export default EditManagerEmployee;

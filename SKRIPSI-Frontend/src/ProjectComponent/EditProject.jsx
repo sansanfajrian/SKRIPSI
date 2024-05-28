@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -11,10 +11,18 @@ const EditProject = () => {
     deadlineDate: "",
   });
 
+  const navigate = useNavigate();
+
   const location = useLocation();
   const project = location.state;
+  const [list, setList] = useState(project)
 
-  const navigate = useNavigate();
+  useEffect(() => {
+
+    let {name, description, requirement, deadlineDate} = list
+    setEditProjectRequest({name, description, requirement, deadlineDate})
+  
+  }, []);
 
   const handleUserInput = (e) => {
     setEditProjectRequest({
@@ -22,6 +30,8 @@ const EditProject = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+  console.log("ini apa ?", location)
 
   const saveProject = (e) => {
     e.preventDefault();
@@ -117,7 +127,7 @@ const EditProject = () => {
                         placeholder="Masukkan nama projek"
                         name="name"
                         onChange={handleUserInput}
-                        value={project.name}
+                        value={editProjectRequest.name}
                       />
                     </div>
                     <div className="mb-3">
@@ -131,7 +141,7 @@ const EditProject = () => {
                         name="description"
                         placeholder="Masukkan deskripsi projek"
                         onChange={handleUserInput}
-                        value={project.description}
+                        value={editProjectRequest.description}
                       />
                     </div>
                     <div className="mb-3">
@@ -145,7 +155,7 @@ const EditProject = () => {
                         name="requirement"
                         placeholder="Masukkan persyaratan projek"
                         onChange={handleUserInput}
-                        value={project.requirement}
+                        value={editProjectRequest.requirement}
                       />
                     </div>
 
@@ -160,14 +170,14 @@ const EditProject = () => {
                         placeholder="select deadline date.."
                         name="deadlineDate"
                         onChange={handleUserInput}
-                        value={project.deadlineDate}
+                        value={editProjectRequest.deadlineDate}
                       />
                     </div>
 
                     <input
                       type="submit"
                       className="btn float-right"
-                      value="Edit Project"
+                      value="Save Data"
                       style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
                     />
 

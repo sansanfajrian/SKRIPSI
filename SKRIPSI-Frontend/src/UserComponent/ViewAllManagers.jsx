@@ -2,13 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { ToastContainer, toast } from "react-toastify";
-import $ from 'jquery';
+import { useNavigate } from "react-router-dom";
 import 'datatables.net-bs4';
 
 const ViewAllManagers = () => {
   const [allManagers, setAllManagers] = useState([]);
 
   const tableRef = useRef(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getAllManager = async () => {
@@ -48,6 +50,15 @@ const ViewAllManagers = () => {
     );
     console.log(response.data);
     return response.data;
+  };
+
+  const handleDelete = (userId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+    if (confirmDelete) {
+      deleteManager(userId);
+    } else {
+      console.log("Delete action canceled");
+    }
   };
 
   const deleteManager = (userId) => {
@@ -104,6 +115,9 @@ const ViewAllManagers = () => {
     }, 2000); // Reload after 3 seconds 3000
   };
 
+  const editManager = (manager) => {
+    navigate("/user/manager/edit-data", { state: manager });
+  };
 
   return (
     <div className="content-wrapper">
@@ -181,7 +195,7 @@ const ViewAllManagers = () => {
                           </td>
                           <td className="text-center" width="10%">
                             <button
-                              onClick={""}
+                              onClick={() => editManager(manager)}
                               className="btn btn-sm bg-color custom-bg-text mx-1"
                               style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
                               title="Edit Manager"
@@ -189,7 +203,7 @@ const ViewAllManagers = () => {
                               <i className="nav-icon fas fa-edit" />
                             </button>
                             <button
-                              onClick={() => deleteManager(manager.id)}
+                              onClick={() => handleDelete(manager.id)}
                               className="btn btn-sm bg-color custom-bg-text"
                               style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold"}}
                               title="Remove Manager"

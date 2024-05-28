@@ -14,6 +14,7 @@ import ForgotPassword from "./UserComponent/ForgotPassword";
 import UserLoginForm from "./UserComponent/UserLoginForm";
 import UserRegister from "./UserComponent/UserRegister";
 import ManagerEmployeeRegister from "./UserComponent/ManagerEmployeeRegister";
+import EditManagerEmployee from "./UserComponent/EditManagerEmployee";
 import ViewAllEmployees from "./UserComponent/ViewAllEmployees";
 import ViewAllManagers from "./UserComponent/ViewAllManagers";
 import AboutUs from "./page/AboutUs";
@@ -34,6 +35,8 @@ export default function Content() {
         <Route path="user/manager/register" element={<UserRegister />} />
         <Route path="user/employee/menu-register" element={<ManagerEmployeeRegister />} />
         <Route path="user/manager/menu-register" element={<ManagerEmployeeRegister />} />
+        <Route path="user/manager/edit-data" element={<EditManagerEmployee />} />
+        <Route path="user/employee/edit-data" element={<EditManagerEmployee />} />
         <Route path="user/admin/manager/all" element={<ViewAllManagers />} />
         <Route path="user/employee/all" element={<ViewAllEmployees />} />
         <Route path="/user/login" element={<UserLoginForm />} />

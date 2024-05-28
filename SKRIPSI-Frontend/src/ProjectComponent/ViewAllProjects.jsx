@@ -43,6 +43,15 @@ const ViewAllProjects = () => {
 
   }, []);
 
+  const handleDelete = (projekId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this item?");
+    if (confirmDelete) {
+      console.log(projekId, "Was Deleted"); //Action Delete Goes Here
+    } else {
+      console.log("Delete action canceled");
+    }
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 5;
   const lastIndex = currentPage * recordsPerPage;
@@ -312,7 +321,7 @@ const ViewAllProjects = () => {
                                         <i className="nav-icon fas fa-edit" />
                                       </button>
                                       <button
-                                        onClick={""}
+                                        onClick={() => handleDelete(project.id)}
                                         className="btn btn-sm bg-color custom-bg-text"
                                         style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold", width:30}}
                                         title="Remove Project"
