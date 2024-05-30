@@ -1,6 +1,7 @@
 import React from 'react'
 import { Route, Routes } from "react-router-dom";
 import AddProject from "./ProjectComponent/AddProject";
+import EditProject from "./ProjectComponent/EditProject";
 import AssignProjectToEmployee from "./ProjectComponent/AssignProjectToEmployee";
 import AssignProjectToManager from "./ProjectComponent/AssignProjectToManager";
 import UpdateProjectStatus from "./ProjectComponent/UpdateProjectStatus";
@@ -13,6 +14,7 @@ import ForgotPassword from "./UserComponent/ForgotPassword";
 import UserLoginForm from "./UserComponent/UserLoginForm";
 import UserRegister from "./UserComponent/UserRegister";
 import ManagerEmployeeRegister from "./UserComponent/ManagerEmployeeRegister";
+import EditManagerEmployee from "./UserComponent/EditManagerEmployee";
 import ViewAllEmployees from "./UserComponent/ViewAllEmployees";
 import ViewAllManagers from "./UserComponent/ViewAllManagers";
 import AboutUs from "./page/AboutUs";
@@ -33,10 +35,13 @@ export default function Content() {
         <Route path="user/manager/register" element={<UserRegister />} />
         <Route path="user/employee/menu-register" element={<ManagerEmployeeRegister />} />
         <Route path="user/manager/menu-register" element={<ManagerEmployeeRegister />} />
+        <Route path="user/manager/edit-data" element={<EditManagerEmployee />} />
+        <Route path="user/employee/edit-data" element={<EditManagerEmployee />} />
         <Route path="user/admin/manager/all" element={<ViewAllManagers />} />
         <Route path="user/employee/all" element={<ViewAllEmployees />} />
         <Route path="/user/login" element={<UserLoginForm />} />
         <Route path="/user/admin/project/add" element={<AddProject />} />
+        <Route path="/user/admin/project/edit" element={<EditProject />} />
         <Route path="/user/admin/project/all" element={<ViewAllProjects />} />
         <Route
           path="/user/manager/project/all"

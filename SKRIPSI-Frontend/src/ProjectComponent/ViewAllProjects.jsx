@@ -1,30 +1,62 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import $ from 'jquery';
+import 'datatables.net-bs4';
+import ConfirmDialog from '../ConfirmDialog';
 
 const ViewAllProjects = () => {
+
   const [allProjects, setAllProjects] = useState([]);
 
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
 
+  const tableRef = useRef(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
+    
     const getAllProject = async () => {
       const allProject = await retrieveAllProject();
       if (allProject) {
         setAllProjects(allProject.projects);
       }
+      
     };
-
+    
     getAllProject();
+
+    // setTimeout(() => {
+    //   $(tableRef.current).DataTable(
+    //     {
+    //         paging: true,
+    //         lengthChange: false,
+    //         searching: false,
+    //         ordering: false,
+    //         autoWidth: true,
+    //         responsive: true,
+    //     }
+    //   )
+    // }, 500);
+
   }, []);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 5;
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  const records = allProjects.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(allProjects.length / recordsPerPage);
+  const numbers = [...Array(npage +1).keys()].slice(1);
 
   const retrieveAllProject = async () => {
     const response = await axios.get("http://localhost:8080/api/project/fetch");
     console.log(response.data);
+    setAllProjects(response.data);
+    console.log("Apa Ini"+allProjects);
     return response.data;
   };
 
@@ -72,6 +104,28 @@ const ViewAllProjects = () => {
 
   const assignToManager = (project) => {
     navigate("/project/assign/manager", { state: project });
+  };
+
+  const editProject = (project) => {
+    navigate("/user/admin/project/edit", { state: project });
+  };
+
+  const [isDialogOpen, setDialogOpen] = useState(false);
+
+  const handleDelete = (projekId) => {
+    setDialogOpen(true);
+    setProjectId(projekId);
+  };
+
+  const handleConfirm = () => {
+    setDialogOpen(false);
+    // Perform delete action
+    console.log(projectId, 'was deleted');
+  };
+
+  const handleCancel = () => {
+    setDialogOpen(false);
+    console.log('Delete action canceled');
   };
 
   return (
@@ -166,7 +220,7 @@ const ViewAllProjects = () => {
                   </div>
                 </div>
                 <div className="table-responsive">
-                  <table id='pagination' className="table table-bordered table-hover">
+                  <table className="table table-bordered table-hover">
                     <thead className="table-bordered bg-color custom-bg-text border-color">
                       <tr className="text-center">
                         <th scope="col">Project Name</th>
@@ -184,9 +238,9 @@ const ViewAllProjects = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {allProjects.map((project) => {
+                      {records.map((project, i) => {
                         return (
-                          <tr>
+                          <tr key={i}>
                             <td>
                               <b>{project.name}</b>
                             </td>
@@ -221,20 +275,71 @@ const ViewAllProjects = () => {
                             <td className="text-center">
                               <b>{project.projectStatus}</b>
                             </td>
-                            <td className="text-center">
+                            <td className="text-center" width="10%">
                               {(() => {
                                 if (project.assignedToManager === "Not Assigned") {
                                 
                                     return (
-                                      <button
-                                        onClick={() => assignToManager(project)}
-                                        className="btn btn-sm"
-                                        style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
-                                      >
-                                        <b>Assign To Manager</b>
-                                      </button>
+                                      <div>
+                                        <button
+                                          onClick={() => assignToManager(project)}
+                                          className="btn btn-sm"
+                                          style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                                          title="Assign to Manager"
+                                          
+                                        >
+                                          <i className="flex nav-icon fas fa-people-arrows" />
+                                        </button>
+                                        <button
+                                          onClick={() => editProject(project)}
+                                          className="btn btn-sm bg-color custom-bg-text mx-1"
+                                          style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
+                                          title="Edit Project"
+                                        >
+                                          <i className="nav-icon fas fa-edit" />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDelete(project.id)}
+                                          className="btn btn-sm bg-color custom-bg-text"
+                                          style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold", width:30}}
+                                          title="Remove Project"
+                                        >
+                                          <i className="nav-icon fas fa-trash" />
+                                        </button>
+                                      </div>
                                     );
                                   
+                                } else {
+                                  return (
+                                    <div>
+                                      <button
+                                        onClick={""}
+                                        className="btn btn-sm"
+                                        style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                                        title="Assign to Manager"
+                                        disabled
+                                        
+                                      >
+                                        <i className="flex nav-icon fas fa-people-arrows" />
+                                      </button>
+                                      <button
+                                        onClick={() => editProject(project)}
+                                        className="btn btn-sm bg-color custom-bg-text mx-1"
+                                        style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
+                                        title="Edit Project"
+                                      >
+                                        <i className="nav-icon fas fa-edit" />
+                                      </button>
+                                      <button
+                                        onClick={() => handleDelete(project.id)}
+                                        className="btn btn-sm bg-color custom-bg-text"
+                                        style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold", width:30}}
+                                        title="Remove Project"
+                                      >
+                                        <i className="nav-icon fas fa-trash" />
+                                      </button>
+                                    </div>
+                                  );
                                 }
                               })()}
                             </td>
@@ -245,7 +350,25 @@ const ViewAllProjects = () => {
                       })}
                     </tbody>
                   </table>
+                  
                 </div>
+              </div>
+              <div class="card-footer">
+                <nav className="float-right">
+                  <ul className='pagination'>
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={prePage}>Prev</a>
+                    </li>
+                    {numbers.map((n, i) => (
+                      <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
+                        <a href='#' className='page-link' onClick={() => changeCPage(n)}>{n}</a>
+                      </li>
+                    ))}
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={nextPage}>Next</a>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
             </div>
@@ -253,10 +376,32 @@ const ViewAllProjects = () => {
         </div>
       </section>
 
-
+        <ConfirmDialog
+          isOpen={isDialogOpen}
+          message="Are you sure you want to delete this project ?"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
       
     </div>
   );
+  
+  function prePage(){
+    if(currentPage !== 1){
+      setCurrentPage(currentPage - 1);
+    }
+  }
+
+  function changeCPage(id){
+    setCurrentPage(id);
+  }
+
+  function nextPage(){
+    if(currentPage !== npage){
+      setCurrentPage(currentPage + 1);
+    }
+  }
+
 };
 
 export default ViewAllProjects;

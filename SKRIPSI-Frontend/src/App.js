@@ -4,6 +4,7 @@ import logo from "./images/task_logo.png";
 import Header from "./NavbarComponent/Header";
 import RoleNav from "./NavbarComponent/RoleNav";
 import Content from "./content";
+import Footer from "./footer";
 import 'admin-lte/dist/css/adminlte.min.css';
 import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
 import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
@@ -20,6 +21,7 @@ function App() {
         
         <RoleNav />
         <Content />
+        <Footer />
       </div>
     </div>
   );

@@ -1,10 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import 'datatables.net-bs4';
+import ConfirmDialog from '../ConfirmDialog';
 
 const ViewAllManagers = () => {
   const [allManagers, setAllManagers] = useState([]);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [managerId, setManagerId] = useState("");
+
+  const tableRef = useRef(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getAllManager = async () => {
@@ -14,15 +23,52 @@ const ViewAllManagers = () => {
       }
     };
 
+    // setTimeout(() => {
+    //   $(tableRef.current).DataTable(
+    //     {
+    //         paging: true,
+    //         lengthChange: false,
+    //         searching: false,
+    //         ordering: false,
+    //         autoWidth: true,
+    //         responsive: true,
+    //     }
+    //   )
+    // },200);
+
     getAllManager();
   }, []);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 5;
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  const records = allManagers.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(allManagers.length / recordsPerPage);
+  const numbers = [...Array(npage +1).keys()].slice(1);
+  
   const retrieveAllManagers = async () => {
     const response = await axios.get(
       "http://localhost:8080/api/user/manager/all"
     );
     console.log(response.data);
     return response.data;
+  };
+
+
+  const handleDelete = (userID) => {
+    setDialogOpen(true);
+    setManagerId(userID);
+  };
+
+  const handleConfirm = () => {
+    setDialogOpen(false);
+    deleteManager(managerId);
+  };
+
+  const handleCancel = () => {
+    setDialogOpen(false);
+    console.log('Delete action canceled');
   };
 
   const deleteManager = (userId) => {
@@ -79,6 +125,9 @@ const ViewAllManagers = () => {
     }, 2000); // Reload after 3 seconds 3000
   };
 
+  const editManager = (manager) => {
+    navigate("/user/manager/edit-data", { state: manager });
+  };
 
   return (
     <div className="content-wrapper">
@@ -116,7 +165,7 @@ const ViewAllManagers = () => {
               }}
             >
               <div className="table-responsive">
-                <table className="table table-bordered table-hover">
+                <table ref={tableRef} className="table table-bordered table-hover">
                   <thead className="table-bordered border-color bg-color custom-bg-text">
                     <tr className="text-center">
                       <th scope="col">First Name</th>
@@ -128,9 +177,9 @@ const ViewAllManagers = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {allManagers.map((manager) => {
+                    {records.map((manager, i) => {
                       return (
-                        <tr>
+                        <tr key={i}>
                           <td>
                             <b>{manager.firstName}</b>
                           </td>
@@ -154,13 +203,22 @@ const ViewAllManagers = () => {
                                 manager.pincode}
                             </b>
                           </td>
-                          <td className="text-center">
+                          <td className="text-center" width="10%">
                             <button
-                              onClick={() => deleteManager(manager.id)}
-                              className="btn btn-sm bg-color custom-bg-text"
-                              style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                              onClick={() => editManager(manager)}
+                              className="btn btn-sm bg-color custom-bg-text mx-1"
+                              style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
+                              title="Edit Manager"
                             >
-                              Remove
+                              <i className="nav-icon fas fa-edit" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(manager.id)}
+                              className="btn btn-sm bg-color custom-bg-text"
+                              style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold"}}
+                              title="Remove Manager"
+                            >
+                              <i className="nav-icon fas fa-trash" />
                             </button>
                             <ToastContainer />
                           </td>
@@ -171,11 +229,53 @@ const ViewAllManagers = () => {
                 </table>
               </div>
             </div>
+            <div class="card-footer">
+                <nav className="float-right">
+                  <ul className='pagination'>
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={prePage}>Prev</a>
+                    </li>
+                    {numbers.map((n, i) => (
+                      <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
+                        <a href='#' className='page-link' onClick={() => changeCPage(n)}>{n}</a>
+                      </li>
+                    ))}
+                    <li className='page-item'>
+                      <a href='#' className='page-link' onClick={nextPage}>Next</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
           </div>
         </div>
       </section>
+
+      <ConfirmDialog
+          isOpen={isDialogOpen}
+          message="Are you sure you want to delete this user ?"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+
     </div>
   );
+
+  function prePage(){
+    if(currentPage !== 1){
+      setCurrentPage(currentPage - 1);
+    }
+  }
+
+  function changeCPage(id){
+    setCurrentPage(id);
+  }
+
+  function nextPage(){
+    if(currentPage !== npage){
+      setCurrentPage(currentPage + 1);
+    }
+  }
+
 };
 
 export default ViewAllManagers;
