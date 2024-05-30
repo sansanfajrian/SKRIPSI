@@ -4,6 +4,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import $ from 'jquery';
 import 'datatables.net-bs4';
+import ConfirmDialog from '../ConfirmDialog';
 
 const ViewAllProjects = () => {
 
@@ -42,15 +43,6 @@ const ViewAllProjects = () => {
     // }, 500);
 
   }, []);
-
-  const handleDelete = (projekId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this item?");
-    if (confirmDelete) {
-      console.log(projekId, "Was Deleted"); //Action Delete Goes Here
-    } else {
-      console.log("Delete action canceled");
-    }
-  };
 
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 5;
@@ -116,6 +108,24 @@ const ViewAllProjects = () => {
 
   const editProject = (project) => {
     navigate("/user/admin/project/edit", { state: project });
+  };
+
+  const [isDialogOpen, setDialogOpen] = useState(false);
+
+  const handleDelete = (projekId) => {
+    setDialogOpen(true);
+    setProjectId(projekId);
+  };
+
+  const handleConfirm = () => {
+    setDialogOpen(false);
+    // Perform delete action
+    console.log(projectId, 'was deleted');
+  };
+
+  const handleCancel = () => {
+    setDialogOpen(false);
+    console.log('Delete action canceled');
   };
 
   return (
@@ -289,7 +299,7 @@ const ViewAllProjects = () => {
                                           <i className="nav-icon fas fa-edit" />
                                         </button>
                                         <button
-                                          onClick={""}
+                                          onClick={() => handleDelete(project.id)}
                                           className="btn btn-sm bg-color custom-bg-text"
                                           style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold", width:30}}
                                           title="Remove Project"
@@ -366,7 +376,12 @@ const ViewAllProjects = () => {
         </div>
       </section>
 
-
+        <ConfirmDialog
+          isOpen={isDialogOpen}
+          message="Are you sure you want to delete this project ?"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
       
     </div>
   );

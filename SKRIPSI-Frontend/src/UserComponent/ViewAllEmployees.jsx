@@ -4,9 +4,12 @@ import React from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import 'datatables.net-bs4';
+import ConfirmDialog from '../ConfirmDialog';
 
 const ViewAllEmployees = () => {
   const [allEmployees, setAllEmployees] = useState([]);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [employeeId, setemployeeId] = useState("");
 
   const tableRef = useRef(null);
 
@@ -52,13 +55,19 @@ const ViewAllEmployees = () => {
     return response.data;
   };
 
-  const handleDelete = (userId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this item?");
-    if (confirmDelete) {
-      deleteEmployee(userId);
-    } else {
-      console.log("Delete action canceled");
-    }
+  const handleDelete = (userID) => {
+    setDialogOpen(true);
+    setemployeeId(userID);
+  };
+
+  const handleConfirm = () => {
+    setDialogOpen(false);
+    deleteEmployee(employeeId);
+  };
+
+  const handleCancel = () => {
+    setDialogOpen(false);
+    console.log('Delete action canceled');
   };
 
   const deleteEmployee = (userId) => {
@@ -239,6 +248,14 @@ const ViewAllEmployees = () => {
           </div>
         </div>
       </section>
+
+      <ConfirmDialog
+          isOpen={isDialogOpen}
+          message="Are you sure you want to delete this user ?"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+
     </div>
   );
 
