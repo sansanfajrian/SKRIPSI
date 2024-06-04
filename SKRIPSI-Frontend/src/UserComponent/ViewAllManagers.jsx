@@ -55,7 +55,6 @@ const ViewAllManagers = () => {
     return response.data;
   };
 
-
   const handleDelete = (userID) => {
     setDialogOpen(true);
     setManagerId(userID);
