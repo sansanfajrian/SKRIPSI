@@ -1,11 +1,11 @@
+import 'admin-lte/dist/css/adminlte.min.css';
+import 'admin-lte/dist/js/adminlte.min.js';
+import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
+import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import 'admin-lte/dist/css/adminlte.min.css';
-import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
-import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
-import 'admin-lte/dist/js/adminlte.min.js';
 
 const UserLoginForm = () => {
   let navigate = useNavigate();
@@ -177,15 +177,15 @@ const UserLoginForm = () => {
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-8">
+                  {/* <div className="col-8">
                     <div className="icheck-primary">
                       <input type="checkbox" id="remember" />
                       <label htmlFor="remember">
                         Remember Me
                       </label>
                     </div>
-                  </div>
-                  <div className="col-4">
+                  </div> */}
+                  <div className="col-12">
                     <button
                       type="submit"
                       className="btn btn-primary btn-block"
@@ -203,10 +203,10 @@ const UserLoginForm = () => {
                 </a>
               </div>
               <p className="mb-1">
-                <a href="/user/forgot/password">I forgot my password</a>
+                <a href="/user/forgot/password">Forgot your password?</a>
               </p>
               <p className="mb-0">
-                <a href="/user/admin/register" className="text-center">Register a new membership</a>
+                <a href="/user/admin/register" className="text-center">Sign Up new account</a>
               </p>
             </div>
           </div>
