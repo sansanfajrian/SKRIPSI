@@ -1,10 +1,7 @@
 package com.taskmanagement.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
+import javax.persistence.*;
 import org.springframework.beans.BeanUtils;
 
 import com.taskmanagement.dto.UserLoginResponse;
@@ -16,7 +13,7 @@ import lombok.Data;
 public class User {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy= GenerationType.IDENTITY)
 	private int id;
 
 	private String firstName;

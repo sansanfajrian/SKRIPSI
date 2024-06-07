@@ -1,14 +1,19 @@
 package com.taskmanagement.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Set;
 
 @Entity
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Project {
 	
 	@Id
@@ -34,5 +39,8 @@ public class Project {
 	private String assignedDate;
 	
 	private String deadlineDate;
+
+	@OneToMany
+	private Set<DocMetadata> docMetadata;
 	
 }

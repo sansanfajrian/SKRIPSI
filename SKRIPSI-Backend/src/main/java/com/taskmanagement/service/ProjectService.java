@@ -1,8 +1,13 @@
 package com.taskmanagement.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.taskmanagement.dao.DocMetadataDao;
+import javax.transaction.Transactional;
+
+import com.taskmanagement.entity.DocMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,12 +19,17 @@ public class ProjectService {
 	
 	@Autowired
 	private ProjectDao projectDao;
-	
+
+	@Autowired
+	private DocMetadataDao docMetadataDao;
+
 	public Project addProject(Project project) {
+		docMetadataDao.saveAll(project.getDocMetadata());
 		return projectDao.save(project);
 	}
 	
 	public Project updateProject(Project project) {
+		docMetadataDao.saveAll(project.getDocMetadata());
 		return projectDao.save(project);
 	}
 	
@@ -60,4 +70,12 @@ public class ProjectService {
 		return projectDao.findByManagerId(managerId);
 	}
 
+	public List<DocMetadata> getAllProjectDocMetadata(Integer[] docMetadataIds) {
+		return docMetadataDao.findAllById(Arrays.asList(docMetadataIds));
+	}
+
+	@Transactional
+	public void deleteProjectDocuments(Integer[] deletedDocumentsId) {
+		docMetadataDao.deleteByIdIn(Arrays.asList(deletedDocumentsId));
+	}
 }
