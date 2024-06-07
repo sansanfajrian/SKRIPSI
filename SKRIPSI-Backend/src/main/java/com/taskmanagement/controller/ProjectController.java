@@ -364,7 +364,6 @@ public class ProjectController {
     @PostMapping("update")
     @ApiOperation(value = "Api to update the project status")
     public ResponseEntity<CommonApiResponse> updateProject(MultipartFile[] documents, Integer id, String name, String description, String requirement, String deadlineDate, Integer[] deletedDocumentIds, String projectStatus, Integer employeeId, Integer managerId) {
-
         LOG.info("Received request for updating the project");
 
         CommonApiResponse response = new CommonApiResponse();
@@ -390,7 +389,6 @@ public class ProjectController {
         Project project = this.projectService.getProjectById(updateProjectRequest.getProjectId());
 
         if (updateProjectRequest.getManagerId() != 0) { // admin is assigning the project to manager
-
             User manager = this.userService.getUserById(updateProjectRequest.getManagerId());
 
             if (manager == null || !manager.getRole().equals(UserRole.MANAGER.value())) {
@@ -438,7 +436,6 @@ public class ProjectController {
                 response.setResponseMessage("assigned project to employee successfully");
                 return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
             }
-
         } else if (updateProjectRequest.getProjectStatus() != null && !StringUtils.isEmpty(updateProjectRequest.getProjectStatus())) { // employee is updating the project status
 
             project.setStatus(updateProjectRequest.getProjectStatus());
@@ -499,10 +496,123 @@ public class ProjectController {
 
     }
 
+    @PostMapping("assignToManager")
+    @ApiOperation(value = "Api to assign project to manager")
+    public ResponseEntity<CommonApiResponse> assignToManager(@RequestBody UpdateProjectRequestDto updateProjectRequest) {
+        LOG.info("Received request for assigning project to manager");
+
+        CommonApiResponse response = new CommonApiResponse();
+
+        if (updateProjectRequest == null) {
+            response.setSuccess(true);
+            response.setResponseMessage("request data is missing");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        // Get today's date
+        LocalDate today = LocalDate.now();
+        String desiredFormat = "yyyy-MM-dd";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(desiredFormat);
+        String formattedTodaysDate = today.format(formatter);
+
+        Project project = this.projectService.getProjectById(updateProjectRequest.getProjectId());
+
+        User manager = this.userService.getUserById(updateProjectRequest.getManagerId());
+
+        if (manager == null || !manager.getRole().equals(UserRole.MANAGER.value())) {
+            response.setSuccess(true);
+            response.setResponseMessage("failed to assign the project to manager");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        project.setManagerId(manager.getId());
+        project.setAssignedDate(formattedTodaysDate);
+        project.setStatus(ProjectAssignStatus.NOT_ASSIGNED_TO_EMPLOYEE.value());
+
+        Project updatedProject = this.projectService.updateProject(project);
+
+        response.setSuccess(true);
+        if (updatedProject == null) {
+            response.setResponseMessage("failed to update the project status");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            response.setResponseMessage("assigned project to manager successfully");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("assignToEmployee")
+    @ApiOperation(value = "Api to assign project to employee")
+    public ResponseEntity<CommonApiResponse> assignToEmployee(@RequestBody UpdateProjectRequestDto updateProjectRequest) {
+
+        LOG.info("Received request for assigning project to employee");
+
+        CommonApiResponse response = new CommonApiResponse();
+
+        if (updateProjectRequest == null) {
+            response.setSuccess(true);
+            response.setResponseMessage("request data is missing");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        Project project = this.projectService.getProjectById(updateProjectRequest.getProjectId());
+
+        User employee = this.userService.getUserById(updateProjectRequest.getEmployeeId());
+
+        if (employee == null || !employee.getRole().equals(UserRole.EMPLOYEE.value())) {
+            response.setSuccess(true);
+            response.setResponseMessage("failed to assign the project to employee");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        project.setEmployeeId(employee.getId());
+        project.setStatus(ProjectStatus.PENDING.value());
+
+        Project updatedProject = this.projectService.updateProject(project);
+
+        response.setSuccess(true);
+        if (updatedProject == null) {
+            response.setResponseMessage("failed to assign the project to employee");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            response.setResponseMessage("assigned project to employee successfully");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
+    }
+
+    @PostMapping("updateStatus")
+    @ApiOperation(value = "Api to update project status")
+    public ResponseEntity<CommonApiResponse> updateStatus(@RequestBody UpdateProjectRequestDto updateProjectRequest) {
+        LOG.info("Received request for updating the project status");
+
+        CommonApiResponse response = new CommonApiResponse();
+
+        if (updateProjectRequest == null) {
+            response.setSuccess(true);
+            response.setResponseMessage("request data is missing");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        Project project = this.projectService.getProjectById(updateProjectRequest.getProjectId());
+
+        project.setStatus(updateProjectRequest.getProjectStatus());
+
+        Project updatedProject = this.projectService.updateProject(project);
+
+        response.setSuccess(true);
+        if (updatedProject == null) {
+            response.setResponseMessage("failed to update the project status");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            response.setResponseMessage("project status updated successfully");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
+    }
+
     @GetMapping("fetch/manager")
     @ApiOperation(value = "Api to fetch all projects by manager id")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByManagerId(@RequestParam("managerId") int managerId) {
-        LOG.info("Recieved request for Fetch projects by using manager Id");
+        LOG.info("Received request for Fetch projects by using manager Id");
 
         ProjectResponseDto response = new ProjectResponseDto();
 
@@ -581,7 +691,7 @@ public class ProjectController {
     @GetMapping("fetch/employee")
     @ApiOperation(value = "Api to fetch all projects by manager id")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByEmployeeId(@RequestParam("employeeId") int employeeId) {
-        LOG.info("Recieved request for Fetch projects by using employee Id");
+        LOG.info("Received request for Fetch projects by using employee Id");
 
         ProjectResponseDto response = new ProjectResponseDto();
 
@@ -659,7 +769,7 @@ public class ProjectController {
     @GetMapping("manager/search")
     @ApiOperation(value = "Api to fetch all projects by name")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByNameAndManger(@RequestParam("projectName") String projectName, @RequestParam("managerId") int managerId) {
-        LOG.info("Recieved request for searching the project by using project name and manager id");
+        LOG.info("Received request for searching the project by using project name and manager id");
 
         ProjectResponseDto response = new ProjectResponseDto();
         List<ProjectDto> projectDtos = new ArrayList<>();
@@ -743,7 +853,7 @@ public class ProjectController {
     @GetMapping("employee/search")
     @ApiOperation(value = "Api to fetch all projects by name")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByNameAndEmployee(@RequestParam("projectName") String projectName, @RequestParam("employeeId") int employeeId) {
-        LOG.info("Recieved request for searching the project by using project name and manager id");
+        LOG.info("Received request for searching the project by using project name and manager id");
 
         ProjectResponseDto response = new ProjectResponseDto();
 
@@ -828,7 +938,7 @@ public class ProjectController {
     @GetMapping("allStatus")
     @ApiOperation(value = "Api to fetch all projects by name")
     public ResponseEntity<List<String>> fetchAllProjectStatus() {
-        LOG.info("Recieved request for Fecth all the project status");
+        LOG.info("Received request for Fecth all the project status");
 
         List<String> allStatus = new ArrayList<>();
 

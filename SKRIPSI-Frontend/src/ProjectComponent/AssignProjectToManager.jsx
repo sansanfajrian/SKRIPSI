@@ -46,7 +46,7 @@ const AssignProjectToManager = () => {
   const assignProject = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:8080/api/project/update", {
+    fetch("http://localhost:8080/api/project/assignToManager", {
       method: "POST",
       headers: {
         Accept: "application/json",
