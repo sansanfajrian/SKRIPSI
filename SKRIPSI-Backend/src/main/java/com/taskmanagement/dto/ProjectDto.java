@@ -2,6 +2,8 @@ package com.taskmanagement.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class ProjectDto {
 	
@@ -32,5 +34,7 @@ public class ProjectDto {
 	private String assignedDate;
 	
 	private String deadlineDate;
+
+	private List<DocMetadataDto> documents;
 
 }

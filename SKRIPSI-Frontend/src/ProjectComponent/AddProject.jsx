@@ -9,6 +9,7 @@ const AddProject = () => {
     requirement: "",
     deadlineDate: "",
   });
+  const [documents, setDocuments] = useState([]);
 
   const navigate = useNavigate();
 
@@ -22,13 +23,22 @@ const AddProject = () => {
   const saveProject = (e) => {
     e.preventDefault();
 
+    const formData = new FormData();
+    formData.append("name", addProjectRequest.name);
+    formData.append("description", addProjectRequest.description);
+    formData.append("requirement", addProjectRequest.requirement);
+    formData.append("deadlineDate", addProjectRequest.deadlineDate);
+
+    [...documents].forEach((documents, i) => {
+      formData.append('documents', documents, documents.name)
+    })
+
     fetch("http://localhost:8080/api/project/add", {
       method: "POST",
       headers: {
         Accept: "application/json",
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify(addProjectRequest),
+      body: formData,
     }).then((result) => {
       console.log("result", result);
       result.json().then((res) => {
@@ -71,20 +81,13 @@ const AddProject = () => {
 
   return (
     <div className="content-wrapper">
-
-      <section className="content-header">
-      </section>
+      <section className="content-header"></section>
 
       <section className="content">
         <div className="container-fluid">
           <div className="row">
             <div className="col-12">
-              <div
-                className="card form-card ms-2 me-2 mb-5 custom-bg border-color"
-                style={{
-                  height: "45rem",
-                }}
-              >
+              <div className="card form-card ms-2 me-2 mb-5 custom-bg border-color">
                 <div className="card-header">
                   <div className="container-fluid">
                     <div className="row">
@@ -92,16 +95,23 @@ const AddProject = () => {
                         <h1>Add Project</h1>
                       </div>
                       <div className="col-sm-6">
-                        <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'transparent'}}>
-                          <li className="breadcrumb-item" ><a href="#">Home</a></li>
-                          <li className="breadcrumb-item active">Add Project</li>
+                        <ol
+                          className="breadcrumb float-sm-right"
+                          style={{ backgroundColor: "transparent" }}
+                        >
+                          <li className="breadcrumb-item">
+                            <a href="#">Home</a>
+                          </li>
+                          <li className="breadcrumb-item active">
+                            Add Project
+                          </li>
                         </ol>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="card-body">
-                  <form onSubmit={saveProject}>
+                <form onSubmit={saveProject}>
+                  <div className="card-body">
                     <div className="mb-3">
                       <label htmlFor="name" className="form-label">
                         Project Name
@@ -160,6 +170,36 @@ const AddProject = () => {
                       />
                     </div>
 
+                    <div className="mb-3">
+                      <label htmlFor="name" className="form-label">
+                        Project Documents
+                      </label>
+                      <input
+                        type="file"
+                        multiple
+                        className="form-control"
+                        id="documents"
+                        placeholder="Upload documents"
+                        name="documents"
+                        onChange={(e) => setDocuments(e.target.files)}
+                      ></input>
+                    </div>
+
+                    {documents.length > 0 && (
+                      <div className="mb-3">
+                        <div className="row">
+                          <div className="col-md-6">
+                            <ul className="nav flex-column">
+                              {[...documents].map((file, index) => (
+                                <li className="nav-item" key={index}>{file.name} - {file.type}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="card-footer">
                     <input
                       type="submit"
                       className="btn float-right"
@@ -168,8 +208,8 @@ const AddProject = () => {
                     />
 
                     <ToastContainer />
-                  </form>
-                </div>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

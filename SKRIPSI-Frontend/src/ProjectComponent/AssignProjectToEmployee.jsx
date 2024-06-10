@@ -46,7 +46,7 @@ const AssignProjectToEmployee = () => {
   const assignProject = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:8080/api/project/update", {
+    fetch("http://localhost:8080/api/project/assignToEmployee", {
       method: "POST",
       headers: {
         Accept: "application/json",
