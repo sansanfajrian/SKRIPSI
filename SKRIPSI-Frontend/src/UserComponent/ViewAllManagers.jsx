@@ -135,7 +135,7 @@ const ViewAllManagers = () => {
       <section className="content-header">
       </section>
 
-      <section class="content">
+      <section className="content">
         <div className="container-fluid">
           <div
             className="card form-card ms-2 me-2 mb-5 custom-bg border-color "
@@ -229,7 +229,7 @@ const ViewAllManagers = () => {
                 </table>
               </div>
             </div>
-            <div class="card-footer">
+            <div className="card-footer">
                 <nav className="float-right">
                   <ul className='pagination'>
                     <li className='page-item'>

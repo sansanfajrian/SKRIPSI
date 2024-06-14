@@ -105,18 +105,18 @@ const MenuChangePassword = () => {
   };
 
   return (
-    <div class="content-wrapper">
+    <div className="content-wrapper">
 
     <section className="content-header">
     </section>
 
 
-    <section class="content">
+    <section className="content">
       <div className="container-fluid">
         
-        <div class="row">
+        <div className="row">
           
-          <div class="col-12">
+          <div className="col-12">
             {/* /.login-logo */}
             <div className="card form-card ms-2 me-2 mb-5 custom-bg border-color">
                   <div className="card-header">
@@ -201,7 +201,7 @@ const MenuChangePassword = () => {
                       <div className="col-12">
                         <button
                           type="submit"
-                          class="btn btn-primary float-right"
+                          className="btn btn-primary float-right"
                           onClick={userChangePassword}
                         >Change password</button>
                       </div>

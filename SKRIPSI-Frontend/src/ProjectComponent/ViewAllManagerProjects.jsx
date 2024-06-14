@@ -90,7 +90,7 @@ const ViewAllManagerProjects = () => {
       </section>
 
 
-      <section class="content">
+      <section className="content">
         <div className="container-fluid">
           <div
             className="card form-card ms-2 me-2 mb-5 custom-bg border-color "
@@ -120,22 +120,22 @@ const ViewAllManagerProjects = () => {
               }}
             >
               <div className="row g-3">
-                <div class="col-auto">
-                  <form class="row g-3">
-                    <div class="col-auto">
+                <div className="col-auto">
+                  <form className="row g-3">
+                    <div className="col-auto">
                       <input
                         type="text"
-                        class="form-control"
+                        className="form-control"
                         id="inputPassword2"
                         placeholder="Enter Project Name..."
                         onChange={(e) => setProjectName(e.target.value)}
                         value={projectName}
                       />
                     </div>
-                    <div class="col-auto">
+                    <div className="col-auto">
                       <button
                         type="submit"
-                        class="btn bg-color custom-bg-text mb-3"
+                        className="btn bg-color custom-bg-text mb-3"
                         onClick={searchProjectbyName}
                         style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
                       >
@@ -227,7 +227,7 @@ const ViewAllManagerProjects = () => {
                 </table>
               </div>
             </div>
-            <div class="card-footer">
+            <div className="card-footer">
                 <nav className="float-right">
                   <ul className='pagination'>
                     <li className='page-item'>

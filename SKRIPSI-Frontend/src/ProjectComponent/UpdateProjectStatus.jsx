@@ -179,7 +179,7 @@ const UpdateProjectStatus = () => {
                   </div>
 
                   <form>
-                    <div class="mb-2">
+                    <div className="mb-2">
                       <label htmlFor="quantity" className="form-label">
                         Status
                       </label>
@@ -198,7 +198,7 @@ const UpdateProjectStatus = () => {
                     </div>
                     <button
                       type="submit"
-                      class="btn float-right"
+                      className="btn float-right"
                       onClick={updateProjectStatus}
                       style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
                     >

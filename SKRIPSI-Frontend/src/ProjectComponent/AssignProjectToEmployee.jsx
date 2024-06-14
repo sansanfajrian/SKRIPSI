@@ -179,7 +179,7 @@ const AssignProjectToEmployee = () => {
                   </div>
 
                   <form>
-                    <div class="mb-3">
+                    <div className="mb-3">
                       <label htmlFor="quantity" className="form-label">
                         Assign Project To Emplooyee 
                       </label>
@@ -204,7 +204,7 @@ const AssignProjectToEmployee = () => {
 
                     <button
                       type="submit"
-                      class="btn float-right"
+                      className="btn float-right"
                       onClick={assignProject}
                       style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
                     >

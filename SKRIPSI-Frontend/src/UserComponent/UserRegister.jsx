@@ -107,7 +107,7 @@ const UserRegister = () => {
   };
 
   return (
-    <div class="wrapper">
+    <div className="wrapper">
       <div className="d-flex aligns-items-center justify-content-center" style={{backgroundColor:"#e9ecef"}}>
       {/* <div className="hold-transition register-page*/}
 

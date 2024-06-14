@@ -132,7 +132,7 @@ const UserLoginForm = () => {
    };
 
   return (
-    <div class="wrapper">
+    <div className="wrapper">
       <div className="hold-transition login-page">
 
         <div className="login-box">

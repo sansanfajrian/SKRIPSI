@@ -130,7 +130,7 @@ const ForgotPassword = () => {
                   <div className="col-12">
                     <button
                       type="submit"
-                      class="btn btn-primary btn-block"
+                      className="btn btn-primary btn-block"
                       onClick={userChangePassword}
                     >Change password</button>
                   </div>
@@ -141,8 +141,8 @@ const ForgotPassword = () => {
               <p className="mt-3 mb-1">
                 <a href="/user/login">Login</a>
               </p>
-              <p class="mb-0">
-                <a href="user/admin/register" class="text-center">Register a new membership</a>
+              <p className="mb-0">
+                <a href="user/admin/register" className="text-center">Register a new membership</a>
               </p>
             </div>
             {/* /.login-card-body */}

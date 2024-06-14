@@ -180,7 +180,7 @@ const AssignProjectToManager = () => {
                   </div>
 
                   <form>
-                    <div class="mb-3">
+                    <div className="mb-3">
                       <label htmlFor="quantity" className="form-label">
                         Assign Project To Manager
                       </label>
