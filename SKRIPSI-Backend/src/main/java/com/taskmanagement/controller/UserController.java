@@ -3,14 +3,24 @@ package com.taskmanagement.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.taskmanagement.entity.AuthProvider;
+import com.taskmanagement.exception.ResourceNotFoundException;
+import com.taskmanagement.payload.AuthResponse;
+import com.taskmanagement.payload.LoginRequest;
+import com.taskmanagement.security.CurrentUser;
+import com.taskmanagement.security.TokenProvider;
+import com.taskmanagement.security.UserPrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -29,7 +39,7 @@ import com.taskmanagement.dto.UserLoginResponseDto;
 import com.taskmanagement.dto.UserRoleResponse;
 import com.taskmanagement.dto.UsersResponseDto;
 import com.taskmanagement.entity.User;
-import com.taskmanagement.service.CustomUserDetailsService;
+import com.taskmanagement.security.CustomUserDetailsService;
 import com.taskmanagement.service.UserService;
 import com.taskmanagement.utility.Constants.Sex;
 import com.taskmanagement.utility.Constants.UserRole;
@@ -38,265 +48,253 @@ import com.taskmanagement.utility.JwtUtil;
 
 import io.swagger.annotations.ApiOperation;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("api/user/")
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
-	Logger LOG = LoggerFactory.getLogger(UserController.class);
+    Logger LOG = LoggerFactory.getLogger(UserController.class);
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-	@Autowired
-	private UserService userService;
+    @Autowired
+    private UserService userService;
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-	@Autowired
-	private CustomUserDetailsService customUserDetailsService;
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
 
-	@Autowired
-	private JwtUtil jwtUtil;
-	
-	@GetMapping("gender")
-	@ApiOperation(value = "Api to get all user gender")
-	public ResponseEntity<?> getAllUserGender() {
-		LOG.info("Recieved request for getting all the user gender");
-		
-		UserRoleResponse response = new UserRoleResponse();
-		List<String> genders = new ArrayList<>();
-		
-		for(Sex gender : Sex.values() ) {
-			genders.add(gender.value());
-		}
-		
-		if(genders.isEmpty()) {
-			
-			response.setResponseMessage("Failed to Fetch User Genders");
-			return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
-		else {
-			response.setGenders(genders);
-			response.setResponseMessage("User Genders Fetched success");
-			return new ResponseEntity(response, HttpStatus.OK);
-		}
-		
-	}
-	
-	@PostMapping("admin/register")
-	@ApiOperation(value = "Api to register Admin User")
-	public ResponseEntity<CommonApiResponse> adminRegister(@RequestBody User user) {
-		LOG.info("Recieved request for Admin register");
+    @Autowired
+    private JwtUtil jwtUtil;
 
-		CommonApiResponse response = new CommonApiResponse();
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
+    @Autowired
+    private TokenProvider tokenProvider;
 
-		user.setPassword(encodedPassword);
-		user.setStatus(UserStatus.ACTIVE.value());
-		
-		User registerUser = userService.registerUser(user);
-		
-		if (registerUser != null) {
-			response.setSuccess(true);
-			response.setResponseMessage(user.getRole() + " Registered Successfully");
-			return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
-		}
+    @GetMapping("me")
+    @PreAuthorize("hasRole('USER')")
+    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
+        User user = userService.getUserById(userPrincipal.getId());
 
-		response.setSuccess(true);
-		response.setResponseMessage("Failed to Register " + user.getRole() + " User");
-		return new ResponseEntity<CommonApiResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        if (user == null) {
+            throw new ResourceNotFoundException("User", "id", userPrincipal.getId());
+        }
 
-	}
-	
-	@PostMapping("manager/register")
-	@ApiOperation(value = "Api to register Manager User")
-	public ResponseEntity<CommonApiResponse> mangaerRegister(@RequestBody User user) {
-		LOG.info("Recieved request for Manager register");
+        return user;
+    }
 
-		CommonApiResponse response = new CommonApiResponse();
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
+    @GetMapping("gender")
+    @ApiOperation(value = "Api to get all user gender")
+    public ResponseEntity<?> getAllUserGender() {
+        LOG.info("Received request for getting all the user gender");
 
-		user.setPassword(encodedPassword);
-		user.setStatus(UserStatus.ACTIVE.value());
+        UserRoleResponse response = new UserRoleResponse();
+        List<String> genders = new ArrayList<>();
 
-		User registerUser = userService.registerUser(user);
-		
-		if (registerUser != null) {
-			response.setSuccess(true);
-			response.setResponseMessage(user.getRole() + " Registered Successfully");
-			return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
-		}
+        for (Sex gender : Sex.values()) {
+            genders.add(gender.value());
+        }
 
-		response.setSuccess(true);
-		response.setResponseMessage("Failed to Register " + user.getRole() + " User");
-		return new ResponseEntity<CommonApiResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        if (genders.isEmpty()) {
 
-	}
-	
-	@PostMapping("employee/register")
-	@ApiOperation(value = "Api to register Employee User")
-	public ResponseEntity<CommonApiResponse> employeeRegister(@RequestBody User user) {
-		LOG.info("Recieved request for Employee register");
+            response.setResponseMessage("Failed to Fetch User Genders");
+            return new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        } else {
+            response.setGenders(genders);
+            response.setResponseMessage("User Genders Fetched success");
+            return new ResponseEntity(response, HttpStatus.OK);
+        }
 
-		CommonApiResponse response = new CommonApiResponse();
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
+    }
 
-		user.setPassword(encodedPassword);
-		user.setStatus(UserStatus.ACTIVE.value());
-		
-		User registerUser = userService.registerUser(user);
-		
-		if (registerUser != null) {
-			response.setSuccess(true);
-			response.setResponseMessage(user.getRole() + " Registered Successfully");
-			return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
-		}
+    @PostMapping("admin/register")
+    @ApiOperation(value = "Api to register Admin User")
+    public ResponseEntity<CommonApiResponse> adminRegister(@RequestBody User user) {
+        LOG.info("Received request for Admin register");
 
-		response.setSuccess(true);
-		response.setResponseMessage("Failed to Register " + user.getRole() + " User");
-		return new ResponseEntity<CommonApiResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        CommonApiResponse response = new CommonApiResponse();
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
 
-	}
+        user.setPassword(encodedPassword);
+        user.setStatus(UserStatus.ACTIVE.value());
+        user.setProvider(AuthProvider.local);
 
-	@PostMapping("login")
-	@ApiOperation(value = "Api to login any User")
-	public ResponseEntity<UserLoginResponseDto> login(@RequestBody UserLoginRequest userLoginRequest) {
-		LOG.info("Recieved request for User Login");
-		
-		UserLoginResponseDto response = new UserLoginResponseDto();
+        User registerUser = userService.registerUser(user);
 
-		String jwtToken = null;
-		UserLoginResponse useLoginResponse = new UserLoginResponse();
-        User user = null;
-		try {
-			authenticationManager.authenticate(
-					new UsernamePasswordAuthenticationToken(userLoginRequest.getEmailId(), userLoginRequest.getPassword()));
-		} catch (Exception ex) {
-			LOG.error("Autthentication Failed!!!");
-			response.setSuccess(true);
-			response.setResponseMessage("Failed to authenticate!");
-			return new ResponseEntity<UserLoginResponseDto>(response, HttpStatus.BAD_REQUEST);
-		}
+        if (registerUser != null) {
+            response.setSuccess(true);
+            response.setResponseMessage(user.getRole() + " Registered Successfully");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
 
-		UserDetails userDetails = customUserDetailsService.loadUserByUsername(userLoginRequest.getEmailId());
+        response.setSuccess(true);
+        response.setResponseMessage("Failed to Register " + user.getRole() + " User");
+        return new ResponseEntity<CommonApiResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 
-		for (GrantedAuthority grantedAuthory : userDetails.getAuthorities()) {
-			// if (grantedAuthory.getAuthority().equals(userLoginRequest.getRole())) {
-			// 	jwtToken = jwtUtil.generateToken(userDetails.getUsername());
-			// }
-			jwtToken = jwtUtil.generateToken(userDetails.getUsername());
-		}
+    }
 
-		// user is authenticated
-		if (jwtToken != null) {
+    @PostMapping("manager/register")
+    @ApiOperation(value = "Api to register Manager User")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CommonApiResponse> mangaerRegister(@RequestBody User user) {
+        LOG.info("Received request for Manager register");
 
-			user = userService.getUserByEmailId(userLoginRequest.getEmailId());
-			
-			useLoginResponse = User.toUserLoginResponse(user);
-			useLoginResponse.setJwtToken(jwtToken);
-			
-			response.setUser(useLoginResponse);
+        CommonApiResponse response = new CommonApiResponse();
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
 
-			response.setSuccess(true);
-			response.setResponseMessage("Logged in Successful!");
-			return new ResponseEntity<UserLoginResponseDto>(response, HttpStatus.OK);
-		
-		}
+        user.setPassword(encodedPassword);
+        user.setStatus(UserStatus.ACTIVE.value());
+        user.setProvider(AuthProvider.local);
 
-		else {
-			response.setSuccess(true);
-			response.setResponseMessage("Failed to Get JWT Token!");
-			return new ResponseEntity<UserLoginResponseDto>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		
-		}
-	}
-	
-	@PostMapping("changePassword")
-	@ApiOperation(value = "Api to change the user password")
-	public ResponseEntity<CommonApiResponse> userChangePassword(@RequestBody UserLoginRequest user) {
-		LOG.info("Recieved request for changing the user password");
+        User registerUser = userService.registerUser(user);
 
-		CommonApiResponse response = new CommonApiResponse();
-		
-		if(user == null) {
-			response.setSuccess(true);
-			response.setResponseMessage("Failed to change the password");
-			return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
-		}
-		
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
-		
-		User existingUser = this.userService.getUserById(user.getUserId());
-		existingUser.setPassword(encodedPassword);
+        if (registerUser != null) {
+            response.setSuccess(true);
+            response.setResponseMessage(user.getRole() + " Registered Successfully");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
 
-		User updatedUser = userService.registerUser(existingUser);
+        response.setSuccess(true);
+        response.setResponseMessage("Failed to Register " + user.getRole() + " User");
+        return new ResponseEntity<CommonApiResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 
-		if (updatedUser != null) {
-			response.setSuccess(true);
-			response.setResponseMessage("password changed successfully");
-			return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
-		}
+    }
 
-		else {
-			response.setSuccess(true);
-			response.setResponseMessage("failed to change the password");
-			return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
-		}
-	}
-	
-	@DeleteMapping("delete")
-	@ApiOperation(value = "Api to delete the user")
-	public ResponseEntity<CommonApiResponse> deleteUser(@RequestParam("userId") int userId) {
-		LOG.info("Recieved request for deleting the user");
+    @PostMapping("employee/register")
+    @ApiOperation(value = "Api to register Employee User")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CommonApiResponse> employeeRegister(@RequestBody User user) {
+        LOG.info("Received request for Employee register");
 
-		CommonApiResponse response = new CommonApiResponse();
-		
-		User user = this.userService.getUserById(userId);
-		user.setStatus(UserStatus.DELETED.value());
+        CommonApiResponse response = new CommonApiResponse();
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
 
-		User updatedUser = userService.registerUser(user);  // this will update the entry
+        user.setPassword(encodedPassword);
+        user.setStatus(UserStatus.ACTIVE.value());
+        user.setProvider(AuthProvider.local);
 
-		if (updatedUser != null) {
-			response.setSuccess(true);
-			response.setResponseMessage("user deleted successfully");
-			return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
-		}
+        User registerUser = userService.registerUser(user);
 
-		else {
-			response.setSuccess(true);
-			response.setResponseMessage("failed to delete the user");
-			return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
-		}
-	}
-	
-	@GetMapping("manager/all")
-	public ResponseEntity<UsersResponseDto> getAllManager() {
+        if (registerUser != null) {
+            response.setSuccess(true);
+            response.setResponseMessage(user.getRole() + " Registered Successfully");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
 
-		LOG.info("recieved request for getting ALL Managers!!!");
+        response.setSuccess(true);
+        response.setResponseMessage("Failed to Register " + user.getRole() + " User");
+        return new ResponseEntity<CommonApiResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 
-		UsersResponseDto response = new UsersResponseDto();
-		
-		List<User> managers = this.userService.getUsersByRoleAndStatus(UserRole.MANAGER.value(), UserStatus.ACTIVE.value());
-		
-		response.setUsers(managers);
-		response.setSuccess(true);
-		response.setResponseMessage("managers fetched successfully");
-		return new ResponseEntity<UsersResponseDto>(response, HttpStatus.OK);
-	}
-	
-	@GetMapping("employee/all")
-	public ResponseEntity<UsersResponseDto> getAllEmployee() {
-		System.out.println("recieved request for getting ALL Employees!!!");
-		
-		UsersResponseDto response = new UsersResponseDto();
-		List<User> employees = this.userService.getUsersByRoleAndStatus(UserRole.EMPLOYEE.value(), UserStatus.ACTIVE.value());
-		
-		response.setUsers(employees);
-		response.setSuccess(true);
-		response.setResponseMessage("employees fetched successfully");
-		return new ResponseEntity<UsersResponseDto>(response, HttpStatus.OK);
-	}
+    }
+
+    @PostMapping("login")
+    @ApiOperation(value = "Api to login any User")
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+        LOG.info("Received request for User Login");
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getEmail(),
+                        loginRequest.getPassword()
+                )
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        User user = userService.getUserByEmailId(loginRequest.getEmail());
+        UserLoginResponse useLoginResponse = User.toUserLoginResponse(user);
+
+        String token = tokenProvider.createToken(authentication);
+        return ResponseEntity.ok(new AuthResponse(token, useLoginResponse));
+    }
+
+    @PostMapping("changePassword")
+    @ApiOperation(value = "Api to change the user password")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CommonApiResponse> userChangePassword(@RequestBody UserLoginRequest user) {
+        LOG.info("Received request for changing the user password");
+
+        CommonApiResponse response = new CommonApiResponse();
+
+        if (user == null) {
+            response.setSuccess(true);
+            response.setResponseMessage("Failed to change the password");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
+
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+
+        User existingUser = this.userService.getUserById(user.getUserId());
+        existingUser.setPassword(encodedPassword);
+
+        User updatedUser = userService.registerUser(existingUser);
+
+        if (updatedUser != null) {
+            response.setSuccess(true);
+            response.setResponseMessage("password changed successfully");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        } else {
+            response.setSuccess(true);
+            response.setResponseMessage("failed to change the password");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
+    }
+
+    @DeleteMapping("delete")
+    @ApiOperation(value = "Api to delete the user")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<CommonApiResponse> deleteUser(@RequestParam("userId") int userId) {
+        LOG.info("Received request for deleting the user");
+
+        CommonApiResponse response = new CommonApiResponse();
+
+        User user = this.userService.getUserById(userId);
+        user.setStatus(UserStatus.DELETED.value());
+
+        User updatedUser = userService.registerUser(user);  // this will update the entry
+
+        if (updatedUser != null) {
+            response.setSuccess(true);
+            response.setResponseMessage("user deleted successfully");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        } else {
+            response.setSuccess(true);
+            response.setResponseMessage("failed to delete the user");
+            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("manager/all")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UsersResponseDto> getAllManager() {
+
+        LOG.info("Received request for getting ALL Managers!!!");
+
+        UsersResponseDto response = new UsersResponseDto();
+
+        List<User> managers = this.userService.getUsersByRoleAndStatus(UserRole.MANAGER.value(), UserStatus.ACTIVE.value());
+
+        response.setUsers(managers);
+        response.setSuccess(true);
+        response.setResponseMessage("managers fetched successfully");
+        return new ResponseEntity<UsersResponseDto>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("employee/all")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<UsersResponseDto> getAllEmployee() {
+        System.out.println("Received request for getting ALL Employees!!!");
+
+        UsersResponseDto response = new UsersResponseDto();
+        List<User> employees = this.userService.getUsersByRoleAndStatus(UserRole.EMPLOYEE.value(), UserStatus.ACTIVE.value());
+
+        response.setUsers(employees);
+        response.setSuccess(true);
+        response.setResponseMessage("employees fetched successfully");
+        return new ResponseEntity<UsersResponseDto>(response, HttpStatus.OK);
+    }
 }

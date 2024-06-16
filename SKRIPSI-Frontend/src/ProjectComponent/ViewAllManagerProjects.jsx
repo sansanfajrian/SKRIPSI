@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import $ from 'jquery';
-import 'datatables.net-bs4';
+import $ from "jquery";
+import "datatables.net-bs4";
+import { request } from "../util/APIUtils";
+import { API_BASE_URL } from "../constants";
 
 const ViewAllManagerProjects = () => {
   const manager = JSON.parse(sessionStorage.getItem("active-manager"));
@@ -24,19 +26,6 @@ const ViewAllManagerProjects = () => {
       }
     };
 
-    // setTimeout(() => {
-    //   $(tableRef.current).DataTable(
-    //     {
-    //         paging: true,
-    //         lengthChange: false,
-    //         searching: false,
-    //         ordering: false,
-    //         autoWidth: true,
-    //         responsive: true,
-    //     }
-    //   )
-    // },200);
-
     getAllProject();
   }, []);
 
@@ -46,31 +35,41 @@ const ViewAllManagerProjects = () => {
   const firstIndex = lastIndex - recordsPerPage;
   const records = allProjects.slice(firstIndex, lastIndex);
   const npage = Math.ceil(allProjects.length / recordsPerPage);
-  const numbers = [...Array(npage +1).keys()].slice(1);
+  const numbers = [...Array(npage + 1).keys()].slice(1);
 
   const retrieveAllProject = async () => {
-    const response = await axios.get(
-      "http://localhost:8080/api/project/fetch/manager?managerId="+manager.id
-    );
-    console.log(response.data);
-    return response.data;
+    request({
+      url: API_BASE_URL + "/api/project/fetch/manager?managerId=" + manager.id,
+      method: "GET",
+    })
+      .then((response) => {
+        setAllProjects(response.projects);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const getProjectsByName = async () => {
     const allProject = await retrieveProjectByName();
     if (allProject) {
-      setAllProjects(allProject.projects);
+      setAllProjects(allProject);
     }
   };
 
   const retrieveProjectByName = async () => {
-    const response = await axios.get(
-      "http://localhost:8080/api/project/manager/search?projectName=" + projectName +
-        "&managerId=" +
-        manager.id
-    );
-    console.log(response.data);
-    return response.data;
+    const projects = await request({
+      url: API_BASE_URL + "/api/project/manager/search?projectName=" + projectName + "&managerId=" + manager.id,
+      method: "GET",
+    })
+      .then((response) => {
+        return response.projects;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return projects;
   };
 
   const searchProjectbyName = (e) => {
@@ -85,10 +84,7 @@ const ViewAllManagerProjects = () => {
 
   return (
     <div className="content-wrapper">
-
-      <section className="content-header">
-      </section>
-
+      <section className="content-header"></section>
 
       <section className="content">
         <div className="container-fluid">
@@ -99,20 +95,25 @@ const ViewAllManagerProjects = () => {
             }}
           >
             <div className="card-header">
-                <div className="container-fluid">
-                  <div className="row">
-                    <div className="col-sm-6">
-                      <h1>All Projects</h1>
-                    </div>
-                    <div className="col-sm-6">
-                      <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'transparent'}}>
-                        <li className="breadcrumb-item" ><a href="#">Home</a></li>
-                        <li className="breadcrumb-item active">All Project</li>
-                      </ol>
-                    </div>
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-sm-6">
+                    <h1>All Projects</h1>
+                  </div>
+                  <div className="col-sm-6">
+                    <ol
+                      className="breadcrumb float-sm-right"
+                      style={{ backgroundColor: "transparent" }}
+                    >
+                      <li className="breadcrumb-item">
+                        <a href="#">Home</a>
+                      </li>
+                      <li className="breadcrumb-item active">All Project</li>
+                    </ol>
                   </div>
                 </div>
               </div>
+            </div>
             <div
               className="card-body"
               style={{
@@ -137,18 +138,24 @@ const ViewAllManagerProjects = () => {
                         type="submit"
                         className="btn bg-color custom-bg-text mb-3"
                         onClick={searchProjectbyName}
-                        style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                        style={{
+                          backgroundColor: "#3393df",
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
                       >
                         Search
                       </button>
                     </div>
                   </form>
                 </div>
-                
               </div>
               <div className="table-responsive">
-                <table ref={tableRef} className="table table-bordered table-hover">
-                    <thead className="table-bordered bg-color custom-bg-text border-color">
+                <table
+                  ref={tableRef}
+                  className="table table-bordered table-hover"
+                >
+                  <thead className="table-bordered bg-color custom-bg-text border-color">
                     <tr className="text-center">
                       <th scope="col">Project Name</th>
                       <th scope="col">Project Description</th>
@@ -204,13 +211,19 @@ const ViewAllManagerProjects = () => {
                           </td>
                           <td className="text-center">
                             {(() => {
-                              if (project.assignedToEmployee === "Not Assigned") {
+                              if (
+                                project.assignedToEmployee === "Not Assigned"
+                              ) {
                                 return (
                                   <div>
                                     <button
                                       onClick={() => assignToEmployee(project)}
                                       className="btn btn-sm"
-                                      style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                                      style={{
+                                        backgroundColor: "#3393df",
+                                        color: "white",
+                                        fontWeight: "bold",
+                                      }}
                                       title="Assign to Employee"
                                     >
                                       <b>Assign to Employee</b>
@@ -228,44 +241,58 @@ const ViewAllManagerProjects = () => {
               </div>
             </div>
             <div className="card-footer">
-                <nav className="float-right">
-                  <ul className='pagination'>
-                    <li className='page-item'>
-                      <a href='#' className='page-link' onClick={prePage}>Prev</a>
+              <nav className="float-right">
+                <ul className="pagination">
+                  <li className="page-item">
+                    <a href="#" className="page-link" onClick={prePage}>
+                      Prev
+                    </a>
+                  </li>
+                  {numbers.map((n, i) => (
+                    <li
+                      className={`page-item ${
+                        currentPage === n ? "active" : ""
+                      }`}
+                      key={i}
+                    >
+                      <a
+                        href="#"
+                        className="page-link"
+                        onClick={() => changeCPage(n)}
+                      >
+                        {n}
+                      </a>
                     </li>
-                    {numbers.map((n, i) => (
-                      <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
-                        <a href='#' className='page-link' onClick={() => changeCPage(n)}>{n}</a>
-                      </li>
-                    ))}
-                    <li className='page-item'>
-                      <a href='#' className='page-link' onClick={nextPage}>Next</a>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+                  ))}
+                  <li className="page-item">
+                    <a href="#" className="page-link" onClick={nextPage}>
+                      Next
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
         </div>
       </section>
     </div>
   );
 
-  function prePage(){
-    if(currentPage !== 1){
+  function prePage() {
+    if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
   }
 
-  function changeCPage(id){
+  function changeCPage(id) {
     setCurrentPage(id);
   }
 
-  function nextPage(){
-    if(currentPage !== npage){
+  function nextPage() {
+    if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
   }
-
 };
 
 export default ViewAllManagerProjects;

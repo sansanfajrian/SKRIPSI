@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { request } from "../util/APIUtils";
+import { API_BASE_URL } from "../constants";
 
 const AddProject = () => {
   const [addProjectRequest, setAddProjectRequest] = useState({
@@ -30,52 +32,45 @@ const AddProject = () => {
     formData.append("deadlineDate", addProjectRequest.deadlineDate);
 
     [...documents].forEach((documents, i) => {
-      formData.append('documents', documents, documents.name)
-    })
+      formData.append("documents", documents, documents.name);
+    });
 
-    fetch("http://localhost:8080/api/project/add", {
+    request({
+      url: API_BASE_URL + "/api/project/add",
       method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
       body: formData,
     }).then((result) => {
-      console.log("result", result);
-      result.json().then((res) => {
-        console.log(res);
+      if (result.success) {
+        console.log("Got the success response");
 
-        if (res.success) {
-          console.log("Got the success response");
+        toast.success(result.responseMessage, {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
 
-          toast.success(res.responseMessage, {
-            position: "top-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-
-          setTimeout(() => {
-            navigate("/user/admin/project/all");
-          }, 1000); // Redirect after 3 seconds
-        } else {
-          console.log("Didn't got success response");
-          toast.error("It seems server is down", {
-            position: "top-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setTimeout(() => {
-            window.location.reload(true);
-          }, 1000); // Redirect after 3 seconds
-        }
-      });
+        setTimeout(() => {
+          navigate("/user/admin/project/all");
+        }, 1000); // Redirect after 3 seconds
+      } else {
+        console.log("Didn't got success response");
+        toast.error("It seems server is down", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 1000); // Redirect after 3 seconds
+      }
     });
   };
 
@@ -191,7 +186,9 @@ const AddProject = () => {
                           <div className="col-md-6">
                             <ul className="nav flex-column">
                               {[...documents].map((file, index) => (
-                                <li className="nav-item" key={index}>{file.name} - {file.type}</li>
+                                <li className="nav-item" key={index}>
+                                  {file.name} - {file.type}
+                                </li>
                               ))}
                             </ul>
                           </div>
@@ -204,7 +201,11 @@ const AddProject = () => {
                       type="submit"
                       className="btn float-right"
                       value="Add Project"
-                      style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                      style={{
+                        backgroundColor: "#3393df",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
                     />
 
                     <ToastContainer />

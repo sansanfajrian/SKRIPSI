@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import 'admin-lte/dist/css/adminlte.min.css';
 import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
 import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
 import 'admin-lte/dist/js/adminlte.min.js';
+import { GOOGLE_AUTH_URL } from "../constants";
 
 const UserRegister = () => {
   const [user, setUser] = useState({
@@ -57,8 +58,8 @@ const UserRegister = () => {
     getAllGenders();
   }, []);
 
-  const saveUser = (event) => {
-    event.preventDefault();
+  const saveUser = (e) => {
+    e.preventDefault();
     fetch("http://localhost:8080/api/user/" + user.role + "/register", {
       method: "POST",
       headers: {
@@ -308,10 +309,10 @@ const UserRegister = () => {
               </form>
               <div className="social-auth-links text-center">
                 <p>- OR -</p>
-                <a href="#" className="btn btn-block btn-danger">
+                <Link to={GOOGLE_AUTH_URL} className="btn btn-block btn-danger">
                   <i className="fab fa-google-plus mr-2" />
                   Sign up using Google+
-                </a>
+                </Link>
               </div>
               <a href="/user/login" className="text-center">I already have a membership</a>
             </div>

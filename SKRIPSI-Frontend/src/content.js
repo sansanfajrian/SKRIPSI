@@ -20,6 +20,7 @@ import ViewAllManagers from "./UserComponent/ViewAllManagers";
 import AboutUs from "./page/AboutUs";
 import ContactUs from "./page/ContactUs";
 import HomePage from "./page/HomePage";
+import OAuth2RedirectHandler from './UserComponent/OAuth2RedirectHandler';
 
 export default function Content() {
     return (
@@ -66,6 +67,8 @@ export default function Content() {
         <Route path="/user/change/menu-password" element={<MenuChangePassword />} />
         <Route path="/user/change/password" element={<ChangePassword />} />
         <Route path="/user/forgot/password" element={<ForgotPassword />} />
+
+        <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
       </Routes>
 
     </div>

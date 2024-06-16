@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,6 +47,7 @@ public class ProjectController {
 
     @PostMapping("add")
     @ApiOperation(value = "Api to add project")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonApiResponse> addProject(MultipartFile[] documents, String name, String description, String requirement, String deadlineDate) {
 
         LOG.info("Received request for adding the project");
@@ -111,6 +113,7 @@ public class ProjectController {
 
     @GetMapping("fetch")
     @ApiOperation(value = "Api to fetch all projects")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ProjectResponseDto> fetchAllProjects() {
         LOG.info("Recieved request for Fetching all the projects");
 
@@ -203,6 +206,7 @@ public class ProjectController {
 
     @GetMapping("search")
     @ApiOperation(value = "Api to fetch all projects by name")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByName(@RequestParam("projectName") String projectName) {
         LOG.info("Recieved request for Fetch all projects by name");
 
@@ -230,6 +234,20 @@ public class ProjectController {
             projectDto.setRequirement(project.getRequirement());
             projectDto.setDeadlineDate(project.getDeadlineDate());
             projectDto.setProjectStatus(project.getStatus());
+
+            List<DocMetadataDto> documents = new ArrayList<>();
+            project.getDocMetadata().forEach(docMetadata -> {
+                DocMetadataDto docMetadataDto = new DocMetadataDto();
+                docMetadataDto.setId(docMetadata.getId());
+                docMetadataDto.setDocId(docMetadata.getDocId());
+                docMetadataDto.setName(docMetadata.getName());
+                docMetadataDto.setSize(docMetadata.getSize());
+                docMetadataDto.setHttpContentType(docMetadata.getHttpContentType());
+                docMetadataDto.setPresignedUrl(minioUtils.getPresignedObjectUrl(minioConfig.getBucketName(), docMetadata.getDocId()));
+
+                documents.add(docMetadataDto);
+            });
+            projectDto.setDocuments(documents);
 
             if (project.getManagerId() == 0) {
 
@@ -281,6 +299,7 @@ public class ProjectController {
 
     @GetMapping("search/id")
     @ApiOperation(value = "Api to fetch all projects by id")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByName(@RequestParam("projectId") int projectId) {
         LOG.info("Recieved request for Fetch project by id");
 
@@ -312,6 +331,20 @@ public class ProjectController {
             projectDto.setRequirement(project.getRequirement());
             projectDto.setDeadlineDate(project.getDeadlineDate());
             projectDto.setProjectStatus(project.getStatus());
+
+            List<DocMetadataDto> documents = new ArrayList<>();
+            project.getDocMetadata().forEach(docMetadata -> {
+                DocMetadataDto docMetadataDto = new DocMetadataDto();
+                docMetadataDto.setId(docMetadata.getId());
+                docMetadataDto.setDocId(docMetadata.getDocId());
+                docMetadataDto.setName(docMetadata.getName());
+                docMetadataDto.setSize(docMetadata.getSize());
+                docMetadataDto.setHttpContentType(docMetadata.getHttpContentType());
+                docMetadataDto.setPresignedUrl(minioUtils.getPresignedObjectUrl(minioConfig.getBucketName(), docMetadata.getDocId()));
+
+                documents.add(docMetadataDto);
+            });
+            projectDto.setDocuments(documents);
 
             if (project.getManagerId() == 0) {
 
@@ -363,6 +396,7 @@ public class ProjectController {
 
     @PostMapping("update")
     @ApiOperation(value = "Api to update the project status")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonApiResponse> updateProject(MultipartFile[] documents, Integer id, String name, String description, String requirement, String deadlineDate, Integer[] deletedDocumentIds, String projectStatus, Integer employeeId, Integer managerId) {
         LOG.info("Received request for updating the project");
 
@@ -498,6 +532,7 @@ public class ProjectController {
 
     @PostMapping("assignToManager")
     @ApiOperation(value = "Api to assign project to manager")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonApiResponse> assignToManager(@RequestBody UpdateProjectRequestDto updateProjectRequest) {
         LOG.info("Received request for assigning project to manager");
 
@@ -543,6 +578,7 @@ public class ProjectController {
 
     @PostMapping("assignToEmployee")
     @ApiOperation(value = "Api to assign project to employee")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonApiResponse> assignToEmployee(@RequestBody UpdateProjectRequestDto updateProjectRequest) {
 
         LOG.info("Received request for assigning project to employee");
@@ -582,6 +618,7 @@ public class ProjectController {
 
     @PostMapping("updateStatus")
     @ApiOperation(value = "Api to update project status")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonApiResponse> updateStatus(@RequestBody UpdateProjectRequestDto updateProjectRequest) {
         LOG.info("Received request for updating the project status");
 
@@ -611,6 +648,7 @@ public class ProjectController {
 
     @GetMapping("fetch/manager")
     @ApiOperation(value = "Api to fetch all projects by manager id")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByManagerId(@RequestParam("managerId") int managerId) {
         LOG.info("Received request for Fetch projects by using manager Id");
 
@@ -690,6 +728,7 @@ public class ProjectController {
 
     @GetMapping("fetch/employee")
     @ApiOperation(value = "Api to fetch all projects by manager id")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByEmployeeId(@RequestParam("employeeId") int employeeId) {
         LOG.info("Received request for Fetch projects by using employee Id");
 
@@ -768,6 +807,7 @@ public class ProjectController {
 
     @GetMapping("manager/search")
     @ApiOperation(value = "Api to fetch all projects by name")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByNameAndManger(@RequestParam("projectName") String projectName, @RequestParam("managerId") int managerId) {
         LOG.info("Received request for searching the project by using project name and manager id");
 
@@ -852,6 +892,7 @@ public class ProjectController {
 
     @GetMapping("employee/search")
     @ApiOperation(value = "Api to fetch all projects by name")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ProjectResponseDto> fetchAllProjectsByNameAndEmployee(@RequestParam("projectName") String projectName, @RequestParam("employeeId") int employeeId) {
         LOG.info("Received request for searching the project by using project name and manager id");
 
@@ -937,6 +978,7 @@ public class ProjectController {
 
     @GetMapping("allStatus")
     @ApiOperation(value = "Api to fetch all projects by name")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<String>> fetchAllProjectStatus() {
         LOG.info("Received request for Fecth all the project status");
 
