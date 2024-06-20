@@ -3,8 +3,10 @@ import axios from "axios";
 import React from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import 'datatables.net-bs4';
-import ConfirmDialog from '../ConfirmDialog';
+import "datatables.net-bs4";
+import ConfirmDialog from "../ConfirmDialog";
+import { request } from "../util/APIUtils";
+import { API_BASE_URL } from "../constants";
 
 const ViewAllEmployees = () => {
   const [allEmployees, setAllEmployees] = useState([]);
@@ -14,27 +16,14 @@ const ViewAllEmployees = () => {
   const tableRef = useRef(null);
 
   const navigate = useNavigate();
-  
+
   useEffect(() => {
-      const getAllEmployee = async () => {
+    const getAllEmployee = async () => {
       const allEmployee = await retrieveAllEmployees();
       if (allEmployee) {
         setAllEmployees(allEmployee.users);
       }
     };
-
-    // setTimeout(() => {
-    //   $(tableRef.current).DataTable(
-    //     {
-    //         paging: true,
-    //         lengthChange: false,
-    //         searching: false,
-    //         ordering: false,
-    //         autoWidth: true,
-    //         responsive: true,
-    //     }
-    //   )
-    // },200);
 
     getAllEmployee();
   }, []);
@@ -45,14 +34,19 @@ const ViewAllEmployees = () => {
   const firstIndex = lastIndex - recordsPerPage;
   const records = allEmployees.slice(firstIndex, lastIndex);
   const npage = Math.ceil(allEmployees.length / recordsPerPage);
-  const numbers = [...Array(npage +1).keys()].slice(1);
+  const numbers = [...Array(npage + 1).keys()].slice(1);
 
   const retrieveAllEmployees = async () => {
-    const response = await axios.get(
-      "http://localhost:8080/api/user/employee/all"
-    );
-    console.log(response.data);
-    return response.data;
+    request({
+      url: API_BASE_URL + "/api/user/employee/all",
+      method: "GET",
+    })
+      .then((response) => {
+        setAllEmployees(response.users);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleDelete = (userID) => {
@@ -67,44 +61,40 @@ const ViewAllEmployees = () => {
 
   const handleCancel = () => {
     setDialogOpen(false);
-    console.log('Delete action canceled');
+    console.log("Delete action canceled");
   };
 
   const deleteEmployee = (userId) => {
-    fetch("http://localhost:8080/api/user/delete?userId=" + userId, {
+    request({
+      url: API_BASE_URL + "/api/user/delete?userId=" + userId,
       method: "DELETE",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+      contentType: "application/json",
     })
       .then((result) => {
-        result.json().then((res) => {
-          if (res.success) {
-            console.log("Got the success response");
+        if (result.success) {
+          console.log("Got the success response");
 
-            toast.success(res.responseMessage, {
-              position: "top-center",
-              autoClose: 1000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
-          } else {
-            console.log("Failed to delete the employee");
-            toast.error("It seems server is down", {
-              position: "top-center",
-              autoClose: 1000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-            });
-          }
-        });
+          toast.success(result.responseMessage, {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        } else {
+          console.log("Failed to delete the employee");
+          toast.error("It seems server is down", {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -130,11 +120,9 @@ const ViewAllEmployees = () => {
 
   return (
     <div className="content-wrapper">
+      <section className="content-header"></section>
 
-      <section className="content-header">
-      </section>
-      
-      <section class="content">
+      <section className="content">
         <div className="container-fluid">
           <div
             className="card form-card ms-2 me-2 mb-5 custom-bg border-color "
@@ -143,20 +131,27 @@ const ViewAllEmployees = () => {
             }}
           >
             <div className="card-header">
-                  <div className="container-fluid">
-                    <div className="row">
-                      <div className="col-sm-6">
-                        <h1>All Employee</h1>
-                      </div>
-                      <div className="col-sm-6">
-                        <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'transparent'}}>
-                          <li className="breadcrumb-item" ><a href="#">Home</a></li>
-                          <li className="breadcrumb-item active">View All Employee</li>
-                        </ol>
-                      </div>
-                    </div>
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-sm-6">
+                    <h1>All Employee</h1>
                   </div>
+                  <div className="col-sm-6">
+                    <ol
+                      className="breadcrumb float-sm-right"
+                      style={{ backgroundColor: "transparent" }}
+                    >
+                      <li className="breadcrumb-item">
+                        <a href="#">Home</a>
+                      </li>
+                      <li className="breadcrumb-item active">
+                        View All Employee
+                      </li>
+                    </ol>
+                  </div>
+                </div>
               </div>
+            </div>
             <div
               className="card-body"
               style={{
@@ -164,7 +159,10 @@ const ViewAllEmployees = () => {
               }}
             >
               <div className="table-responsive">
-                <table ref={tableRef} className="table table-bordered table-hover">
+                <table
+                  ref={tableRef}
+                  className="table table-bordered table-hover"
+                >
                   <thead className="table-bordered border-color bg-color custom-bg-text">
                     <tr className="text-center">
                       <th scope="col">First Name</th>
@@ -176,9 +174,9 @@ const ViewAllEmployees = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {allEmployees.map((employee) => {
+                    {allEmployees.map((employee, index) => {
                       return (
-                        <tr>
+                        <tr key={index}>
                           <td>
                             <b>{employee.firstName}</b>
                           </td>
@@ -206,7 +204,11 @@ const ViewAllEmployees = () => {
                             <button
                               onClick={() => editEmployee(employee)}
                               className="btn btn-sm bg-color custom-bg-text mx-1"
-                              style={{backgroundColor: "#f4a62a", color: "white", fontWeight: "bold"}}
+                              style={{
+                                backgroundColor: "#f4a62a",
+                                color: "white",
+                                fontWeight: "bold",
+                              }}
                               title="Edit Employee"
                             >
                               <i className="nav-icon fas fa-edit" />
@@ -214,7 +216,11 @@ const ViewAllEmployees = () => {
                             <button
                               onClick={() => handleDelete(employee.id)}
                               className="btn btn-sm bg-color custom-bg-text"
-                              style={{backgroundColor: "#df3333", color: "white", fontWeight: "bold"}}
+                              style={{
+                                backgroundColor: "#df3333",
+                                color: "white",
+                                fontWeight: "bold",
+                              }}
                               title="Remove Employee"
                             >
                               <i className="nav-icon fas fa-trash" />
@@ -228,53 +234,66 @@ const ViewAllEmployees = () => {
                 </table>
               </div>
             </div>
-            <div class="card-footer">
-                <nav className="float-right">
-                  <ul className='pagination'>
-                    <li className='page-item'>
-                      <a href='#' className='page-link' onClick={prePage}>Prev</a>
+            <div className="card-footer">
+              <nav className="float-right">
+                <ul className="pagination">
+                  <li className="page-item">
+                    <a href="#" className="page-link" onClick={prePage}>
+                      Prev
+                    </a>
+                  </li>
+                  {numbers.map((n, i) => (
+                    <li
+                      className={`page-item ${
+                        currentPage === n ? "active" : ""
+                      }`}
+                      key={i}
+                    >
+                      <a
+                        href="#"
+                        className="page-link"
+                        onClick={() => changeCPage(n)}
+                      >
+                        {n}
+                      </a>
                     </li>
-                    {numbers.map((n, i) => (
-                      <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
-                        <a href='#' className='page-link' onClick={() => changeCPage(n)}>{n}</a>
-                      </li>
-                    ))}
-                    <li className='page-item'>
-                      <a href='#' className='page-link' onClick={nextPage}>Next</a>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
+                  ))}
+                  <li className="page-item">
+                    <a href="#" className="page-link" onClick={nextPage}>
+                      Next
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
         </div>
       </section>
 
       <ConfirmDialog
-          isOpen={isDialogOpen}
-          message="Are you sure you want to delete this user ?"
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-
+        isOpen={isDialogOpen}
+        message="Are you sure you want to delete this user ?"
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
     </div>
   );
 
-  function prePage(){
-    if(currentPage !== 1){
+  function prePage() {
+    if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
   }
 
-  function changeCPage(id){
+  function changeCPage(id) {
     setCurrentPage(id);
   }
 
-  function nextPage(){
-    if(currentPage !== npage){
+  function nextPage() {
+    if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
   }
-
 };
 
 export default ViewAllEmployees;

@@ -2,13 +2,13 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <div>
-      <div class="container my-5">
-        <footer class="text-center text-lg-start text-color">
-          <div class="container-fluid p-4 pb-0">
-            <section class="">
-              <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4 mb-md-0">
-                  <h5 class="text-uppercase text-color">
+      <div className="container my-5">
+        <footer className="text-center text-lg-start text-color">
+          <div className="container-fluid p-4 pb-0">
+            <section className="">
+              <div className="row">
+                <div className="col-lg-4 col-md-6 mb-4 mb-md-0">
+                  <h5 className="text-uppercase text-color">
                     Monitoring Project
                   </h5>
 
@@ -19,108 +19,108 @@ const Footer = () => {
                   </p>
                 </div>
 
-                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-                  <h5 class="text-uppercase text-color-4">About us</h5>
+                <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
+                  <h5 className="text-uppercase text-color-4">About us</h5>
 
-                  <ul class="list-unstyled mb-0">
+                  <ul className="list-unstyled mb-0">
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 1
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 2
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 3
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 4
                       </a>
                     </li>
                   </ul>
                 </div>
 
-                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-                  <h5 class="text-uppercase text-color-4">Contact us</h5>
+                <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
+                  <h5 className="text-uppercase text-color-4">Contact us</h5>
 
-                  <ul class="list-unstyled mb-0">
+                  <ul className="list-unstyled mb-0">
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 1
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 2
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 3
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 4
                       </a>
                     </li>
                   </ul>
                 </div>
 
-                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-                  <h5 class="text-uppercase text-color-4">Careers</h5>
+                <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
+                  <h5 className="text-uppercase text-color-4">Careers</h5>
 
-                  <ul class="list-unstyled mb-0">
+                  <ul className="list-unstyled mb-0">
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 1
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 2
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 3
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 4
                       </a>
                     </li>
                   </ul>
                 </div>
 
-                <div class="col-lg-2 col-md-6 mb-4 mb-md-0">
-                  <h5 class="text-uppercase text-color-4">Links</h5>
+                <div className="col-lg-2 col-md-6 mb-4 mb-md-0">
+                  <h5 className="text-uppercase text-color-4">Links</h5>
 
-                  <ul class="list-unstyled mb-0">
+                  <ul className="list-unstyled mb-0">
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 1
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 2
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 3
                       </a>
                     </li>
                     <li>
-                      <a href="#!" class="text-color">
+                      <a href="#!" className="text-color">
                         Link 4
                       </a>
                     </li>
@@ -129,15 +129,15 @@ const Footer = () => {
               </div>
             </section>
 
-            <hr class="mb-4" />
+            <hr className="mb-4" />
 
-            <section class="">
-              <p class="d-flex justify-content-center align-items-center">
-                <span class="me-3 text-color">Login from here</span>
-                <Link to="/user/login" class="active">
+            <section className="">
+              <p className="d-flex justify-content-center align-items-center">
+                <span className="me-3 text-color">Login from here</span>
+                <Link to="/user/login" className="active">
                   <button
                     type="button"
-                    class="btn btn-outline-light btn-rounded bg-color custom-bg-text"
+                    className="btn btn-outline-light btn-rounded bg-color custom-bg-text"
                   >
                     Log in
                   </button>
@@ -145,12 +145,12 @@ const Footer = () => {
               </p>
             </section>
 
-            <hr class="mb-4" />
+            <hr className="mb-4" />
           </div>
 
-          <div class="text-center">
+          <div className="text-center">
             © 2022 Copyright:
-            <a class="text-color-3" href="https://codewithmurad.com/">
+            <a className="text-color-3" href="https://codewithmurad.com/">
               codewithmurad.com
             </a>
           </div>

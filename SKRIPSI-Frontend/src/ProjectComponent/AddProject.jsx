@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { request } from "../util/APIUtils";
+import { API_BASE_URL } from "../constants";
 
 const AddProject = () => {
   const [addProjectRequest, setAddProjectRequest] = useState({
     name: "",
     description: "",
     requirement: "",
+    startDate: "",
+    startTime: "08:00",
     deadlineDate: "",
+    deadlineTime: "08:00",
+    reminderEmail: 0,
+    reminderPopup: 0,
   });
   const [documents, setDocuments] = useState([]);
 
@@ -27,57 +34,62 @@ const AddProject = () => {
     formData.append("name", addProjectRequest.name);
     formData.append("description", addProjectRequest.description);
     formData.append("requirement", addProjectRequest.requirement);
+    formData.append("startDate", addProjectRequest.startDate);
+    formData.append("startTime", addProjectRequest.startTime);
     formData.append("deadlineDate", addProjectRequest.deadlineDate);
+    formData.append("deadlineTime", addProjectRequest.deadlineTime);
+    formData.append("reminderEmail", addProjectRequest.reminderEmail);
+    formData.append("reminderPopup", addProjectRequest.reminderPopup);
 
     [...documents].forEach((documents, i) => {
-      formData.append('documents', documents, documents.name)
-    })
+      formData.append("documents", documents, documents.name);
+    });
 
-    fetch("http://localhost:8080/api/project/add", {
+    request({
+      url: API_BASE_URL + "/api/project/add",
       method: "POST",
-      headers: {
-        Accept: "application/json",
-      },
       body: formData,
     }).then((result) => {
-      console.log("result", result);
-      result.json().then((res) => {
-        console.log(res);
+      if (result.success) {
+        console.log("Got the success response");
 
-        if (res.success) {
-          console.log("Got the success response");
+        toast.success(result.responseMessage, {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
 
-          toast.success(res.responseMessage, {
-            position: "top-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-
-          setTimeout(() => {
-            navigate("/user/admin/project/all");
-          }, 1000); // Redirect after 3 seconds
-        } else {
-          console.log("Didn't got success response");
-          toast.error("It seems server is down", {
-            position: "top-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setTimeout(() => {
-            window.location.reload(true);
-          }, 1000); // Redirect after 3 seconds
-        }
-      });
+        setTimeout(() => {
+          navigate("/user/admin/project/all");
+        }, 1000); // Redirect after 3 seconds
+      } else {
+        console.log("Didn't got success response");
+        toast.error("It seems server is down", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 1000); // Redirect after 3 seconds
+      }
     });
   };
+
+  const handleOnSelectTimePopupReminder = (e, field) => {
+    setAddProjectRequest({
+      ...addProjectRequest,
+      [field]: e.target.value,
+    });
+  }
 
   return (
     <div className="content-wrapper">
@@ -155,19 +167,150 @@ const AddProject = () => {
                       />
                     </div>
 
-                    <div className="mb-3">
-                      <label htmlFor="name" className="form-label">
-                        Project Deadline
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        id="deadlineDate"
-                        placeholder="select deadline date.."
-                        name="deadlineDate"
-                        onChange={handleUserInput}
-                        value={addProjectRequest.deadlineDate}
-                      />
+                    <hr />
+
+                    <h5>Timeline</h5>
+
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <div className="mb-3">
+                          <label htmlFor="name" className="form-label">
+                            Start
+                          </label>
+
+                          <div className="row">
+                            <div className="col-sm-8">
+                              <input
+                                type="date"
+                                className="form-control"
+                                id="startDate"
+                                placeholder="select start date.."
+                                name="startDate"
+                                onChange={handleUserInput}
+                                value={addProjectRequest.startDate}
+                              />
+                            </div>
+                            <div className="col-sm-4">
+                              <input
+                                type="time"
+                                className="form-control"
+                                id="startTime"
+                                placeholder="select start time.."
+                                name="startTime"
+                                onChange={handleUserInput}
+                                value={addProjectRequest.startTime}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col-sm-6">
+                        <div className="mb-3">
+                          <label htmlFor="name" className="form-label">
+                            Deadline
+                          </label>
+
+                          <div className="row">
+                            <div className="col-sm-8">
+                              <input
+                                type="date"
+                                className="form-control"
+                                id="deadlineDate"
+                                placeholder="select deadline date.."
+                                name="deadlineDate"
+                                onChange={handleUserInput}
+                                value={addProjectRequest.deadlineDate}
+                              />
+                            </div>
+                            <div className="col-sm-4">
+                              <input
+                                type="time"
+                                className="form-control"
+                                id="deadlineTime"
+                                placeholder="select deadline date.."
+                                name="deadlineTime"
+                                onChange={handleUserInput}
+                                value={addProjectRequest.deadlineTime}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <hr />
+
+                    <h5>
+                      Deadline Reminders <small>(in minutes before deadline)</small>
+                    </h5>
+
+                    <div className="row">
+                      <div className="col-sm-3">
+                        <div className="mb-3">
+                          <label htmlFor="name" className="form-label">
+                            With Email
+                          </label>
+
+                          <div className="row">
+                            <div className="col-md-6">
+                              <input
+                                type="number"
+                                className="form-control"
+                                id="reminderEmail"
+                                name="reminderEmail"
+                                onChange={handleUserInput}
+                                value={addProjectRequest.reminderEmail}
+                              />
+                            </div>
+                            <div className="col-md-6">
+                              <select className="form-control" onChange={(e) => handleOnSelectTimePopupReminder(e, 'reminderEmail')}>
+                                <option value={0}>-- Select Time --</option>
+                                <option value={10}>10 minutes before</option>
+                                <option value={15}>15 minutes before</option>
+                                <option value={30}>30 minutes before</option>
+                                <option value={60}>1 hour before</option>
+                                <option value={1 * 24 * 60}>1 day before</option>
+                                <option value={2 * 24 * 60}>2 days before</option>
+                                <option value={7 * 24 * 60}>1 week before</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col-sm-3">
+                        <div className="mb-3">
+                          <label htmlFor="name" className="form-label">
+                            With Popup
+                          </label>
+
+                          <div className="row">
+                            <div className="col-md-6">
+                              <input
+                                type="number"
+                                className="form-control"
+                                id="reminderPopup"
+                                name="reminderPopup"
+                                onChange={handleUserInput}
+                                value={addProjectRequest.reminderPopup}
+                              />
+                            </div>
+                            <div className="col-md-6">
+                            <select className="form-control" onChange={(e) => handleOnSelectTimePopupReminder(e, 'reminderPopup')}>
+                                <option value={0}>-- Select Time --</option>
+                                <option value={10}>10 minutes before</option>
+                                <option value={15}>15 minutes before</option>
+                                <option value={30}>30 minutes before</option>
+                                <option value={60}>1 hour before</option>
+                                <option value={1 * 24 * 60}>1 day before</option>
+                                <option value={2 * 24 * 60}>2 days before</option>
+                                <option value={7 * 24 * 60}>1 week before</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="mb-3">
@@ -191,7 +334,9 @@ const AddProject = () => {
                           <div className="col-md-6">
                             <ul className="nav flex-column">
                               {[...documents].map((file, index) => (
-                                <li className="nav-item" key={index}>{file.name} - {file.type}</li>
+                                <li className="nav-item" key={index}>
+                                  {file.name} - {file.type}
+                                </li>
                               ))}
                             </ul>
                           </div>
@@ -204,7 +349,11 @@ const AddProject = () => {
                       type="submit"
                       className="btn float-right"
                       value="Add Project"
-                      style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                      style={{
+                        backgroundColor: "#3393df",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
                     />
 
                     <ToastContainer />

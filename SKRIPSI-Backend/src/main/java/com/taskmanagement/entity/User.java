@@ -2,6 +2,8 @@ package com.taskmanagement.entity;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.BeanUtils;
 
 import com.taskmanagement.dto.UserLoginResponse;
@@ -39,6 +41,17 @@ public class User {
 	private String role;
 	
 	private int status;
+
+	private String imageUrl;
+
+	@Column(nullable = false)
+	private Boolean emailVerified = false;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	private AuthProvider provider;
+
+	private String providerId;
 
 	public static UserLoginResponse toUserLoginResponse(User user) {
 		UserLoginResponse userLoginResponse=new UserLoginResponse();

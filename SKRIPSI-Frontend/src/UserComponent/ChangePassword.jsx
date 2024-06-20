@@ -166,7 +166,7 @@ const ChangePassword = () => {
                   <div className="col-12">
                     <button
                       type="submit"
-                      class="btn btn-primary btn-block"
+                      className="btn btn-primary btn-block"
                       onClick={userChangePassword}
                     >Change password</button>
                   </div>

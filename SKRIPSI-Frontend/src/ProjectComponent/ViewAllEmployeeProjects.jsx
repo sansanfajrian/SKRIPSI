@@ -2,8 +2,10 @@ import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import $ from 'jquery';
-import 'datatables.net-bs4';
+import $ from "jquery";
+import "datatables.net-bs4";
+import { request } from "../util/APIUtils";
+import { API_BASE_URL } from "../constants";
 
 const ViewAllEmployeeProjects = () => {
   const employee = JSON.parse(sessionStorage.getItem("active-employee"));
@@ -25,20 +27,6 @@ const ViewAllEmployeeProjects = () => {
     };
 
     getAllProject();
-
-    // setTimeout(() => {
-    //   $(tableRef.current).DataTable(
-    //     {
-    //         paging: true,
-    //         lengthChange: false,
-    //         searching: false,
-    //         ordering: false,
-    //         autoWidth: true,
-    //         responsive: true,
-    //     }
-    //   )
-    // },200);
-
   }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,33 +35,47 @@ const ViewAllEmployeeProjects = () => {
   const firstIndex = lastIndex - recordsPerPage;
   const records = allProjects.slice(firstIndex, lastIndex);
   const npage = Math.ceil(allProjects.length / recordsPerPage);
-  const numbers = [...Array(npage +1).keys()].slice(1);
+  const numbers = [...Array(npage + 1).keys()].slice(1);
 
   const retrieveAllProject = async () => {
-    const response = await axios.get(
-      "http://localhost:8080/api/project/fetch/employee?employeeId=" +
-        employee.id
-    );
-    console.log(response.data);
-    return response.data;
+    request({
+      url:
+        API_BASE_URL + "/api/project/fetch/employee?employeeId=" + employee.id,
+      method: "GET",
+    })
+      .then((response) => {
+        setAllProjects(response.projects);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const getProjectsByName = async () => {
     const allProject = await retrieveProjectByName();
     if (allProject) {
-      setAllProjects(allProject.projects);
+      setAllProjects(allProject);
     }
   };
 
   const retrieveProjectByName = async () => {
-    const response = await axios.get(
-      "http://localhost:8080/api/project/employee/search?projectName=" +
+    const projects = await request({
+      url:
+        API_BASE_URL +
+        "/api/project/employee/search?projectName=" +
         projectName +
         "&employeeId=" +
-        employee.id
-    );
-    console.log(response.data);
-    return response.data;
+        employee.id,
+      method: "GET",
+    })
+      .then((response) => {
+        return response.projects;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return projects;
   };
 
   const searchProjectbyName = (e) => {
@@ -88,11 +90,9 @@ const ViewAllEmployeeProjects = () => {
 
   return (
     <div className="content-wrapper">
+      <section className="content-header"></section>
 
-      <section className="content-header">
-      </section>
-
-      <section class="content">
+      <section className="content">
         <div className="container-fluid">
           <div
             className="card form-card ms-2 me-2 mb-5 custom-bg border-color "
@@ -101,20 +101,25 @@ const ViewAllEmployeeProjects = () => {
             }}
           >
             <div className="card-header">
-                <div className="container-fluid">
-                  <div className="row">
-                    <div className="col-sm-6">
-                      <h1>My Projects</h1>
-                    </div>
-                    <div className="col-sm-6">
-                      <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'transparent'}}>
-                        <li className="breadcrumb-item" ><a href="#">Home</a></li>
-                        <li className="breadcrumb-item active">All Project</li>
-                      </ol>
-                    </div>
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-sm-6">
+                    <h1>My Projects</h1>
+                  </div>
+                  <div className="col-sm-6">
+                    <ol
+                      className="breadcrumb float-sm-right"
+                      style={{ backgroundColor: "transparent" }}
+                    >
+                      <li className="breadcrumb-item">
+                        <a href="#">Home</a>
+                      </li>
+                      <li className="breadcrumb-item active">All Project</li>
+                    </ol>
                   </div>
                 </div>
               </div>
+            </div>
             <div
               className="card-body"
               style={{
@@ -122,24 +127,28 @@ const ViewAllEmployeeProjects = () => {
               }}
             >
               <div className="row g-3">
-                <div class="col-auto">
-                  <form class="row g-3">
-                    <div class="col-auto">
+                <div className="col-auto">
+                  <form className="row g-3">
+                    <div className="col-auto">
                       <input
                         type="text"
-                        class="form-control"
+                        className="form-control"
                         id="inputPassword2"
                         placeholder="Enter Project Name..."
                         onChange={(e) => setProjectName(e.target.value)}
                         value={projectName}
                       />
                     </div>
-                    <div class="col-auto">
+                    <div className="col-auto">
                       <button
                         type="submit"
-                        class="btn bg-color custom-bg-text mb-3"
+                        className="btn bg-color custom-bg-text mb-3"
                         onClick={searchProjectbyName}
-                        style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                        style={{
+                          backgroundColor: "#3393df",
+                          color: "white",
+                          fontWeight: "bold",
+                        }}
                       >
                         Search
                       </button>
@@ -148,7 +157,10 @@ const ViewAllEmployeeProjects = () => {
                 </div>
               </div>
               <div className="table-responsive">
-                <table ref={tableRef} className="table table-bordered table-hover">
+                <table
+                  ref={tableRef}
+                  className="table table-bordered table-hover"
+                >
                   <thead className="table-bordered bg-color custom-bg-text border-color">
                     <tr className="text-center">
                       <th scope="col">Project Name</th>
@@ -209,7 +221,11 @@ const ViewAllEmployeeProjects = () => {
                                   <button
                                     onClick={() => updateProjectStatus(project)}
                                     className="btn btn-sm"
-                                    style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                                    style={{
+                                      backgroundColor: "#3393df",
+                                      color: "white",
+                                      fontWeight: "bold",
+                                    }}
                                   >
                                     <b>Update Project Status</b>
                                   </button>
@@ -224,41 +240,56 @@ const ViewAllEmployeeProjects = () => {
                 </table>
               </div>
             </div>
-            <div class="card-footer">
-                  <nav className="float-right">
-                    <ul className='pagination'>
-                      <li className='page-item'>
-                        <a href='#' className='page-link' onClick={prePage}>Prev</a>
-                      </li>
-                      {numbers.map((n, i) => (
-                        <li className={`page-item ${currentPage === n ? 'active' : ''}`} key={i}>
-                          <a href='#' className='page-link' onClick={() => changeCPage(n)}>{n}</a>
-                        </li>
-                      ))}
-                      <li className='page-item'>
-                        <a href='#' className='page-link' onClick={nextPage}>Next</a>
-                      </li>
-                    </ul>
-                  </nav>
-                </div>
+            <div className="card-footer">
+              <nav className="float-right">
+                <ul className="pagination">
+                  <li className="page-item">
+                    <a href="#" className="page-link" onClick={prePage}>
+                      Prev
+                    </a>
+                  </li>
+                  {numbers.map((n, i) => (
+                    <li
+                      className={`page-item ${
+                        currentPage === n ? "active" : ""
+                      }`}
+                      key={i}
+                    >
+                      <a
+                        href="#"
+                        className="page-link"
+                        onClick={() => changeCPage(n)}
+                      >
+                        {n}
+                      </a>
+                    </li>
+                  ))}
+                  <li className="page-item">
+                    <a href="#" className="page-link" onClick={nextPage}>
+                      Next
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
         </div>
       </section>
     </div>
   );
 
-  function prePage(){
-    if(currentPage !== 1){
+  function prePage() {
+    if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
     }
   }
 
-  function changeCPage(id){
+  function changeCPage(id) {
     setCurrentPage(id);
   }
 
-  function nextPage(){
-    if(currentPage !== npage){
+  function nextPage() {
+    if (currentPage !== npage) {
       setCurrentPage(currentPage + 1);
     }
   }

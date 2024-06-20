@@ -34,3 +34,6 @@ build/
 
 ### Miscellaneous ###
 volumes/
+tokens/
+notes
+./src/main/resources/credentials.json

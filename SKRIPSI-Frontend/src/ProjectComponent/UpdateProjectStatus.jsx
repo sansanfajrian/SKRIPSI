@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { request } from "../util/APIUtils";
+import { API_BASE_URL } from "../constants";
 
 const UpdateProjectStatus = () => {
   const [updateStatusRequest, setUpdateStatusRequest] = useState({
@@ -36,68 +38,68 @@ const UpdateProjectStatus = () => {
   }, []);
 
   const retrieveAllStatus = async () => {
-    const response = await axios.get(
-      "http://localhost:8080/api/project/allStatus"
-    );
-    console.log(response.data);
-    return response.data;
+    const status = await request({
+      url: API_BASE_URL + "/api/project/allStatus",
+      method: "GET",
+    })
+      .then((response) => {
+        return response;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+    return status;
   };
 
   const updateProjectStatus = (e) => {
     e.preventDefault();
 
-    fetch("http://localhost:8080/api/project/updateStatus", {
+    request({
+      url: API_BASE_URL + "/api/project/updateStatus",
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(updateStatusRequest),
+      contentType: "application/json",
     }).then((result) => {
-      console.log("result", result);
-      result.json().then((res) => {
-        console.log(res);
+      console.log(result);
 
-        if (res.success) {
-          console.log("Got the success response");
+      if (result.success) {
+        console.log("Got the success response");
 
-          toast.success(res.responseMessage, {
-            position: "top-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+        toast.success(result.responseMessage, {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
 
-          setTimeout(() => {
-            navigate("/user/employee/project/all");
-          }, 1000); // Redirect after 3 seconds
-        } else {
-          console.log("Didn't got success response");
-          toast.error("It seems server is down", {
-            position: "top-center",
-            autoClose: 1000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
-          setTimeout(() => {
-            window.location.reload(true);
-          }, 1000); // Redirect after 3 seconds
-        }
-      });
+        setTimeout(() => {
+          navigate("/user/employee/project/all");
+        }, 1000); // Redirect after 3 seconds
+      } else {
+        console.log("Didn't got success response");
+        toast.error("It seems server is down", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          window.location.reload(true);
+        }, 1000); // Redirect after 3 seconds
+      }
     });
   };
 
   return (
     <div className="content-wrapper">
-
-      <section className="content-header">
-      </section>
+      <section className="content-header"></section>
 
       <section className="content">
         <div className="container-fluid">
@@ -116,10 +118,19 @@ const UpdateProjectStatus = () => {
                         <h1>Update Project Status</h1>
                       </div>
                       <div className="col-sm-6">
-                        <ol className="breadcrumb float-sm-right" style={{backgroundColor: 'transparent'}}>
-                          <li className="breadcrumb-item" ><a href="#">Home</a></li>
-                          <li className="breadcrumb-item" ><a href="/user/employee/project/all">My Project</a></li>
-                          <li className="breadcrumb-item active">Update Project Status</li>
+                        <ol
+                          className="breadcrumb float-sm-right"
+                          style={{ backgroundColor: "transparent" }}
+                        >
+                          <li className="breadcrumb-item">
+                            <a href="#">Home</a>
+                          </li>
+                          <li className="breadcrumb-item">
+                            <a href="/user/employee/project/all">My Project</a>
+                          </li>
+                          <li className="breadcrumb-item active">
+                            Update Project Status
+                          </li>
                         </ol>
                       </div>
                     </div>
@@ -179,7 +190,7 @@ const UpdateProjectStatus = () => {
                   </div>
 
                   <form>
-                    <div class="mb-2">
+                    <div className="mb-2">
                       <label htmlFor="quantity" className="form-label">
                         Status
                       </label>
@@ -191,16 +202,25 @@ const UpdateProjectStatus = () => {
                       >
                         <option value="">Select Status</option>
 
-                        {allStatus.map((status) => {
-                          return <option value={status}> {status} </option>;
+                        {allStatus.map((status, index) => {
+                          return (
+                            <option key={index} value={status}>
+                              {" "}
+                              {status}{" "}
+                            </option>
+                          );
                         })}
                       </select>
                     </div>
                     <button
                       type="submit"
-                      class="btn float-right"
+                      className="btn float-right"
                       onClick={updateProjectStatus}
-                      style={{backgroundColor: "#3393df", color: "white", fontWeight: "bold"}}
+                      style={{
+                        backgroundColor: "#3393df",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
                     >
                       Update Status
                     </button>

@@ -25,11 +25,11 @@ const ManagerHeader = () => {
   };
 
   return (
-    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 me-5">
-      <li class="nav-item">
+    <ul className="navbar-nav ms-auto mb-2 mb-lg-0 me-5">
+      <li className="nav-item">
         <Link
           to="/user/manager/project/all"
-          class="nav-link active"
+          className="nav-link active"
           aria-current="page"
         >
           <b className="text-color">My Projects</b>
@@ -46,10 +46,10 @@ const ManagerHeader = () => {
         </Link>
       </li>
 
-      <li class="nav-item">
+      <li className="nav-item">
         <Link
           to="/user/employee/all"
-          class="nav-link active"
+          className="nav-link active"
           aria-current="page"
         >
           <b className="text-color">View All Employees</b>
@@ -66,10 +66,10 @@ const ManagerHeader = () => {
         </Link>
       </li>
 
-      <li class="nav-item">
+      <li className="nav-item">
         <Link
           to=""
-          class="nav-link active"
+          className="nav-link active"
           aria-current="page"
           onClick={managerLogout}
         >
