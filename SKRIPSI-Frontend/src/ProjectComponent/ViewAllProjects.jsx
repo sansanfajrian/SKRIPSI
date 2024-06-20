@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import $ from "jquery";
 import "datatables.net-bs4";
 import ConfirmDialog from "../ConfirmDialog";
@@ -87,7 +87,10 @@ const ViewAllProjects = () => {
 
   const retrieveProjectById = async () => {
     const projects = await request({
-      url: API_BASE_URL + "/api/project/search/id?projectId=" + (projectId === '' ? 0 : projectId),
+      url:
+        API_BASE_URL +
+        "/api/project/search/id?projectId=" +
+        (projectId === "" ? 0 : projectId),
       method: "GET",
     })
       .then((response) => {
@@ -246,6 +249,7 @@ const ViewAllProjects = () => {
                           <th scope="col">Employee Name</th>
                           <th scope="col">Project Created Date</th>
                           <th scope="col">Project Assign Date</th>
+                          <th scope="col">Project Start</th>
                           <th scope="col">Project Deadline</th>
                           <th scope="col">Project Status</th>
                           <th scope="col">Action</th>
@@ -284,7 +288,16 @@ const ViewAllProjects = () => {
                                 <b>{project.assignedDate}</b>
                               </td>
                               <td className="text-center">
-                                <b>{project.deadlineDate}</b>
+                                <b>
+                                  {project.startDate + " " + project.startTime}
+                                </b>
+                              </td>
+                              <td className="text-center">
+                                <b>
+                                  {project.deadlineDate +
+                                    " " +
+                                    project.deadlineTime}
+                                </b>
                               </td>
                               <td className="text-center">
                                 <b>{project.projectStatus}</b>
@@ -400,9 +413,9 @@ const ViewAllProjects = () => {
                   <nav className="float-right">
                     <ul className="pagination">
                       <li className="page-item">
-                        <a href="#" className="page-link" onClick={prePage}>
+                        <Link to="#" className="page-link" onClick={prePage}>
                           Prev
-                        </a>
+                        </Link>
                       </li>
                       {numbers.map((n, i) => (
                         <li
@@ -411,19 +424,19 @@ const ViewAllProjects = () => {
                           }`}
                           key={i}
                         >
-                          <a
-                            href="#"
+                          <Link
+                            to="#"
                             className="page-link"
                             onClick={() => changeCPage(n)}
                           >
                             {n}
-                          </a>
+                          </Link>
                         </li>
                       ))}
                       <li className="page-item">
-                        <a href="#" className="page-link" onClick={nextPage}>
+                        <Link to="#" className="page-link" onClick={nextPage}>
                           Next
-                        </a>
+                        </Link>
                       </li>
                     </ul>
                   </nav>

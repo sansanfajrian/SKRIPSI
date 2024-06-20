@@ -5,6 +5,9 @@ import com.taskmanagement.dto.*;
 import com.taskmanagement.entity.DocMetadata;
 import com.taskmanagement.entity.Project;
 import com.taskmanagement.entity.User;
+import com.taskmanagement.security.CurrentUser;
+import com.taskmanagement.security.UserPrincipal;
+import com.taskmanagement.service.CalendarService;
 import com.taskmanagement.service.ProjectService;
 import com.taskmanagement.service.UserService;
 import com.taskmanagement.utility.Constants.ProjectAssignStatus;
@@ -22,6 +25,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -40,6 +45,9 @@ public class ProjectController {
     private UserService userService;
 
     @Autowired
+    private CalendarService calendarService;
+
+    @Autowired
     private MinioUtils minioUtils;
 
     @Autowired
@@ -48,7 +56,7 @@ public class ProjectController {
     @PostMapping("add")
     @ApiOperation(value = "Api to add project")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<CommonApiResponse> addProject(MultipartFile[] documents, String name, String description, String requirement, String deadlineDate) {
+    public ResponseEntity<CommonApiResponse> addProject(MultipartFile[] documents, String name, String description, String requirement, String startDate, String startTime, String deadlineDate, String deadlineTime, Integer reminderEmail, Integer reminderPopup) {
 
         LOG.info("Received request for adding the project");
 
@@ -70,7 +78,12 @@ public class ProjectController {
                 .name(name)
                 .description(description)
                 .requirement(requirement)
+                .startDate(startDate)
+                .startTime(startTime)
                 .deadlineDate(deadlineDate)
+                .deadlineTime(deadlineTime)
+                .reminderEmail(reminderEmail)
+                .reminderPopup(reminderPopup)
                 .build();
 
         if (project == null) {
@@ -139,7 +152,12 @@ public class ProjectController {
             projectDto.setDescription(project.getDescription());
             projectDto.setCreatedDate(project.getCreatedDate());
             projectDto.setRequirement(project.getRequirement());
+            projectDto.setStartDate(project.getStartDate());
+            projectDto.setStartTime(project.getStartTime());
             projectDto.setDeadlineDate(project.getDeadlineDate());
+            projectDto.setDeadlineTime(project.getDeadlineTime());
+            projectDto.setReminderEmail(project.getReminderEmail());
+            projectDto.setReminderPopup(project.getReminderPopup());
             projectDto.setProjectStatus(project.getStatus());
 
             List<DocMetadataDto> documents = new ArrayList<>();
@@ -232,7 +250,12 @@ public class ProjectController {
             projectDto.setDescription(project.getDescription());
             projectDto.setCreatedDate(project.getCreatedDate());
             projectDto.setRequirement(project.getRequirement());
+            projectDto.setStartDate(project.getStartDate());
+            projectDto.setStartTime(project.getStartTime());
             projectDto.setDeadlineDate(project.getDeadlineDate());
+            projectDto.setDeadlineTime(project.getDeadlineTime());
+            projectDto.setReminderEmail(project.getReminderEmail());
+            projectDto.setReminderPopup(project.getReminderPopup());
             projectDto.setProjectStatus(project.getStatus());
 
             List<DocMetadataDto> documents = new ArrayList<>();
@@ -329,7 +352,12 @@ public class ProjectController {
             projectDto.setDescription(project.getDescription());
             projectDto.setCreatedDate(project.getCreatedDate());
             projectDto.setRequirement(project.getRequirement());
+            projectDto.setStartDate(project.getStartDate());
+            projectDto.setStartTime(project.getStartTime());
             projectDto.setDeadlineDate(project.getDeadlineDate());
+            projectDto.setDeadlineTime(project.getDeadlineTime());
+            projectDto.setReminderEmail(project.getReminderEmail());
+            projectDto.setReminderPopup(project.getReminderPopup());
             projectDto.setProjectStatus(project.getStatus());
 
             List<DocMetadataDto> documents = new ArrayList<>();
@@ -397,7 +425,7 @@ public class ProjectController {
     @PostMapping("update")
     @ApiOperation(value = "Api to update the project status")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<CommonApiResponse> updateProject(MultipartFile[] documents, Integer id, String name, String description, String requirement, String deadlineDate, Integer[] deletedDocumentIds, String projectStatus, Integer employeeId, Integer managerId) {
+    public ResponseEntity<CommonApiResponse> updateProject(MultipartFile[] documents, Integer id, String name, String description, String requirement, String startDate, String startTime, String deadlineDate, String deadlineTime, Integer[] deletedDocumentIds, String projectStatus, Integer employeeId, Integer managerId, Integer reminderEmail, Integer reminderPopup) {
         LOG.info("Received request for updating the project");
 
         CommonApiResponse response = new CommonApiResponse();
@@ -489,7 +517,12 @@ public class ProjectController {
             project.setName(name);
             project.setDescription(description);
             project.setRequirement(requirement);
+            project.setStartDate(startDate);
+            project.setStartTime(startTime);
             project.setDeadlineDate(deadlineDate);
+            project.setDeadlineTime(deadlineTime);
+            project.setReminderEmail(reminderEmail);
+            project.setReminderPopup(reminderPopup);
 
             Set<DocMetadata> docMetadataSet = new HashSet<>();
             Arrays.stream(documents).forEach(document -> {
@@ -533,7 +566,7 @@ public class ProjectController {
     @PostMapping("assignToManager")
     @ApiOperation(value = "Api to assign project to manager")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<CommonApiResponse> assignToManager(@RequestBody UpdateProjectRequestDto updateProjectRequest) {
+    public ResponseEntity<CommonApiResponse> assignToManager(@RequestBody UpdateProjectRequestDto updateProjectRequest, @CurrentUser UserPrincipal userPrincipal) throws GeneralSecurityException, IOException {
         LOG.info("Received request for assigning project to manager");
 
         CommonApiResponse response = new CommonApiResponse();
@@ -571,6 +604,8 @@ public class ProjectController {
             response.setResponseMessage("failed to update the project status");
             return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
         } else {
+            calendarService.addProjectToEvent(project, userPrincipal, UserRole.MANAGER);
+
             response.setResponseMessage("assigned project to manager successfully");
             return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
         }
@@ -579,7 +614,7 @@ public class ProjectController {
     @PostMapping("assignToEmployee")
     @ApiOperation(value = "Api to assign project to employee")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<CommonApiResponse> assignToEmployee(@RequestBody UpdateProjectRequestDto updateProjectRequest) {
+    public ResponseEntity<CommonApiResponse> assignToEmployee(@RequestBody UpdateProjectRequestDto updateProjectRequest, @CurrentUser UserPrincipal userPrincipal) throws GeneralSecurityException, IOException {
 
         LOG.info("Received request for assigning project to employee");
 
@@ -611,6 +646,8 @@ public class ProjectController {
             response.setResponseMessage("failed to assign the project to employee");
             return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
         } else {
+            calendarService.addProjectToEvent(project, userPrincipal, UserRole.EMPLOYEE);
+
             response.setResponseMessage("assigned project to employee successfully");
             return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
         }
@@ -674,7 +711,12 @@ public class ProjectController {
             projectDto.setDescription(project.getDescription());
             projectDto.setCreatedDate(project.getCreatedDate());
             projectDto.setRequirement(project.getRequirement());
+            projectDto.setStartDate(project.getStartDate());
+            projectDto.setStartTime(project.getStartTime());
             projectDto.setDeadlineDate(project.getDeadlineDate());
+            projectDto.setDeadlineTime(project.getDeadlineTime());
+            projectDto.setReminderEmail(project.getReminderEmail());
+            projectDto.setReminderPopup(project.getReminderPopup());
             projectDto.setProjectStatus(project.getStatus());
 
             if (project.getManagerId() == 0) {
@@ -754,7 +796,12 @@ public class ProjectController {
             projectDto.setDescription(project.getDescription());
             projectDto.setCreatedDate(project.getCreatedDate());
             projectDto.setRequirement(project.getRequirement());
+            projectDto.setStartDate(project.getStartDate());
+            projectDto.setStartTime(project.getStartTime());
             projectDto.setDeadlineDate(project.getDeadlineDate());
+            projectDto.setDeadlineTime(project.getDeadlineTime());
+            projectDto.setReminderEmail(project.getReminderEmail());
+            projectDto.setReminderPopup(project.getReminderPopup());
             projectDto.setProjectStatus(project.getStatus());
 
             if (project.getManagerId() == 0) {
@@ -839,7 +886,12 @@ public class ProjectController {
             projectDto.setDescription(project.getDescription());
             projectDto.setCreatedDate(project.getCreatedDate());
             projectDto.setRequirement(project.getRequirement());
+            projectDto.setStartDate(project.getStartDate());
+            projectDto.setStartTime(project.getStartTime());
             projectDto.setDeadlineDate(project.getDeadlineDate());
+            projectDto.setDeadlineTime(project.getDeadlineTime());
+            projectDto.setReminderEmail(project.getReminderEmail());
+            projectDto.setReminderPopup(project.getReminderPopup());
             projectDto.setProjectStatus(project.getStatus());
 
             if (project.getManagerId() == 0) {
@@ -925,7 +977,12 @@ public class ProjectController {
             projectDto.setDescription(project.getDescription());
             projectDto.setCreatedDate(project.getCreatedDate());
             projectDto.setRequirement(project.getRequirement());
+            projectDto.setStartDate(project.getStartDate());
+            projectDto.setStartTime(project.getStartTime());
             projectDto.setDeadlineDate(project.getDeadlineDate());
+            projectDto.setDeadlineTime(project.getDeadlineTime());
+            projectDto.setReminderEmail(project.getReminderEmail());
+            projectDto.setReminderPopup(project.getReminderPopup());
             projectDto.setProjectStatus(project.getStatus());
 
             if (project.getManagerId() == 0) {

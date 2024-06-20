@@ -1,0 +1,20 @@
+version: "3"
+services:
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    restart: unless-stopped
+    environment:
+#      - MINIO_ROOT_USER=s53kr_lm8a6r
+#      - MINIO_ROOT_PASSWORD=$$p@s5w0rD_s53K12x
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=passw0rd
+      - MINIO_SERVER_URL=http://localhost:9001
+      - MINIO_BROWSER_REDIRECT_URL=http://localhost:65120
+    ports:
+      - 65020:9001  # Conn
+      - 65120:9002  # UI
+    volumes:
+      - ./volumes/minio-etc:/data
+      - ./volumes/minio-dat:/var/lib/minio/data
+    command: server /var/lib/minio/data --address ":9001" --console-address ":9002" --json
