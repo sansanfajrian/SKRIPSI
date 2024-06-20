@@ -32,8 +32,18 @@ public class ProjectDto {
 	private String createdDate;
 	
 	private String assignedDate;
+
+	private String startDate;
+
+	private String startTime;
 	
 	private String deadlineDate;
+
+	private String deadlineTime;
+
+	private int reminderEmail;
+
+	private int reminderPopup;
 
 	private List<DocMetadataDto> documents;
 

@@ -11,7 +11,10 @@ const EditProject = () => {
     name: "",
     description: "",
     requirement: "",
+    startDate: "",
+    startTime: "08:00",
     deadlineDate: "",
+    deadlineTime: "08:00",
     documents: [],
   });
   const [documents, setDocuments] = useState([]);
@@ -21,14 +24,26 @@ const EditProject = () => {
   const location = useLocation();
 
   useEffect(() => {
-    let { id, name, description, requirement, deadlineDate, documents } =
-      location.state;
+    let {
+      id,
+      name,
+      description,
+      requirement,
+      startDate,
+      startTime,
+      deadlineDate,
+      deadlineTime,
+      documents,
+    } = location.state;
     setEditProjectRequest({
       id,
       name,
       description,
       requirement,
+      startDate,
+      startTime,
       deadlineDate,
+      deadlineTime,
       documents,
     });
   }, []);
@@ -56,7 +71,10 @@ const EditProject = () => {
     formData.append("name", editProjectRequest.name);
     formData.append("description", editProjectRequest.description);
     formData.append("requirement", editProjectRequest.requirement);
+    formData.append("startDate", editProjectRequest.startDate);
+    formData.append("startTime", editProjectRequest.startTime);
     formData.append("deadlineDate", editProjectRequest.deadlineDate);
+    formData.append("deadlineTime", editProjectRequest.deadlineTime);
     formData.append(
       "deletedDocumentIds",
       editProjectRequest.documents
@@ -183,19 +201,76 @@ const EditProject = () => {
                       />
                     </div>
 
-                    <div className="mb-3">
-                      <label htmlFor="name" className="form-label">
-                        Project Deadline
-                      </label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        id="deadlineDate"
-                        placeholder="select deadline date.."
-                        name="deadlineDate"
-                        onChange={handleUserInput}
-                        value={editProjectRequest.deadlineDate}
-                      />
+                    <hr />
+
+                    <h5 class="mt-4 mb-2">Project Timeline</h5>
+
+                    <div class="row">
+                      <div class="col-sm-6">
+                        <div className="mb-3">
+                          <label htmlFor="name" className="form-label">
+                            Start
+                          </label>
+
+                          <div className="row">
+                            <div class="col-sm-8">
+                              <input
+                                type="date"
+                                className="form-control"
+                                id="startDate"
+                                placeholder="select start date.."
+                                name="startDate"
+                                onChange={handleUserInput}
+                                value={editProjectRequest.startDate}
+                              />
+                            </div>
+                            <div class="col-sm-4">
+                              <input
+                                type="time"
+                                className="form-control"
+                                id="startTime"
+                                placeholder="select start time.."
+                                name="startTime"
+                                onChange={handleUserInput}
+                                value={editProjectRequest.startTime}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-sm-6">
+                        <div className="mb-3">
+                          <label htmlFor="name" className="form-label">
+                            Deadline
+                          </label>
+
+                          <div className="row">
+                            <div class="col-sm-8">
+                              <input
+                                type="date"
+                                className="form-control"
+                                id="deadlineDate"
+                                placeholder="select deadline date.."
+                                name="deadlineDate"
+                                onChange={handleUserInput}
+                                value={editProjectRequest.deadlineDate}
+                              />
+                            </div>
+                            <div class="col-sm-4">
+                              <input
+                                type="time"
+                                className="form-control"
+                                id="deadlineTime"
+                                placeholder="select deadline date.."
+                                name="deadlineTime"
+                                onChange={handleUserInput}
+                                value={editProjectRequest.deadlineTime}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="mb-3">

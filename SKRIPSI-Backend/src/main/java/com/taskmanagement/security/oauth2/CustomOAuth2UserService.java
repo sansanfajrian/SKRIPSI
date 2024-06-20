@@ -7,6 +7,7 @@ import com.taskmanagement.security.UserPrincipal;
 import com.taskmanagement.security.oauth2.user.OAuth2UserInfo;
 import com.taskmanagement.security.oauth2.user.OAuth2UserInfoFactory;
 import com.taskmanagement.service.UserService;
+import com.taskmanagement.utility.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -45,12 +46,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         User user = userService.getUserByEmailId(oAuth2UserInfo.getEmail());
         if (user != null) {
+            user.setProvider(AuthProvider.google);
             if (!user.getProvider().equals(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
                 throw new OAuth2AuthenticationProcessingException("Looks like you're signed up with " +
                         user.getProvider() + " account. Please use your " + user.getProvider() +
                         " account to login.");
             }
-            user = updateExistingUser(user, oAuth2UserInfo);
+            user = updateExistingUser(oAuth2UserRequest, user, oAuth2UserInfo);
         } else {
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
         }
@@ -66,10 +68,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         user.setFirstName(oAuth2UserInfo.getName());
         user.setEmailId(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
+        user.setRole(Constants.UserRole.ADMIN.value());
         return userService.registerUser(user);
     }
 
-    private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
+    private User updateExistingUser(OAuth2UserRequest oAuth2UserRequest, User existingUser, OAuth2UserInfo oAuth2UserInfo) {
         existingUser.setFirstName(oAuth2UserInfo.getName());
         existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
         return userService.registerUser(existingUser);
