@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer, toast } from "react-toastify";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
 import 'admin-lte/dist/css/adminlte.min.css';
+import 'admin-lte/dist/js/adminlte.min.js';
 import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
 import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
-import 'admin-lte/dist/js/adminlte.min.js';
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { GOOGLE_AUTH_URL } from "../constants";
 
 const UserRegister = () => {
@@ -121,7 +121,7 @@ const UserRegister = () => {
               <p className="login-box-msg">Register a new membership</p>
               <form className="row g-3" onSubmit={saveUser}>
 
-                {/* FirstName */}
+                {/* 
                 <div className="col-md-6 mb-3 text-color">
                     <input
                       type="text"
@@ -135,7 +135,7 @@ const UserRegister = () => {
                     />
                 </div>
 
-                {/* LastName */}
+                
                 <div className="col-md-6 mb-3 text-color">
                   <input
                     type="text"
@@ -149,7 +149,7 @@ const UserRegister = () => {
                   />
                 </div>
                 
-                {/* Email ID */}
+
                 <div className="input-group mb-3">
                   <input
                     type="email"
@@ -168,7 +168,7 @@ const UserRegister = () => {
                   </div>
                 </div>
 
-                {/* Password */} 
+                
                 <div className="input-group mb-3">
                   <input
                     type="password"
@@ -187,7 +187,7 @@ const UserRegister = () => {
                   </div>
                 </div>
 
-                {/* Gender */}
+                
                 <div className="input-group mb-3">
                   <select
                     onChange={handleUserInput}
@@ -208,7 +208,7 @@ const UserRegister = () => {
                   </div>
                 </div>
 
-                {/* Contact Number */}
+                
                 <div className="input-group mb-3">
                   <input
                     type="number"
@@ -227,7 +227,7 @@ const UserRegister = () => {
                   </div>
                 </div>
 
-                {/* Age */}
+                
                 <div className="input-group mb-3">
                   <input
                     type="number"
@@ -246,7 +246,7 @@ const UserRegister = () => {
                   </div>
                 </div>
 
-                {/* Street */}
+                
                 <div className="input-group mb-3">
                   <textarea
                     className="form-control"
@@ -265,7 +265,7 @@ const UserRegister = () => {
                   </div>
                 </div>
 
-                {/* City */}
+                
                 <div className="input-group mb-3">
                   <input
                     type="text"
@@ -284,7 +284,7 @@ const UserRegister = () => {
                   </div>
                 </div>
 
-                {/* Pincode */}
+                
                 <div className="input-group mb-3">
                   <input
                     type="number"
@@ -305,10 +305,10 @@ const UserRegister = () => {
 
                 <div className="d-flex aligns-items-center justify-content-center">
                     <button type="submit" className="btn btn-primary btn-block">Register</button>
-                  </div>
-              </form>
+                  </div>*/}
+                  </form> 
               <div className="social-auth-links text-center">
-                <p>- OR -</p>
+                {/* <p>- OR -</p> */}
                 <Link to={GOOGLE_AUTH_URL} className="btn btn-block btn-danger">
                   <i className="fab fa-google-plus mr-2" />
                   Sign up using Google+

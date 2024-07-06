@@ -1,26 +1,32 @@
-import React from 'react'
+import React from 'react';
 import { Route, Routes } from "react-router-dom";
 import AddProject from "./ProjectComponent/AddProject";
-import EditProject from "./ProjectComponent/EditProject";
 import AssignProjectToEmployee from "./ProjectComponent/AssignProjectToEmployee";
 import AssignProjectToManager from "./ProjectComponent/AssignProjectToManager";
+import EditProject from "./ProjectComponent/EditProject";
 import UpdateProjectStatus from "./ProjectComponent/UpdateProjectStatus";
 import ViewAllEmployeeProjects from "./ProjectComponent/ViewAllEmployeeProjects";
 import ViewAllManagerProjects from "./ProjectComponent/ViewAllManagerProjects";
 import ViewAllProjects from "./ProjectComponent/ViewAllProjects";
-import MenuChangePassword from "./UserComponent/MenuChangePassword";
+import AddSprint from './SprintComponent/AddSprint';
+import EditSprint from './SprintComponent/EditSprint';
+import ViewAllSprints from './SprintComponent/ViewAllSprints';
+import AddStory from './StoryComponent/AddStory';
+import EditStory from './StoryComponent/EditStory';
+import ViewAllStories from "./StoryComponent/ViewAllStories";
 import ChangePassword from "./UserComponent/ChangePassword";
+import EditManagerEmployee from "./UserComponent/EditManagerEmployee";
 import ForgotPassword from "./UserComponent/ForgotPassword";
+import ManagerEmployeeRegister from "./UserComponent/ManagerEmployeeRegister";
+import MenuChangePassword from "./UserComponent/MenuChangePassword";
+import OAuth2RedirectHandler from './UserComponent/OAuth2RedirectHandler';
 import UserLoginForm from "./UserComponent/UserLoginForm";
 import UserRegister from "./UserComponent/UserRegister";
-import ManagerEmployeeRegister from "./UserComponent/ManagerEmployeeRegister";
-import EditManagerEmployee from "./UserComponent/EditManagerEmployee";
 import ViewAllEmployees from "./UserComponent/ViewAllEmployees";
 import ViewAllManagers from "./UserComponent/ViewAllManagers";
 import AboutUs from "./page/AboutUs";
 import ContactUs from "./page/ContactUs";
 import HomePage from "./page/HomePage";
-import OAuth2RedirectHandler from './UserComponent/OAuth2RedirectHandler';
 
 export default function Content() {
     return (
@@ -44,6 +50,11 @@ export default function Content() {
         <Route path="/user/admin/project/add" element={<AddProject />} />
         <Route path="/user/admin/project/edit" element={<EditProject />} />
         <Route path="/user/admin/project/all" element={<ViewAllProjects />} />
+        <Route path="/user/admin/sprint/add" element={<AddSprint />} />
+        <Route path="/user/admin/sprint/edit/:id" element={<EditSprint />} />
+        <Route path="/user/admin/story/all" element={<ViewAllStories />} />
+        <Route path="/user/admin/story/add" element={<AddStory />} />
+        <Route path="/user/admin/story/edit/:id" element={<EditStory />} />
         <Route
           path="/user/manager/project/all"
           element={<ViewAllManagerProjects />}
@@ -63,6 +74,10 @@ export default function Content() {
         <Route
           path="/employee/project/status/update"
           element={<UpdateProjectStatus />}
+        />
+        <Route
+          path="/user/admin/sprint/all"
+          element={<ViewAllSprints />}
         />
         <Route path="/user/change/menu-password" element={<MenuChangePassword />} />
         <Route path="/user/change/password" element={<ChangePassword />} />

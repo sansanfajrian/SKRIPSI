@@ -31,4 +31,5 @@ public class UserLoginResponse {
 	
 	private String jwtToken;
 
+	private String imageUrl;
 }

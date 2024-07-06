@@ -1,16 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import avatar from "../images/user.png";
-
 
 const MenuAdmin = () => {
   let navigate = useNavigate();
 
   const user = JSON.parse(sessionStorage.getItem("active-admin"));
-  console.log("test" + user);
+  console.log("test " + user);
 
   const username = JSON.parse(sessionStorage.getItem("username"));
+  const image_url = user.imageUrl;
 
   const adminLogout = () => {
     toast.success("logged out!!!", {
@@ -43,7 +42,7 @@ const MenuAdmin = () => {
           {/* Sidebar user panel (optional) */}
           <div className="user-panel mt-3 pb-3 mb-3 d-flex">
             <div className="image">
-              <img src={avatar} className="img-circle elevation-2" alt="User Image" />
+              <img src={image_url} className="img-circle elevation-2" alt="User Image" />
             </div>
             <div className="info">
               <a href="#" className="d-block">{username}</a>
@@ -52,74 +51,140 @@ const MenuAdmin = () => {
           {/* Sidebar Menu */}
           <nav className="mt-2">
             <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-              
-              {/* <li className="nav-header">EXAMPLES</li> */}
-              <li className="nav-item">
-                <Link to="/user/manager/menu-register" className="nav-link">
-                  <i className="nav-icon far fa-user" />
+              {/* Project */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-project-diagram" />
                   <p>
-                    Register Manager
+                    Project
+                    <i className="right fas fa-angle-left" />
                   </p>
-                </Link>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/admin/project/add" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Project</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/admin/project/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Project</p>
+                    </Link>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/user/admin/project/add" className="nav-link">
-                  <i className="nav-icon fas fa-plus" />
+              {/* Sprint */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-running" />
                   <p>
-                    Add Project
+                    Sprint
+                    <i className="right fas fa-angle-left" />
                   </p>
-                </Link>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/admin/sprint/add" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Sprint</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/admin/sprint/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Sprint</p>
+                    </Link>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/user/admin/project/all" className="nav-link">
-                  <i className="nav-icon fas fa-folder" />
+              {/* Story */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-book" />
                   <p>
-                    All Project
-                    <span className="badge badge-info right">2</span>
+                    Story
+                    <i className="right fas fa-angle-left" />
                   </p>
-                </Link>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/admin/story/add" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Story</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/admin/story/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Stories</p>
+                    </Link>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/user/admin/manager/all" className="nav-link">
+              {/* Manager */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
                   <i className="nav-icon fas fa-user-tie" />
                   <p>
-                    View Managers
+                    Manager
+                    <i className="right fas fa-angle-left" />
                   </p>
-                </Link>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/manager/menu-register" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Manager</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/manager/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Manager</p>
+                    </Link>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/user/employee/all" className="nav-link">
+              {/* Employee */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
                   <i className="nav-icon fas fa-users" />
                   <p>
-                    View All Employee
+                    Employee
+                    <i className="right fas fa-angle-left" />
                   </p>
-                </Link>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/employee/menu-register" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Employee</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/employee/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Employee</p>
+                    </Link>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/user/change/menu-password" className="nav-link">
-                  <i className="nav-icon fas fa-key" />
-                  <p>
-                    Change Password
-                  </p>
-                </Link>
-              </li>
+              {/* Logout */}
               <li className="nav-item">
                 <Link to="" onClick={adminLogout} className="nav-link">
                   <i className="nav-icon fas fa-arrow-right" />
-                  <p>
-                    Logout
-                  </p>
+                  <p>Logout</p>
                 </Link>
                 <ToastContainer />
               </li>
-              
             </ul>
           </nav>
           {/* /.sidebar-menu */}
         </div>
         {/* /.sidebar */}
       </aside>
-
     </div>
   );
 };

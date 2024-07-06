@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "admin-lte/dist/css/adminlte.min.css";
+import "admin-lte/dist/js/adminlte.min.js";
 import "admin-lte/plugins/fontawesome-free/css/all.min.css";
 import "admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css";
-import "admin-lte/dist/js/adminlte.min.js";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { ACCESS_TOKEN, API_BASE_URL, GOOGLE_AUTH_URL } from "../constants";
 import { request } from "../util/APIUtils";
 
@@ -96,7 +96,7 @@ const UserLoginForm = () => {
           <div className="card">
             <div className="card-body login-card-body">
               <p className="login-box-msg">Login to start your session</p>
-              <form>
+              {/* <form>
                 <div className="input-group mb-3">
                   <input
                     type="email"
@@ -148,22 +148,22 @@ const UserLoginForm = () => {
                   </div>
                 </div>
                 <ToastContainer />
-              </form>
+              </form> */}
               <div className="social-auth-links text-center mb-3">
-                <p>- OR -</p>
+                {/* <p>- OR -</p> */}
                 <Link to={GOOGLE_AUTH_URL} className="btn btn-block btn-danger">
                   <i className="fab fa-google-plus mr-2" /> Sign in using
                   Google+
                 </Link>
               </div>
-              <p className="mb-1">
+              {/* <p className="mb-1">
                 <a href="/user/forgot/password">I forgot my password</a>
-              </p>
-              <p className="mb-0">
+              </p> */}
+              {/* <p className="mb-0">
                 <a href="/user/admin/register" className="text-center">
                   Register a new membership
                 </a>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
