@@ -55,4 +55,8 @@ public class UserService {
 	public Optional<User> getUserById(int userId) {
         return this.userDao.findById(userId);
     }
+
+	public boolean existsByEmail(String email) {
+        return this.userDao.existsByEmailId(email);
+    }
 }

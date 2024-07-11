@@ -2,8 +2,6 @@ package com.taskmanagement.controller;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -39,7 +37,6 @@ public class SprintController {
     }
 
     @PostMapping("add")
-    @Transactional
     ResponseEntity<SprintDTO> createSprint(@RequestBody SprintDTO sprintDTO, @CurrentUser UserPrincipal currentUser) {
         SprintDTO createdSprint = sprintService.createSprint(sprintDTO);
         return new ResponseEntity<SprintDTO>(createdSprint, HttpStatus.OK);
@@ -52,14 +49,12 @@ public class SprintController {
     }
 
     @PutMapping("edit/{id}")
-    @Transactional
     ResponseEntity<SprintDTO> editSprint(@PathVariable("id") int id, @RequestBody SprintDTO sprintDTO, @CurrentUser UserPrincipal currentUser) {
         SprintDTO editedSprint = sprintService.editSprint(id, sprintDTO);
         return new ResponseEntity<SprintDTO>(editedSprint, HttpStatus.OK);
     }
 
     @DeleteMapping("delete/{id}")
-    @Transactional
     ResponseEntity<?> deleteSprint(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
         sprintService.deleteSprint(id);
         return new ResponseEntity<>("Sprint deleted succesfuly", HttpStatus.OK);

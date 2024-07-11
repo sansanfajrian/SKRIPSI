@@ -133,57 +133,67 @@ public class UserController {
 
     }
 
-    @PostMapping("manager/register")
-    @ApiOperation(value = "Api to register Manager User")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<CommonApiResponse> mangaerRegister(@RequestBody User user) {
+    @PostMapping("/manager/register")
+    @ApiOperation(value = "API to register Manager User")
+    public ResponseEntity<CommonApiResponse> managerRegister(@RequestBody User user) {
         LOG.info("Received request for Manager register");
 
         CommonApiResponse response = new CommonApiResponse();
+
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
         user.setStatus(true);
         user.setProvider(AuthProvider.local);
+        user.setRole(UserRole.ADMIN.value());
 
-        User registerUser = userService.registerUser(user);
-
-        if (registerUser != null) {
-            response.setSuccess(true);
-            response.setResponseMessage(user.getRole() + " Registered Successfully");
-            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        try {
+            if (userService.existsByEmail(user.getEmailId())) {
+                response.setSuccess(false);
+                response.setResponseMessage("Email already registered");
+                return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+            } else {
+                User registerUser = userService.registerUser(user);
+                response.setSuccess(true);
+                response.setResponseMessage(user.getRole() + " Registered Successfully");
+                return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setResponseMessage("Error registering " + user.getRole() + " User: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        response.setSuccess(true);
-        response.setResponseMessage("Failed to Register " + user.getRole() + " User");
-        return new ResponseEntity<CommonApiResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     @PostMapping("employee/register")
     @ApiOperation(value = "Api to register Employee User")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonApiResponse> employeeRegister(@RequestBody User user) {
         LOG.info("Received request for Employee register");
 
         CommonApiResponse response = new CommonApiResponse();
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
 
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         user.setStatus(true);
         user.setProvider(AuthProvider.local);
 
-        User registerUser = userService.registerUser(user);
-
-        if (registerUser != null) {
-            response.setSuccess(true);
-            response.setResponseMessage(user.getRole() + " Registered Successfully");
-            return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+        try{
+            if (userService.existsByEmail(user.getEmailId())) {
+                response.setSuccess(false);
+                response.setResponseMessage("Email already registered");
+                return new ResponseEntity<CommonApiResponse>(response, HttpStatus.BAD_REQUEST);
+            } else {
+                User registerUser = userService.registerUser(user);
+                response.setSuccess(true);
+                response.setResponseMessage(user.getRole() + " Registered Successfully");
+                return new ResponseEntity<CommonApiResponse>(response, HttpStatus.OK);
+            }
         }
-
-        response.setSuccess(true);
-        response.setResponseMessage("Failed to Register " + user.getRole() + " User");
-        return new ResponseEntity<CommonApiResponse>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        catch (Exception e) {
+            response.setSuccess(false);
+            response.setResponseMessage("Error registering " + user.getRole() + " User: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     }
 
@@ -210,7 +220,6 @@ public class UserController {
 
     @PostMapping("changePassword")
     @ApiOperation(value = "Api to change the user password")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonApiResponse> userChangePassword(@RequestBody UserLoginRequest user) {
         LOG.info("Received request for changing the user password");
 
@@ -265,7 +274,6 @@ public class UserController {
     }
 
     @GetMapping("manager/all")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UsersResponseDto> getAllManager() {
 
         LOG.info("Received request for getting ALL Managers!!!");
@@ -281,7 +289,6 @@ public class UserController {
     }
 
     @GetMapping("employee/all")
-    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UsersResponseDto> getAllEmployee() {
         System.out.println("Received request for getting ALL Employees!!!");
 

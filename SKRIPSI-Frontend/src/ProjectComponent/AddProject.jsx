@@ -206,6 +206,7 @@ const AddProject = () => {
                         name="name"
                         onChange={handleUserInput}
                         value={addProjectRequest.name}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -220,6 +221,7 @@ const AddProject = () => {
                         placeholder="Enter project description"
                         onChange={handleUserInput}
                         value={addProjectRequest.description}
+                        required
                       />
                     </div>
 
@@ -232,6 +234,7 @@ const AddProject = () => {
                         id="managerId"
                         name="managerId"
                         onChange={handleUserInput}
+                        required
                       >
                         <option value="">-- Select Manager --</option>
                         {users.managers &&
@@ -254,6 +257,7 @@ const AddProject = () => {
                         name="startDate"
                         onChange={handleUserInput}
                         value={addProjectRequest.startDate}
+                        required
                       />
                     </div>
 
@@ -268,6 +272,7 @@ const AddProject = () => {
                         name="deadlineDate"
                         onChange={handleUserInput}
                         value={addProjectRequest.deadlineDate}
+                        required
                       />
                     </div>
 
@@ -281,6 +286,7 @@ const AddProject = () => {
                         options={memberOptions}
                         isMulti
                         onChange={handleMemberSelectChange}
+                        required
                       />
                     </div>
                   </div>

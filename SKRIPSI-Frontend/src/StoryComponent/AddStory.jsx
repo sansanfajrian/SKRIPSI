@@ -123,6 +123,7 @@ const AddStory = () => {
                         name="code"
                         onChange={handleUserInput}
                         value={addStoryRequest.code}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -137,6 +138,7 @@ const AddStory = () => {
                         name="name"
                         onChange={handleUserInput}
                         value={addStoryRequest.name}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -166,6 +168,7 @@ const AddStory = () => {
                         name="projectId"
                         onChange={handleUserInput}
                         value={addStoryRequest.projectId}
+                        required
                       >
                         <option value="">Select a project</option>
                         {projects.map((project) => (

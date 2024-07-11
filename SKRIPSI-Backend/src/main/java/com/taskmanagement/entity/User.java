@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
@@ -19,11 +18,9 @@ import javax.validation.constraints.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.taskmanagement.dto.UserLoginResponse;
-import com.taskmanagement.listener.AuditLoggingListener;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +28,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Data
 @Getter
@@ -39,7 +37,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@EntityListeners(value = { AuditingEntityListener.class, AuditLoggingListener.class })
+@ToString
 @Table(name = "user")
 public class User {
 	
@@ -84,9 +82,6 @@ public class User {
     @Column
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private Date lastModifiedTime;
-
-	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private TeamMember teamMember;
 
 	public static UserLoginResponse toUserLoginResponse(User user) {
 		UserLoginResponse userLoginResponse=new UserLoginResponse();

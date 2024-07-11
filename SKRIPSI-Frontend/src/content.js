@@ -45,7 +45,7 @@ export default function Content() {
         <Route path="user/manager/menu-register" element={<ManagerEmployeeRegister />} />
         <Route path="user/manager/edit-data" element={<EditManagerEmployee />} />
         <Route path="user/employee/edit-data" element={<EditManagerEmployee />} />
-        <Route path="user/admin/manager/all" element={<ViewAllManagers />} />
+        <Route path="user/manager/all" element={<ViewAllManagers />} />
         <Route path="user/employee/all" element={<ViewAllEmployees />} />
         <Route path="/user/login" element={<UserLoginForm />} />
         <Route path="/user/admin/project/add" element={<AddProject />} />

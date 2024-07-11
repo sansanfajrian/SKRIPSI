@@ -2,8 +2,6 @@ package com.taskmanagement.controller;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -38,7 +36,6 @@ public class StoryController {
     }
 
     @PostMapping("add")
-    @Transactional
     ResponseEntity<StoryRequestDTO> createStory(@RequestBody StoryRequestDTO storyDTO, @CurrentUser UserPrincipal currentUser) {
         StoryRequestDTO createdStory = storyService.createStory(storyDTO);
         return new ResponseEntity<StoryRequestDTO>(createdStory, HttpStatus.OK);
@@ -51,14 +48,12 @@ public class StoryController {
     }
 
     @PutMapping("edit/{id}")
-    @Transactional
     ResponseEntity<StoryRequestDTO> editStory(@PathVariable("id") int id, @RequestBody StoryRequestDTO storyDTO, @CurrentUser UserPrincipal currentUser) {
         StoryRequestDTO editedStory = storyService.editStory(id, storyDTO);
         return new ResponseEntity<StoryRequestDTO>(editedStory, HttpStatus.OK);
     }
 
     @DeleteMapping("delete/{id}")
-    @Transactional
     ResponseEntity<?> deleteStory(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
         storyService.deleteStory(id);
         return new ResponseEntity<>("Story deleted succesfuly", HttpStatus.OK);

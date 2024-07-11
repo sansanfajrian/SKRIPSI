@@ -5,8 +5,6 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,7 +180,6 @@ public class ProjectController {
 
     @PostMapping("add")
     @ApiOperation(value = "Api to add project")
-    @Transactional
     public ResponseEntity<CommonApiResponse> addProject(@RequestBody ProjectDto addProjectRequest) {
         LOG.info("Received request for adding the project" + addProjectRequest);
         try {
@@ -232,7 +229,6 @@ public class ProjectController {
 
     @PutMapping("update/{id}")
     @ApiOperation(value = "API to update project")
-    @Transactional
     public ResponseEntity<CommonApiResponse> updateProject(@PathVariable("id") int id, @RequestBody ProjectDto updateProjectRequest) {
         LOG.info("Received request for updating the project: {}", updateProjectRequest);
         CommonApiResponse response = new CommonApiResponse();
@@ -265,7 +261,6 @@ public class ProjectController {
 
     @DeleteMapping("delete/{id}")
     @ApiOperation(value = "API to delete project")
-    @Transactional
     public ResponseEntity<CommonApiResponse> deleteProject(@PathVariable("id") int id) {
         LOG.info("Received request for deleting the project with id: {}", id);
         

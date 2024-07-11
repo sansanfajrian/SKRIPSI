@@ -18,7 +18,7 @@ const ManagerEmployeeRegister = () => {
   let menuName = null;
 
   if (document.URL.indexOf("manager") != -1) {
-    user.role = "admin";
+    user.role = "manager";
     menuName = "Manager";
   } else if (document.URL.indexOf("employee") != -1) {
     user.role = "employee";
@@ -71,6 +71,12 @@ const ManagerEmployeeRegister = () => {
           window.location.reload(true);
         }, 1000); // Redirect after 3 seconds
       }
+    }).catch(error => {
+      console.error("Error:", error);
+      toast.error(""+ error.responseMessage, {
+        position: "top-center",
+        autoClose: 2000,
+      });
     });
   };
 

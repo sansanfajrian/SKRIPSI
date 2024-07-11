@@ -143,6 +143,7 @@ const EditSprint = () => {
                         name="name"
                         onChange={handleUserInput}
                         value={editSprintRequest.name}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -156,6 +157,7 @@ const EditSprint = () => {
                         name="startDate"
                         onChange={handleUserInput}
                         value={editSprintRequest.startDate}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -169,6 +171,7 @@ const EditSprint = () => {
                         name="endDate"
                         onChange={handleUserInput}
                         value={editSprintRequest.endDate}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -181,6 +184,7 @@ const EditSprint = () => {
                         name="projectId"
                         onChange={handleUserInput}
                         value={editSprintRequest.projectId}
+                        required
                       >
                         <option value="">Select a project</option>
                         {projects.map((project) => (

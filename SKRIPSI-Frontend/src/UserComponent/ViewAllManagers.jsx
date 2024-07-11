@@ -176,7 +176,7 @@ const ViewAllManagers = () => {
                           <td>
                             <b>{manager.emailId}</b>
                           </td>
-                          <td className="text-center" width="10%">
+                          <td className="text-center">
                             <button
                               onClick={() => editManager(manager)}
                               className="btn btn-sm bg-color custom-bg-text mx-1"

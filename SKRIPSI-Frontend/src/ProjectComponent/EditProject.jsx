@@ -211,6 +211,7 @@ const EditProject = () => {
                         name="name"
                         onChange={handleProjectInput}
                         value={editProjectRequest.name}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -225,6 +226,7 @@ const EditProject = () => {
                         placeholder="Enter project description"
                         onChange={handleProjectInput}
                         value={editProjectRequest.description}
+                        required
                       />
                     </div>
 
@@ -237,6 +239,7 @@ const EditProject = () => {
                           value: manager.id,
                           label: manager.name,
                         }))}
+                        required
                         className="basic-multi-select"
                         classNamePrefix="select"
                         value={{
@@ -262,6 +265,7 @@ const EditProject = () => {
                         options={statusOptions}
                         className="basic-multi-select"
                         classNamePrefix="select"
+                        required
                         value={statusOptions.find(
                           (option) => option.value === editProjectRequest.projectStatus
                         )}

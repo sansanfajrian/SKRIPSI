@@ -275,7 +275,7 @@ const ViewAllStories = () => {
                             <td className="text-center">
                               <b>{story.projectName}</b>
                             </td>
-                            <td className="text-center" width="10%">
+                            <td className="text-center">
                               <div>
                                 <button
                                   onClick={() => editStory(story.storyId)}
@@ -296,7 +296,6 @@ const ViewAllStories = () => {
                                     backgroundColor: "#df3333",
                                     color: "white",
                                     fontWeight: "bold",
-                                    width: 30,
                                   }}
                                   title="Remove Story"
                                 >

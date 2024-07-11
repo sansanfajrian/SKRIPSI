@@ -142,6 +142,7 @@ const EditStory = () => {
                         name="code"
                         onChange={handleUserInput}
                         value={editStoryRequest.code}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -156,6 +157,7 @@ const EditStory = () => {
                         name="name"
                         onChange={handleUserInput}
                         value={editStoryRequest.name}
+                        required
                       />
                     </div>
                     <div className="mb-3">
@@ -168,6 +170,7 @@ const EditStory = () => {
                         name="status"
                         onChange={handleUserInput}
                         value={editStoryRequest.status}
+                        required
                       >
                         <option value="started">Started</option>
                         <option value="in progress">In Progress</option>
@@ -184,6 +187,7 @@ const EditStory = () => {
                         name="projectId"
                         onChange={handleUserInput}
                         value={editStoryRequest.projectId}
+                        required
                       >
                         <option value="">Select a project</option>
                         {projects.map((project) => (

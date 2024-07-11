@@ -39,7 +39,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@EntityListeners(value = { AuditingEntityListener.class, AuditLoggingListener.class })
 @Table(name = "sprint")
 public class Sprint {
     @Id
