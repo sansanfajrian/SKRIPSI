@@ -11,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -61,14 +60,11 @@ public class Retrospective {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private Date lastModifiedTime;
 
+    @Column
+    private int fromId;
 
-    @OneToOne
-    @JoinColumn(name = "from_id", referencedColumnName = "team_member_id")
-    private TeamMember fromId;
-
-    @OneToOne
-    @JoinColumn(name = "to_id", referencedColumnName = "team_member_id")
-    private TeamMember toId;
+    @Column
+    private int toId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sprint_id")
