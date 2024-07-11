@@ -94,5 +94,5 @@ public class Project {
     private List<Story> story;
 
 	@OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Retrospective> Retrospective;
+    private List<Retrospective> retrospective;
 }

@@ -71,5 +71,5 @@ public class Sprint {
     private Project project;
 
     @OneToMany(mappedBy = "sprint", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Retrospective> Retrospective;
+    private List<Retrospective> retrospective;
 }
