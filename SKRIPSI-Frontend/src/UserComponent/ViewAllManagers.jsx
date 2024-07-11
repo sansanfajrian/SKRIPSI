@@ -1,12 +1,10 @@
-import { useState, useRef, useEffect } from "react";
-import axios from "axios";
-import React from "react";
-import { ToastContainer, toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import "datatables.net-bs4";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import ConfirmDialog from "../ConfirmDialog";
-import { request } from "../util/APIUtils";
 import { API_BASE_URL } from "../constants";
+import { request } from "../util/APIUtils";
 
 const ViewAllManagers = () => {
   const [allManagers, setAllManagers] = useState([]);
@@ -163,11 +161,8 @@ const ViewAllManagers = () => {
                 >
                   <thead className="table-bordered border-color bg-color custom-bg-text">
                     <tr className="text-center">
-                      <th scope="col">First Name</th>
-                      <th scope="col">Last Name</th>
+                      <th scope="col">Name</th>
                       <th scope="col">Email Id</th>
-                      <th scope="col">Phone No</th>
-                      <th scope="col">Address</th>
                       <th scope="col">Action</th>
                     </tr>
                   </thead>
@@ -176,27 +171,10 @@ const ViewAllManagers = () => {
                       return (
                         <tr key={i}>
                           <td>
-                            <b>{manager.firstName}</b>
-                          </td>
-
-                          <td>
-                            <b>{manager.lastName}</b>
+                            <b>{manager.name}</b>
                           </td>
                           <td>
                             <b>{manager.emailId}</b>
-                          </td>
-                          <td className="text-center">
-                            <b>{manager.contact}</b>
-                          </td>
-
-                          <td>
-                            <b>
-                              {manager.street +
-                                " " +
-                                manager.city +
-                                " " +
-                                manager.pincode}
-                            </b>
                           </td>
                           <td className="text-center" width="10%">
                             <button

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class SprintService {
         return sprintDTOList;
     }
 
+    @Transactional
     public SprintDTO createSprint(SprintDTO sprintDTO) {
         Sprint newSprint = modelMapper.map(sprintDTO, Sprint.class);
         newSprint.setProject(findProjectById(sprintDTO.getProjectId()));
@@ -50,6 +52,7 @@ public class SprintService {
         return modelMapper.map(sprint, SprintDTO.class);
     }
 
+    @Transactional
     public SprintDTO editSprint(int sprintId, SprintDTO sprintDTO){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Sprint sprint = sprintRepository.findById(sprintId).get();

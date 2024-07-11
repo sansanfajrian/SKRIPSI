@@ -262,7 +262,7 @@ const ViewAllSprints = () => {
                             <td className="text-center">
                               <b>{sprint.projectName}</b>
                             </td>
-                            <td className="text-center" width="10%">
+                            <td className="text-center">
                               <div>
                                 <button
                                   onClick={() => editSprint(sprint.sprintId)}
@@ -283,7 +283,6 @@ const ViewAllSprints = () => {
                                     backgroundColor: "#df3333",
                                     color: "white",
                                     fontWeight: "bold",
-                                    width: 30,
                                   }}
                                   title="Remove Sprint"
                                 >

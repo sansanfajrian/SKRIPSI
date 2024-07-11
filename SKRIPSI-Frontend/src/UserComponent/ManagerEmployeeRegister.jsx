@@ -1,36 +1,24 @@
-import { useState, useEffect } from "react";
-import "react-toastify/dist/ReactToastify.css";
-import { toast } from "react-toastify";
-import axios from "axios";
 import "admin-lte/dist/css/adminlte.min.css";
+import "admin-lte/dist/js/adminlte.min.js";
 import "admin-lte/plugins/fontawesome-free/css/all.min.css";
 import "admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css";
-import "admin-lte/dist/js/adminlte.min.js";
-import { request } from "../util/APIUtils";
+import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { API_BASE_URL } from "../constants";
+import { request } from "../util/APIUtils";
 
 const ManagerEmployeeRegister = () => {
   const [user, setUser] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     emailId: "",
     password: "",
-    contact: "",
-    street: "",
-    city: "",
-    pincode: "",
-    role: "",
-    age: "",
-    sex: "",
   });
 
   let menuName = null;
 
-  if (document.URL.indexOf("admin") != -1) {
+  if (document.URL.indexOf("manager") != -1) {
     user.role = "admin";
-    menuName = "Admin";
-  } else if (document.URL.indexOf("manager") != -1) {
-    user.role = "manager";
     menuName = "Manager";
   } else if (document.URL.indexOf("employee") != -1) {
     user.role = "employee";
@@ -41,23 +29,6 @@ const ManagerEmployeeRegister = () => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const [genders, setGenders] = useState([]);
-
-  const retrieveAllGenders = async () => {
-    const response = await axios.get("http://localhost:8080/api/user/gender");
-    return response.data;
-  };
-
-  useEffect(() => {
-    const getAllGenders = async () => {
-      const allGenders = await retrieveAllGenders();
-      if (allGenders) {
-        setGenders(allGenders.genders);
-      }
-    };
-
-    getAllGenders();
-  }, []);
 
   const saveUser = (e) => {
     e.preventDefault();
@@ -143,25 +114,11 @@ const ManagerEmployeeRegister = () => {
                       <input
                         type="text"
                         className="form-control"
-                        placeholder="First Name"
-                        id="firstName"
-                        name="firstName"
+                        placeholder="Name"
+                        id="name"
+                        name="name"
                         onChange={handleUserInput}
-                        value={user.firstName}
-                        required
-                      />
-                    </div>
-
-                    {/* LastName */}
-                    <div className="col-md-6 mb-3 text-color">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Last Name"
-                        id="lastName"
-                        name="lastName"
-                        onChange={handleUserInput}
-                        value={user.lastName}
+                        value={user.name}
                         required
                       />
                     </div>
@@ -173,7 +130,7 @@ const ManagerEmployeeRegister = () => {
                         className="form-control"
                         id="emailId"
                         name="emailId"
-                        placeholder="Email ID"
+                        placeholder="Email"
                         onChange={handleUserInput}
                         value={user.emailId}
                         required
@@ -200,125 +157,6 @@ const ManagerEmployeeRegister = () => {
                       <div className="input-group-append">
                         <div className="input-group-text">
                           <span className="fas fa-lock" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Gender */}
-                    <div className="col-md-6 input-group mb-3">
-                      <select
-                        onChange={handleUserInput}
-                        className="form-control"
-                        name="sex"
-                        required
-                      >
-                        <option value="0">Select Sex</option>
-
-                        {genders.map((gender) => {
-                          return <option value={gender}> {gender} </option>;
-                        })}
-                      </select>
-                      <div className="input-group-append">
-                        <div className="input-group-text">
-                          <span className="fas fa-caret-down" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Contact Number */}
-                    <div className="col-md-6 input-group mb-3">
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="Contact Number"
-                        id="contact"
-                        name="contact"
-                        onChange={handleUserInput}
-                        value={user.contact}
-                        required
-                      />
-                      <div className="input-group-append">
-                        <div className="input-group-text">
-                          <span className="fas fa-phone" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Age */}
-                    <div className="col-md-6 input-group mb-3">
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="Age"
-                        id="age"
-                        name="age"
-                        onChange={handleUserInput}
-                        value={user.age}
-                        required
-                      />
-                      <div className="input-group-append">
-                        <div className="input-group-text">
-                          <span className="fas fa-user" />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="col-md-12">
-                      <h6 style={{ color: "#bcbcbc" }}>Alamat</h6>
-                    </div>
-                    {/* Street */}
-                    <div className="col-md-12 input-group mb-3">
-                      <textarea
-                        className="form-control"
-                        id="street"
-                        placeholder="Street"
-                        name="street"
-                        rows="3"
-                        onChange={handleUserInput}
-                        value={user.street}
-                        required
-                      />
-                      <div className="input-group-append">
-                        <div className="input-group-text">
-                          <span className="fas fa-map" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* City */}
-                    <div className="col-md-6 input-group mb-3">
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="City"
-                        id="city"
-                        name="city"
-                        onChange={handleUserInput}
-                        value={user.city}
-                        required
-                      />
-                      <div className="input-group-append">
-                        <div className="input-group-text">
-                          <span className="fas fa-building" />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Pincode */}
-                    <div className="col-md-6 input-group mb-3">
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="pincode"
-                        placeholder="Pincode"
-                        name="pincode"
-                        onChange={handleUserInput}
-                        value={user.pincode}
-                        required
-                      />
-                      <div className="input-group-append">
-                        <div className="input-group-text">
-                          <span className="fas fa-inbox" />
                         </div>
                       </div>
                     </div>

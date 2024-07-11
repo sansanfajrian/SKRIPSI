@@ -1,13 +1,5 @@
 package com.taskmanagement.security.oauth2;
 
-import com.taskmanagement.entity.AuthProvider;
-import com.taskmanagement.entity.User;
-import com.taskmanagement.exception.OAuth2AuthenticationProcessingException;
-import com.taskmanagement.security.UserPrincipal;
-import com.taskmanagement.security.oauth2.user.OAuth2UserInfo;
-import com.taskmanagement.security.oauth2.user.OAuth2UserInfoFactory;
-import com.taskmanagement.service.UserService;
-import com.taskmanagement.utility.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -17,6 +9,15 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import com.taskmanagement.entity.AuthProvider;
+import com.taskmanagement.entity.User;
+import com.taskmanagement.exception.OAuth2AuthenticationProcessingException;
+import com.taskmanagement.security.UserPrincipal;
+import com.taskmanagement.security.oauth2.user.OAuth2UserInfo;
+import com.taskmanagement.security.oauth2.user.OAuth2UserInfoFactory;
+import com.taskmanagement.service.UserService;
+import com.taskmanagement.utility.Constants;
 
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -53,9 +54,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         " account to login.");
             }
             user = updateExistingUser(oAuth2UserRequest, user, oAuth2UserInfo);
-        } else {
-            user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
-        }
+        } 
 
         return UserPrincipal.create(user, oAuth2User.getAttributes());
     }
@@ -65,15 +64,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         user.setProvider(AuthProvider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
         user.setProviderId(oAuth2UserInfo.getId());
-        user.setFirstName(oAuth2UserInfo.getName());
+        user.setName(oAuth2UserInfo.getName());
         user.setEmailId(oAuth2UserInfo.getEmail());
         user.setImageUrl(oAuth2UserInfo.getImageUrl());
         user.setRole(Constants.UserRole.ADMIN.value());
+        user.setStatus(true);
         return userService.registerUser(user);
     }
 
     private User updateExistingUser(OAuth2UserRequest oAuth2UserRequest, User existingUser, OAuth2UserInfo oAuth2UserInfo) {
-        existingUser.setFirstName(oAuth2UserInfo.getName());
+        existingUser.setName(oAuth2UserInfo.getName());
         existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
         return userService.registerUser(existingUser);
     }

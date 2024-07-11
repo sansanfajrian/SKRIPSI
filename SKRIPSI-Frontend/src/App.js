@@ -1,14 +1,13 @@
-import { Route, Routes } from "react-router-dom";
-import "./App.css";
-import logo from "./images/task_logo.png";
-import Header from "./NavbarComponent/Header";
-import RoleNav from "./NavbarComponent/RoleNav";
-import Content from "./content";
-import CheckFooter from "./CheckFooter";
 import 'admin-lte/dist/css/adminlte.min.css';
+import 'admin-lte/dist/js/adminlte.min.js';
 import 'admin-lte/plugins/fontawesome-free/css/all.min.css';
 import 'admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css';
-import 'admin-lte/dist/js/adminlte.min.js';
+import "react-toastify/dist/ReactToastify.css";
+import "./App.css";
+import CheckFooter from "./CheckFooter";
+import RoleNav from "./NavbarComponent/RoleNav";
+import Content from "./content";
+import logo from "./images/task_logo.png";
 
 function App() {
   return (

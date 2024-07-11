@@ -1,34 +1,18 @@
-import { useState, useRef, useEffect } from "react";
-import axios from "axios";
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import $ from "jquery";
-import "datatables.net-bs4";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import ConfirmDialog from "../ConfirmDialog";
-import { request } from "../util/APIUtils";
 import { API_BASE_URL } from "../constants";
+import { request } from "../util/APIUtils";
 
 const ViewAllProjects = () => {
   const [allProjects, setAllProjects] = useState([]);
-
   const [projectName, setProjectName] = useState("");
   const [projectId, setProjectId] = useState("");
-
   const tableRef = useRef(null);
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const getAllProject = async () => {
-      const allProject = await retrieveAllProject();
-      if (allProject) {
-        setAllProjects(allProject.projects);
-      }
-    };
-
-    getAllProject();
-  }, []);
-
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const [deleteProjectId, setDeleteProjectId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 5;
   const lastIndex = currentPage * recordsPerPage;
@@ -37,13 +21,23 @@ const ViewAllProjects = () => {
   const npage = Math.ceil(allProjects.length / recordsPerPage);
   const numbers = [...Array(npage + 1).keys()].slice(1);
 
-  const retrieveAllProject = () => {
-    request({
+  useEffect(() => {
+    const getAllProjects = async () => {
+      const allProjects = await retrieveAllProjects();
+      if (allProjects) {
+        setAllProjects(allProjects.projects);
+      }
+    };
+    getAllProjects();
+  }, []);
+
+  const retrieveAllProjects = () => {
+    return request({
       url: API_BASE_URL + "/api/project/fetch",
       method: "GET",
     })
       .then((response) => {
-        setAllProjects(response.projects);
+        return response;
       })
       .catch((error) => {
         console.log(error);
@@ -51,13 +45,13 @@ const ViewAllProjects = () => {
   };
 
   const getProjectsByName = async () => {
-    const allProject = await retrieveProjectByName();
-    if (allProject) {
-      setAllProjects(allProject);
+    const allProjects = await retrieveProjectsByName();
+    if (allProjects) {
+      setAllProjects(allProjects);
     }
   };
 
-  const retrieveProjectByName = async () => {
+  const retrieveProjectsByName = async () => {
     const projects = await request({
       url: API_BASE_URL + "/api/project/search?projectName=" + projectName,
       method: "GET",
@@ -72,20 +66,20 @@ const ViewAllProjects = () => {
     return projects;
   };
 
-  const searchProjectbyName = (e) => {
+  const searchProjectByName = (e) => {
     getProjectsByName();
     setProjectName("");
     e.preventDefault();
   };
 
   const getProjectsById = async () => {
-    const allProject = await retrieveProjectById();
-    if (allProject) {
-      setAllProjects(allProject);
+    const allProjects = await retrieveProjectsById();
+    if (allProjects) {
+      setAllProjects(allProjects);
     }
   };
 
-  const retrieveProjectById = async () => {
+  const retrieveProjectsById = async () => {
     const projects = await request({
       url:
         API_BASE_URL +
@@ -103,7 +97,7 @@ const ViewAllProjects = () => {
     return projects;
   };
 
-  const searchProjectbyId = (e) => {
+  const searchProjectById = (e) => {
     getProjectsById();
     setProjectId("");
     e.preventDefault();
@@ -113,26 +107,71 @@ const ViewAllProjects = () => {
     navigate("/project/assign/manager", { state: project });
   };
 
-  const editProject = (project) => {
-    navigate("/user/admin/project/edit", { state: project });
+  const editProject = (projectId) => {
+    navigate(`/user/admin/project/edit/${projectId}`);
   };
 
-  const [isDialogOpen, setDialogOpen] = useState(false);
-
-  const handleDelete = (projekId) => {
+  const handleDelete = (projectId) => {
     setDialogOpen(true);
-    setProjectId(projekId);
+    setDeleteProjectId(projectId);
   };
 
   const handleConfirm = () => {
     setDialogOpen(false);
-    // Perform delete action
-    console.log(projectId, "was deleted");
+    deleteProject(deleteProjectId)
   };
 
   const handleCancel = () => {
     setDialogOpen(false);
     console.log("Delete action canceled");
+  };
+
+  const deleteProject = (projectId) => {
+    return request({
+      url: API_BASE_URL + "/api/project/delete/" + projectId,
+      method: "DELETE",
+    })
+      .then((result) => {
+        console.log(result);
+        if (result.success) {
+          setAllProjects(allProjects.filter((project) => project.id !== projectId));
+          toast.success(result.responseMessage, {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          toast.error("Failed to delete project. Please try again.", {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting project:", error);
+        toast.error("Failed to delete project", {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
   };
 
   return (
@@ -163,9 +202,7 @@ const ViewAllProjects = () => {
                           <li className="breadcrumb-item">
                             <a href="#">Home</a>
                           </li>
-                          <li className="breadcrumb-item active">
-                            All Project
-                          </li>
+                          <li className="breadcrumb-item active">All Project</li>
                         </ol>
                       </div>
                     </div>
@@ -194,7 +231,7 @@ const ViewAllProjects = () => {
                           <button
                             type="submit"
                             className="btn mb-3"
-                            onClick={searchProjectbyName}
+                            onClick={searchProjectByName}
                             style={{
                               backgroundColor: "#3393df",
                               color: "white",
@@ -223,7 +260,7 @@ const ViewAllProjects = () => {
                           <button
                             type="submit"
                             className="btn bg-color mb-3"
-                            onClick={searchProjectbyId}
+                            onClick={searchProjectById}
                             style={{
                               backgroundColor: "#3393df",
                               color: "white",
@@ -241,14 +278,8 @@ const ViewAllProjects = () => {
                       <thead className="table-bordered bg-color custom-bg-text border-color">
                         <tr className="text-center">
                           <th scope="col">Project Name</th>
-                          <th scope="col">Project Description</th>
-                          <th scope="col">Project Requirement</th>
-                          <th scope="col">Manager Assign Status</th>
                           <th scope="col">Manager Name</th>
-                          <th scope="col">Employee Assign Status</th>
-                          <th scope="col">Employee Name</th>
-                          <th scope="col">Project Created Date</th>
-                          <th scope="col">Project Assign Date</th>
+                          <th scope="col">Members</th>
                           <th scope="col">Project Start</th>
                           <th scope="col">Project Deadline</th>
                           <th scope="col">Project Status</th>
@@ -256,155 +287,64 @@ const ViewAllProjects = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {records.map((project, i) => {
-                          return (
-                            <tr key={i}>
-                              <td>
-                                <b>{project.name}</b>
-                              </td>
-
-                              <td>
-                                <b>{project.description}</b>
-                              </td>
-                              <td>
-                                <b>{project.requirement}</b>
-                              </td>
-                              <td className="text-center">
-                                <b>{project.assignedToManager}</b>
-                              </td>
-                              <td>
-                                <b>{project.managerName}</b>
-                              </td>
-                              <td className="text-center">
-                                <b>{project.assignedToEmployee}</b>
-                              </td>
-                              <td>
-                                <b>{project.employeeName}</b>
-                              </td>
-                              <td className="text-center">
-                                <b>{project.createdDate}</b>
-                              </td>
-                              <td className="text-center">
-                                <b>{project.assignedDate}</b>
-                              </td>
-                              <td className="text-center">
-                                <b>
-                                  {project.startDate + " " + project.startTime}
-                                </b>
-                              </td>
-                              <td className="text-center">
-                                <b>
-                                  {project.deadlineDate +
-                                    " " +
-                                    project.deadlineTime}
-                                </b>
-                              </td>
-                              <td className="text-center">
-                                <b>{project.projectStatus}</b>
-                              </td>
-                              <td className="text-center" width="10%">
-                                {(() => {
-                                  if (
-                                    project.assignedToManager === "Not Assigned"
-                                  ) {
-                                    return (
-                                      <div>
-                                        <button
-                                          onClick={() =>
-                                            assignToManager(project)
-                                          }
-                                          className="btn btn-sm"
-                                          style={{
-                                            backgroundColor: "#3393df",
-                                            color: "white",
-                                            fontWeight: "bold",
-                                          }}
-                                          title="Assign to Manager"
-                                        >
-                                          <i className="flex nav-icon fas fa-people-arrows" />
-                                        </button>
-                                        <button
-                                          onClick={() => editProject(project)}
-                                          className="btn btn-sm bg-color custom-bg-text mx-1"
-                                          style={{
-                                            backgroundColor: "#f4a62a",
-                                            color: "white",
-                                            fontWeight: "bold",
-                                          }}
-                                          title="Edit Project"
-                                        >
-                                          <i className="nav-icon fas fa-edit" />
-                                        </button>
-                                        <button
-                                          onClick={() =>
-                                            handleDelete(project.id)
-                                          }
-                                          className="btn btn-sm bg-color custom-bg-text"
-                                          style={{
-                                            backgroundColor: "#df3333",
-                                            color: "white",
-                                            fontWeight: "bold",
-                                            width: 30,
-                                          }}
-                                          title="Remove Project"
-                                        >
-                                          <i className="nav-icon fas fa-trash" />
-                                        </button>
-                                      </div>
-                                    );
-                                  } else {
-                                    return (
-                                      <div>
-                                        <button
-                                          onClick={() =>
-                                            console.log("Event is undefined")
-                                          }
-                                          className="btn btn-sm"
-                                          style={{
-                                            backgroundColor: "#3393df",
-                                            color: "white",
-                                            fontWeight: "bold",
-                                          }}
-                                          title="Assign to Manager"
-                                          disabled
-                                        >
-                                          <i className="flex nav-icon fas fa-people-arrows" />
-                                        </button>
-                                        <button
-                                          onClick={() => editProject(project)}
-                                          className="btn btn-sm bg-color custom-bg-text mx-1"
-                                          style={{
-                                            backgroundColor: "#f4a62a",
-                                            color: "white",
-                                            fontWeight: "bold",
-                                          }}
-                                          title="Edit Project"
-                                        >
-                                          <i className="nav-icon fas fa-edit" />
-                                        </button>
-                                        <button
-                                          onClick={() =>
-                                            handleDelete(project.id)
-                                          }
-                                          className="btn btn-sm bg-color custom-bg-text"
-                                          style={{
-                                            backgroundColor: "#df3333",
-                                            color: "white",
-                                            fontWeight: "bold",
-                                            width: 30,
-                                          }}
-                                          title="Remove Project"
-                                        >
-                                          <i className="nav-icon fas fa-trash" />
-                                        </button>
-                                      </div>
-                                    );
-                                  }
-                                })()}
-                              </td>
-                            </tr>
-                          );
-                        })}
+                        {records.map((project, i) => (
+                          <tr key={i}>
+                            <td>
+                              <b>{project.name}</b>
+                            </td>
+                            <td>
+                              <b>{project.managerName}</b>
+                            </td>
+                            <td>
+                              {project.teamMembers.map((member, index) => (
+                                <div key={index} className="d-flex align-items-center mb-1">
+                                  <b><b>-</b> {member.name}</b>
+                                </div>
+                              ))}
+                            </td>
+                            <td className="text-center">
+                              <b>{project.startDate}</b>
+                            </td>
+                            <td className="text-center">
+                              <b>{project.deadlineDate}</b>
+                            </td>
+                            <td className="text-center">
+                              <b>
+                                <span className={`badge ${project.projectStatus === 'Started' ? 'badge-primary' : project.projectStatus === 'In Progress' ? 'badge-warning' : 'badge-success'}`}>
+                                  {project.projectStatus}
+                                </span>
+                              </b>
+                            </td>
+                            <td className="text-center" width="20%">
+                              <div>
+                                <button
+                                  onClick={() => editProject(project.id)}
+                                  className="btn btn-sm bg-color custom-bg-text mx-1"
+                                  style={{
+                                    backgroundColor: "#f4a62a",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                  }}
+                                  title="Edit Project"
+                                >
+                                  <i className="nav-icon fas fa-edit" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(project.id)}
+                                  className="btn btn-sm bg-color custom-bg-text"
+                                  style={{
+                                    backgroundColor: "#df3333",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                  }}
+                                  title="Remove Project"
+                                >
+                                  <i className="nav-icon fas fa-trash" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -413,30 +353,36 @@ const ViewAllProjects = () => {
                   <nav className="float-right">
                     <ul className="pagination">
                       <li className="page-item">
-                        <Link to="#" className="page-link" onClick={prePage}>
+                        <a
+                          href="#"
+                          className="page-link"
+                          onClick={() => changePage(currentPage - 1)}
+                        >
                           Prev
-                        </Link>
+                        </a>
                       </li>
                       {numbers.map((n, i) => (
                         <li
-                          className={`page-item ${
-                            currentPage === n ? "active" : ""
-                          }`}
+                          className={`page-item ${currentPage === n ? "active" : ""}`}
                           key={i}
                         >
-                          <Link
-                            to="#"
+                          <a
+                            href="#"
                             className="page-link"
-                            onClick={() => changeCPage(n)}
+                            onClick={() => changePage(n)}
                           >
                             {n}
-                          </Link>
+                          </a>
                         </li>
                       ))}
                       <li className="page-item">
-                        <Link to="#" className="page-link" onClick={nextPage}>
+                        <a
+                          href="#"
+                          className="page-link"
+                          onClick={() => changePage(currentPage + 1)}
+                        >
                           Next
-                        </Link>
+                        </a>
                       </li>
                     </ul>
                   </nav>
@@ -446,30 +392,16 @@ const ViewAllProjects = () => {
           </div>
         </div>
       </section>
-
       <ConfirmDialog
         isOpen={isDialogOpen}
-        message="Are you sure you want to delete this project ?"
         onConfirm={handleConfirm}
         onCancel={handleCancel}
       />
     </div>
   );
 
-  function prePage() {
-    if (currentPage !== 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  }
-
-  function changeCPage(id) {
+  function changePage(id) {
     setCurrentPage(id);
-  }
-
-  function nextPage() {
-    if (currentPage !== npage) {
-      setCurrentPage(currentPage + 1);
-    }
   }
 };
 

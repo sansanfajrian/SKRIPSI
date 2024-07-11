@@ -6,7 +6,7 @@ const MenuAdmin = () => {
   let navigate = useNavigate();
 
   const user = JSON.parse(sessionStorage.getItem("active-admin"));
-  console.log("test " + user);
+  console.log(localStorage.getItem("accessToken"));
 
   const username = JSON.parse(sessionStorage.getItem("username"));
   const image_url = user.imageUrl;

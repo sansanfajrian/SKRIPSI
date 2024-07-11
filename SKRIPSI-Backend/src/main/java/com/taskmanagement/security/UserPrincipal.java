@@ -1,18 +1,19 @@
 package com.taskmanagement.security;
 
-import com.taskmanagement.entity.User;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import com.taskmanagement.entity.User;
+
 public class UserPrincipal implements OAuth2User, UserDetails {
-    private int id;
+    private Integer id;
     private String email;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;

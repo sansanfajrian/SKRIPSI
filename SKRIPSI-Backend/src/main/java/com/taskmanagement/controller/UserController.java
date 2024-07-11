@@ -3,13 +3,8 @@ package com.taskmanagement.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.taskmanagement.entity.AuthProvider;
-import com.taskmanagement.exception.ResourceNotFoundException;
-import com.taskmanagement.payload.AuthResponse;
-import com.taskmanagement.payload.LoginRequest;
-import com.taskmanagement.security.CurrentUser;
-import com.taskmanagement.security.TokenProvider;
-import com.taskmanagement.security.UserPrincipal;
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,20 +28,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.taskmanagement.dto.CommonApiResponse;
 import com.taskmanagement.dto.UserLoginRequest;
 import com.taskmanagement.dto.UserLoginResponse;
-import com.taskmanagement.dto.UserLoginResponseDto;
 import com.taskmanagement.dto.UserRoleResponse;
 import com.taskmanagement.dto.UsersResponseDto;
+import com.taskmanagement.entity.AuthProvider;
 import com.taskmanagement.entity.User;
+import com.taskmanagement.exception.ResourceNotFoundException;
+import com.taskmanagement.payload.AuthResponse;
+import com.taskmanagement.payload.LoginRequest;
+import com.taskmanagement.security.CurrentUser;
 import com.taskmanagement.security.CustomUserDetailsService;
+import com.taskmanagement.security.TokenProvider;
+import com.taskmanagement.security.UserPrincipal;
 import com.taskmanagement.service.UserService;
 import com.taskmanagement.utility.Constants.Sex;
 import com.taskmanagement.utility.Constants.UserRole;
-import com.taskmanagement.utility.Constants.UserStatus;
 import com.taskmanagement.utility.JwtUtil;
 
 import io.swagger.annotations.ApiOperation;
-
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/user/")
@@ -78,7 +74,7 @@ public class UserController {
     @GetMapping("me")
     @PreAuthorize("hasRole('USER')")
     public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        User user = userService.getUserById(userPrincipal.getId());
+        User user = userService.getUserId(userPrincipal.getId());
 
         if (user == null) {
             throw new ResourceNotFoundException("User", "id", userPrincipal.getId());
@@ -120,7 +116,7 @@ public class UserController {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
-        user.setStatus(UserStatus.ACTIVE.value());
+        user.setStatus(true);
         user.setProvider(AuthProvider.local);
 
         User registerUser = userService.registerUser(user);
@@ -147,7 +143,7 @@ public class UserController {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
-        user.setStatus(UserStatus.ACTIVE.value());
+        user.setStatus(true);
         user.setProvider(AuthProvider.local);
 
         User registerUser = userService.registerUser(user);
@@ -174,7 +170,7 @@ public class UserController {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
         user.setPassword(encodedPassword);
-        user.setStatus(UserStatus.ACTIVE.value());
+        user.setStatus(true);
         user.setProvider(AuthProvider.local);
 
         User registerUser = userService.registerUser(user);
@@ -228,7 +224,7 @@ public class UserController {
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
 
-        User existingUser = this.userService.getUserById(user.getUserId());
+        User existingUser = this.userService.getUserId(user.getUserId());
         existingUser.setPassword(encodedPassword);
 
         User updatedUser = userService.registerUser(existingUser);
@@ -252,8 +248,8 @@ public class UserController {
 
         CommonApiResponse response = new CommonApiResponse();
 
-        User user = this.userService.getUserById(userId);
-        user.setStatus(UserStatus.DELETED.value());
+        User user = this.userService.getUserId(userId);
+        user.setStatus(false);
 
         User updatedUser = userService.registerUser(user);  // this will update the entry
 
@@ -276,7 +272,7 @@ public class UserController {
 
         UsersResponseDto response = new UsersResponseDto();
 
-        List<User> managers = this.userService.getUsersByRoleAndStatus(UserRole.MANAGER.value(), UserStatus.ACTIVE.value());
+        List<User> managers = this.userService.getUsersByRoleAndStatus(UserRole.ADMIN.value(), true);
 
         response.setUsers(managers);
         response.setSuccess(true);
@@ -290,7 +286,7 @@ public class UserController {
         System.out.println("Received request for getting ALL Employees!!!");
 
         UsersResponseDto response = new UsersResponseDto();
-        List<User> employees = this.userService.getUsersByRoleAndStatus(UserRole.EMPLOYEE.value(), UserStatus.ACTIVE.value());
+        List<User> employees = this.userService.getUsersByRoleAndStatus(UserRole.EMPLOYEE.value(), true);
 
         response.setUsers(employees);
         response.setSuccess(true);

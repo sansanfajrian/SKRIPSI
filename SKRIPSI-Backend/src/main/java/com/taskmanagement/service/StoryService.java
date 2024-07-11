@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,7 @@ public class StoryService {
         return storyDTOList;
     }
 
+    @Transactional
     public StoryRequestDTO createStory(StoryRequestDTO storyDTO) {
         Story newStory = modelMapper.map(storyDTO, Story.class);
         newStory.setProject(findProjectById(storyDTO.getProjectId()));
@@ -50,6 +52,7 @@ public class StoryService {
         return modelMapper.map(story, StoryRequestDTO.class);
     }
 
+    @Transactional
     public StoryRequestDTO editStory(int storyId, StoryRequestDTO storyDTO){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         Story story = storyRepository.findById(storyId).get();
@@ -61,6 +64,7 @@ public class StoryService {
         return modelMapper.map(story, StoryRequestDTO.class);
     }
 
+    @Transactional
     public void deleteStory(int storyId){
         storyRepository.deleteById(storyId);
     }

@@ -3,6 +3,8 @@ package com.taskmanagement.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,7 @@ public class UserService {
 	@Autowired
 	private UserDao userDao;
 	
+	@Transactional
 	public User registerUser(User user) {
 		User registeredUser = null;
 		if(user != null) {
@@ -41,12 +44,15 @@ public class UserService {
 		return this.userDao.findByEmailId(emailId);
 	}
 	
-	public List<User> getUsersByRoleAndStatus(String role, int status) {
+	public List<User> getUsersByRoleAndStatus(String role, boolean status) {
 		return this.userDao.findByRoleAndStatus(role, status);
 	}
 	
-	public User getUserById(int userId) {
+	public User getUserId(int userId) {
 		return this.userDao.findById(userId).get();
 	}
 	
+	public Optional<User> getUserById(int userId) {
+        return this.userDao.findById(userId);
+    }
 }

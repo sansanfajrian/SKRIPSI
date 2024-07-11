@@ -2,11 +2,12 @@ package com.taskmanagement.controller;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,35 +32,33 @@ public class StoryController {
     private StoryService storyService;
 
     @GetMapping("fetch")
-    @PreAuthorize("hasRole('USER')")
     ResponseEntity<List<StoryResponseDTO>> getAllStories(Pageable page, @CurrentUser UserPrincipal currentUser) {
         List<StoryResponseDTO> getAllStories = storyService.getAllStory(page);
         return ResponseEntity.ok(getAllStories);
     }
 
     @PostMapping("add")
-    @PreAuthorize("hasRole('USER')")
+    @Transactional
     ResponseEntity<StoryRequestDTO> createStory(@RequestBody StoryRequestDTO storyDTO, @CurrentUser UserPrincipal currentUser) {
         StoryRequestDTO createdStory = storyService.createStory(storyDTO);
         return new ResponseEntity<StoryRequestDTO>(createdStory, HttpStatus.OK);
     }
 
     @GetMapping("get/{id}")
-    @PreAuthorize("hasRole('USER')")
     ResponseEntity<StoryRequestDTO> getStory(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
         StoryRequestDTO getStory = storyService.getStory(id);
         return ResponseEntity.ok(getStory);
     }
 
     @PutMapping("edit/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @Transactional
     ResponseEntity<StoryRequestDTO> editStory(@PathVariable("id") int id, @RequestBody StoryRequestDTO storyDTO, @CurrentUser UserPrincipal currentUser) {
         StoryRequestDTO editedStory = storyService.editStory(id, storyDTO);
         return new ResponseEntity<StoryRequestDTO>(editedStory, HttpStatus.OK);
     }
 
     @DeleteMapping("delete/{id}")
-    @PreAuthorize("hasRole('USER')")
+    @Transactional
     ResponseEntity<?> deleteStory(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
         storyService.deleteStory(id);
         return new ResponseEntity<>("Story deleted succesfuly", HttpStatus.OK);

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Routes } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
 import AddProject from "./ProjectComponent/AddProject";
 import AssignProjectToEmployee from "./ProjectComponent/AssignProjectToEmployee";
 import AssignProjectToManager from "./ProjectComponent/AssignProjectToManager";
@@ -48,7 +49,7 @@ export default function Content() {
         <Route path="user/employee/all" element={<ViewAllEmployees />} />
         <Route path="/user/login" element={<UserLoginForm />} />
         <Route path="/user/admin/project/add" element={<AddProject />} />
-        <Route path="/user/admin/project/edit" element={<EditProject />} />
+        <Route path="/user/admin/project/edit/:id" element={<EditProject />} />
         <Route path="/user/admin/project/all" element={<ViewAllProjects />} />
         <Route path="/user/admin/sprint/add" element={<AddSprint />} />
         <Route path="/user/admin/sprint/edit/:id" element={<EditSprint />} />

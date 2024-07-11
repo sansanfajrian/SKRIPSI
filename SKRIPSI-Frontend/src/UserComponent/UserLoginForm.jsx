@@ -2,9 +2,9 @@ import "admin-lte/dist/css/adminlte.min.css";
 import "admin-lte/dist/js/adminlte.min.js";
 import "admin-lte/plugins/fontawesome-free/css/all.min.css";
 import "admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css";
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ACCESS_TOKEN, API_BASE_URL, GOOGLE_AUTH_URL } from "../constants";
 import { request } from "../util/APIUtils";
@@ -14,6 +14,22 @@ const UserLoginForm = () => {
     email: "",
     password: "",
   });
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.error) {
+      toast.error("Gagal masuk ke aplikasi, akun anda belum terdaftar", {
+        position: "top-center",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+  }, [location.state]);
 
   const handleUserInput = (e) => {
     setLoginRequest({ ...loginRequest, [e.target.name]: e.target.value });
@@ -37,7 +53,7 @@ const UserLoginForm = () => {
           sessionStorage.setItem(`active-${role}`, JSON.stringify(result.user));
           sessionStorage.setItem(
             "username",
-            JSON.stringify(result.user.firstName)
+            JSON.stringify(result.user.name)
           );
           sessionStorage.setItem(`${role}-jwtToken`, result.accessToken);
 
@@ -165,6 +181,7 @@ const UserLoginForm = () => {
                 </a>
               </p> */}
             </div>
+            <ToastContainer />
           </div>
         </div>
       </div>

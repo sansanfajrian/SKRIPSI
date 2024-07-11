@@ -1,129 +1,170 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Select from "react-select";
 import { ToastContainer, toast } from "react-toastify";
-import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
-import { request } from "../util/APIUtils";
 import { API_BASE_URL } from "../constants";
+import { request } from "../util/APIUtils";
 
 const EditProject = () => {
-  const [editProjectRequest, setEditProjectRequest] = useState({
-    id: 0,
-    name: "",
-    description: "",
-    requirement: "",
-    startDate: "",
-    startTime: "08:00",
-    deadlineDate: "",
-    deadlineTime: "08:00",
-    documents: [],
-  });
-  const [documents, setDocuments] = useState([]);
-
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  const location = useLocation();
+  const [editProjectRequest, setEditProjectRequest] = useState({
+    name: "",
+    description: "",
+    managerId: "",
+    projectStatus: "", // Updated to be managed via Select component
+  });
+
+  const [users, setUsers] = useState({
+    managers: [],
+  });
 
   useEffect(() => {
-    let {
-      id,
-      name,
-      description,
-      requirement,
-      startDate,
-      startTime,
-      deadlineDate,
-      deadlineTime,
-      documents,
-    } = location.state;
-    setEditProjectRequest({
-      id,
-      name,
-      description,
-      requirement,
-      startDate,
-      startTime,
-      deadlineDate,
-      deadlineTime,
-      documents,
-    });
+    fetchProjectDetails();
+    fetchManagers();
   }, []);
 
-  const handleUserInput = (e) => {
+  const fetchProjectDetails = () => {
+    request({
+      url: `${API_BASE_URL}/api/project/${id}`,
+      method: "GET",
+    })
+      .then((response) => {
+        if (response && response.success) {
+          const projectDetails = response;
+          setEditProjectRequest({
+            name: projectDetails.name || "",
+            description: projectDetails.description || "",
+            managerId: projectDetails.managerId || "",
+            projectStatus: projectDetails.projectStatus || "",
+          });
+        } else {
+          console.error("Empty response or missing data in response:", response);
+          toast.error("Failed to fetch project details. Please try again.", {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching project details:", error);
+        toast.error("Failed to fetch project details. Please try again.", {
+          position: "top-center",
+          autoClose: 1000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setTimeout(() => {
+          window.location.href = "/user/admin/project/all";
+        }, 1000);
+      });
+  };
+
+  const retrieveAllManagers = async () => {
+    try {
+      const response = await request({
+        url: `${API_BASE_URL}/api/user/manager/all`,
+        method: "GET",
+      });
+      return response.users;
+    } catch (error) {
+      console.error("Error fetching managers:", error);
+      throw error;
+    }
+  };
+
+  const fetchManagers = () => {
+    retrieveAllManagers()
+      .then((managers) => {
+        setUsers({
+          managers: managers,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching managers:", error);
+      });
+  };
+
+  const handleProjectInput = (e) => {
     setEditProjectRequest({
       ...editProjectRequest,
       [e.target.name]: e.target.value,
     });
   };
 
-  const removeExistingDocument = (e, document) => {
-    e.preventDefault();
-
-    document.deleted = !document.deleted;
-
-    setEditProjectRequest({ ...editProjectRequest });
+  const validateForm = () => {
+    const { name, description, managerId, projectStatus } = editProjectRequest;
+    return name && description && managerId && projectStatus;
   };
 
-  const saveProject = (e) => {
+  const updateProject = (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("id", editProjectRequest.id);
-    formData.append("name", editProjectRequest.name);
-    formData.append("description", editProjectRequest.description);
-    formData.append("requirement", editProjectRequest.requirement);
-    formData.append("startDate", editProjectRequest.startDate);
-    formData.append("startTime", editProjectRequest.startTime);
-    formData.append("deadlineDate", editProjectRequest.deadlineDate);
-    formData.append("deadlineTime", editProjectRequest.deadlineTime);
-    formData.append(
-      "deletedDocumentIds",
-      editProjectRequest.documents
-        .filter((doc) => doc.deleted)
-        .map((doc) => doc.id)
-    );
-
-    [...documents].forEach((documents, i) => {
-      formData.append("documents", documents, documents.name);
-    });
-
+    const accessToken = localStorage.getItem("accessToken");
     request({
-      url: API_BASE_URL + "/api/project/update",
-      method: "POST",
-      body: formData,
-    }).then((result) => {
-      if (result.success) {
-        console.log("Got the success response");
+      url: `${API_BASE_URL}/api/project/update/${id}`,
+      method: "PUT",
+      body: JSON.stringify(editProjectRequest),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    })
+      .then((result) => {
+        if (result.success) {
+          toast.success(result.responseMessage, {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
 
-        toast.success(result.responseMessage, {
+          setTimeout(() => {
+            navigate("/user/admin/project/all");
+          }, 1000);
+        } else {
+          toast.error("Failed to update project. Please try again.", {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating project:", error);
+        toast.error("Failed to update project. Please try again.", {
           position: "top-center",
-          autoClose: 1000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
         });
-
-        setTimeout(() => {
-          navigate("/user/admin/project/all");
-        }, 1000); // Redirect after 3 seconds
-      } else {
-        console.log("Didn't got success response");
-        toast.error("It seems server is down", {
-          position: "top-center",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        setTimeout(() => {
-          window.location.reload(true);
-        }, 1000); // Redirect after 3 seconds
-      }
-    });
+      });
   };
+
+  const statusOptions = [
+    { value: "Started", label: "Started" },
+    { value: "In Progress", label: "In Progress" },
+    { value: "Completed", label: "Completed" },
+  ];
 
   return (
     <div className="content-wrapper">
@@ -156,7 +197,7 @@ const EditProject = () => {
                     </div>
                   </div>
                 </div>
-                <form onSubmit={saveProject}>
+                <form onSubmit={updateProject}>
                   <div className="card-body">
                     <div className="mb-3">
                       <label htmlFor="name" className="form-label">
@@ -166,9 +207,9 @@ const EditProject = () => {
                         type="text"
                         className="form-control"
                         id="name"
-                        placeholder="Masukkan nama projek"
+                        placeholder="Enter project name"
                         name="name"
-                        onChange={handleUserInput}
+                        onChange={handleProjectInput}
                         value={editProjectRequest.name}
                       />
                     </div>
@@ -181,185 +222,71 @@ const EditProject = () => {
                         id="description"
                         rows="3"
                         name="description"
-                        placeholder="Masukkan deskripsi projek"
-                        onChange={handleUserInput}
+                        placeholder="Enter project description"
+                        onChange={handleProjectInput}
                         value={editProjectRequest.description}
                       />
                     </div>
+
                     <div className="mb-3">
-                      <label htmlFor="description" className="form-label">
-                        Project Requirement
+                      <label htmlFor="managerId" className="form-label">
+                        Project Manager
                       </label>
-                      <textarea
-                        className="form-control"
-                        id="requirement"
-                        rows="3"
-                        name="requirement"
-                        placeholder="Masukkan persyaratan projek"
-                        onChange={handleUserInput}
-                        value={editProjectRequest.requirement}
+                      <Select
+                        options={users.managers.map((manager) => ({
+                          value: manager.id,
+                          label: manager.name,
+                        }))}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        value={{
+                          value: editProjectRequest.managerId,
+                          label: users.managers.find(
+                            (manager) => manager.id === editProjectRequest.managerId
+                          )?.name,
+                        }}
+                        onChange={(selectedOption) =>
+                          setEditProjectRequest({
+                            ...editProjectRequest,
+                            managerId: selectedOption.value,
+                          })
+                        }
                       />
                     </div>
 
-                    <hr />
-
-                    <h5 class="mt-4 mb-2">Project Timeline</h5>
-
-                    <div class="row">
-                      <div class="col-sm-6">
-                        <div className="mb-3">
-                          <label htmlFor="name" className="form-label">
-                            Start
-                          </label>
-
-                          <div className="row">
-                            <div class="col-sm-8">
-                              <input
-                                type="date"
-                                className="form-control"
-                                id="startDate"
-                                placeholder="select start date.."
-                                name="startDate"
-                                onChange={handleUserInput}
-                                value={editProjectRequest.startDate}
-                              />
-                            </div>
-                            <div class="col-sm-4">
-                              <input
-                                type="time"
-                                className="form-control"
-                                id="startTime"
-                                placeholder="select start time.."
-                                name="startTime"
-                                onChange={handleUserInput}
-                                value={editProjectRequest.startTime}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div class="col-sm-6">
-                        <div className="mb-3">
-                          <label htmlFor="name" className="form-label">
-                            Deadline
-                          </label>
-
-                          <div className="row">
-                            <div class="col-sm-8">
-                              <input
-                                type="date"
-                                className="form-control"
-                                id="deadlineDate"
-                                placeholder="select deadline date.."
-                                name="deadlineDate"
-                                onChange={handleUserInput}
-                                value={editProjectRequest.deadlineDate}
-                              />
-                            </div>
-                            <div class="col-sm-4">
-                              <input
-                                type="time"
-                                className="form-control"
-                                id="deadlineTime"
-                                placeholder="select deadline date.."
-                                name="deadlineTime"
-                                onChange={handleUserInput}
-                                value={editProjectRequest.deadlineTime}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="mb-3">
-                      <label htmlFor="name" className="form-label">
-                        Project Documents
+                      <label htmlFor="projectStatus" className="form-label">
+                        Project Status
                       </label>
-                      <input
-                        type="file"
-                        multiple
-                        className="form-control"
-                        id="documents"
-                        placeholder="Upload documents"
-                        name="documents"
-                        onChange={(e) => setDocuments(e.target.files)}
-                      ></input>
-                    </div>
-
-                    <div className="mb-3">
-                      <label htmlFor="name" className="form-label">
-                        Existing Documents
-                      </label>
-                      <div className="row">
-                        <div className="col-md-6">
-                          {editProjectRequest.documents.length === 0 &&
-                            documents.length === 0 && (
-                              <i>This project has no documents uploaded</i>
-                            )}
-
-                          <ul className="nav flex-column">
-                            {[...editProjectRequest.documents]?.map(
-                              (doc, index) => (
-                                <li
-                                  className={`nav-item ${
-                                    doc.deleted
-                                      ? "text-decoration-line-through"
-                                      : ""
-                                  }`}
-                                  key={index}
-                                >
-                                  <a
-                                    href={doc.presignedUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
-                                    {doc.name} - {doc.httpContentType}
-                                  </a>
-                                  <span
-                                    className={`float-right btn btn-sm ${
-                                      doc.deleted ? "btn-success" : "btn-danger"
-                                    }`}
-                                    onClick={(e) =>
-                                      removeExistingDocument(e, doc)
-                                    }
-                                  >
-                                    <i
-                                      className={`fa ${
-                                        doc.deleted ? "fa-check" : "fa-trash"
-                                      }`}
-                                    ></i>
-                                  </span>
-                                </li>
-                              )
-                            )}
-
-                            {[...documents].map((doc, index) => (
-                              <li className="nav-item" key={index}>
-                                {doc.name} - {doc.type}{" "}
-                                <span className="badge badge-success ">
-                                  new
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
+                      <Select
+                        options={statusOptions}
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        value={statusOptions.find(
+                          (option) => option.value === editProjectRequest.projectStatus
+                        )}
+                        onChange={(selectedOption) =>
+                          setEditProjectRequest({
+                            ...editProjectRequest,
+                            projectStatus: selectedOption.value,
+                          })
+                        }
+                      />
                     </div>
                   </div>
+
                   <div className="card-footer">
                     <input
                       type="submit"
                       className="btn float-right"
-                      value="Save Data"
+                      value="Update Project"
                       style={{
                         backgroundColor: "#3393df",
                         color: "white",
                         fontWeight: "bold",
                       }}
+                      disabled={!validateForm()}
                     />
-
                     <ToastContainer />
                   </div>
                 </form>
@@ -368,6 +295,7 @@ const EditProject = () => {
           </div>
         </div>
       </section>
+      <ToastContainer />
     </div>
   );
 };

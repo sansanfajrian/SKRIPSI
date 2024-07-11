@@ -1,23 +1,23 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-import { request } from "../util/APIUtils";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ACCESS_TOKEN, API_BASE_URL } from "../constants";
+import { request } from "../util/APIUtils";
 
 const OAuth2RedirectHandler = () => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const getUrlParameter = (name) => {
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
     var results = regex.exec(location.search);
-    return results === null
-      ? ""
-      : decodeURIComponent(results[1].replace(/\+/g, " "));
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   };
 
   useEffect(() => {
     const token = getUrlParameter("token");
     const error = getUrlParameter("error");
+    
 
     if (token) {
       localStorage.setItem(ACCESS_TOKEN, token);
@@ -28,13 +28,8 @@ const OAuth2RedirectHandler = () => {
       })
         .then((response) => {
           const role = response.role;
-          console.log(response);
-
           sessionStorage.setItem(`active-${role}`, JSON.stringify(response));
-          sessionStorage.setItem(
-            "username",
-            JSON.stringify(response.firstName)
-          );
+          sessionStorage.setItem("username", JSON.stringify(response.name));
           sessionStorage.setItem(`${role}-jwtToken`, token);
 
           if (response.role === "admin") {
@@ -50,9 +45,9 @@ const OAuth2RedirectHandler = () => {
         });
     } else {
       // Redirect to /login with error message
-      window.location.href = `/login?error=${encodeURIComponent(error)}`;
+      navigate("/user/login", { state: { error: true } });
     }
-  }, []);
+  }, [navigate, location.search]);
 
   // By default, return null since this component handles redirection via useEffect
   return null;

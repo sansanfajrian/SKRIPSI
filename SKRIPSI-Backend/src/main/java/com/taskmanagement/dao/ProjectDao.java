@@ -11,9 +11,9 @@ import com.taskmanagement.entity.Project;
 public interface ProjectDao extends JpaRepository<Project, Integer> {
 	
 	List<Project> findByNameContainingIgnoreCase(String projectName);
-	List<Project> findByNameContainingIgnoreCaseAndEmployeeId(String projectName, int employee);
-	List<Project> findByNameContainingIgnoreCaseAndManagerId(String projectName, int managerId);
-	List<Project> findByEmployeeId(int employeeId);
-	List<Project> findByManagerId(int managerId);
+	// List<Project> findByNameContainingIgnoreCaseAndEmployeeId(String projectName, int employee);
+	// List<Project> findByNameContainingIgnoreCaseAndManagerId(String projectName, int managerId);
+	// List<Project> findByEmployeeId(int employeeId);
+	// List<Project> findByManagerId(int managerId);
 
 }

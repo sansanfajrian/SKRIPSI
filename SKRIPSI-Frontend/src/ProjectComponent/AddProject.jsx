@@ -1,24 +1,73 @@
-import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { request } from "../util/APIUtils";
+import Select from "react-select";
+import { ToastContainer, toast } from "react-toastify";
 import { API_BASE_URL } from "../constants";
+import { request } from "../util/APIUtils";
 
 const AddProject = () => {
   const [addProjectRequest, setAddProjectRequest] = useState({
     name: "",
     description: "",
-    requirement: "",
+    managerId: "",
     startDate: "",
-    startTime: "08:00",
+    startTime: "08:00", // Default start time set to 08:00
     deadlineDate: "",
-    deadlineTime: "08:00",
-    reminderEmail: 0,
-    reminderPopup: 0,
+    deadlineTime: "08:00", // Default deadline time set to 08:00
+    reminderEmail: 10, // Default reminder email set to 10
+    reminderPopup: 10, // Default reminder popup set to 10
+    memberIds: [],
   });
-  const [documents, setDocuments] = useState([]);
+
+  const [users, setUsers] = useState({
+    managers: [],
+    employees: [],
+  });
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const retrieveAllManagers = async () => {
+    try {
+      const response = await request({
+        url: API_BASE_URL + "/api/user/manager/all",
+        method: "GET",
+      });
+      return response.users;
+    } catch (error) {
+      console.error("Error fetching managers:", error);
+      throw error;
+    }
+  };
+
+  const retrieveAllEmployees = async () => {
+    try {
+      const response = await request({
+        url: API_BASE_URL + "/api/user/employee/all",
+        method: "GET",
+      });
+      return response.users;
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+      throw error;
+    }
+  };
+
+  const fetchUsers = () => {
+    Promise.all([retrieveAllManagers(), retrieveAllEmployees()])
+      .then(([managers, employees]) => {
+        setUsers({
+          managers: managers,
+          employees: employees,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
+  };
 
   const handleUserInput = (e) => {
     setAddProjectRequest({
@@ -27,69 +76,90 @@ const AddProject = () => {
     });
   };
 
+  const handleMemberSelectChange = (selectedOptions) => {
+    const selectedMemberIds = selectedOptions.map((option) => option.value);
+    setAddProjectRequest({
+      ...addProjectRequest,
+      memberIds: selectedMemberIds,
+    });
+  };
+
   const saveProject = (e) => {
     e.preventDefault();
+
+    const accessToken = localStorage.getItem("accessToken");
+    console.log(accessToken);
 
     const formData = new FormData();
     formData.append("name", addProjectRequest.name);
     formData.append("description", addProjectRequest.description);
-    formData.append("requirement", addProjectRequest.requirement);
+    formData.append("managerId", addProjectRequest.managerId);
     formData.append("startDate", addProjectRequest.startDate);
     formData.append("startTime", addProjectRequest.startTime);
     formData.append("deadlineDate", addProjectRequest.deadlineDate);
     formData.append("deadlineTime", addProjectRequest.deadlineTime);
     formData.append("reminderEmail", addProjectRequest.reminderEmail);
     formData.append("reminderPopup", addProjectRequest.reminderPopup);
-
-    [...documents].forEach((documents, i) => {
-      formData.append("documents", documents, documents.name);
+    addProjectRequest.memberIds.forEach((memberId) => {
+      formData.append("memberIds", memberId);
     });
+
+    console.log(JSON.stringify(addProjectRequest));
 
     request({
       url: API_BASE_URL + "/api/project/add",
       method: "POST",
-      body: formData,
-    }).then((result) => {
-      if (result.success) {
-        console.log("Got the success response");
+      body: JSON.stringify(addProjectRequest),
+      headers: {
+        "Content-Type": "application/json", // Ensure this line is sending the correct header
+        Authorization: `Bearer ${accessToken}`, // Assuming you need Authorization header
+      },
+    })
+      .then((result) => {
+        if (result.success) {
+          toast.success(result.responseMessage, {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
 
-        toast.success(result.responseMessage, {
+          setTimeout(() => {
+            navigate("/user/admin/project/all");
+          }, 1000); // Redirect after success
+        } else {
+          toast.error("Failed to add project. Please try again.", {
+            position: "top-center",
+            autoClose: 1000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding project:", error);
+        toast.error("Failed to add project. Please try again.", {
           position: "top-center",
-          autoClose: 1000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
           progress: undefined,
         });
-
-        setTimeout(() => {
-          navigate("/user/admin/project/all");
-        }, 1000); // Redirect after 3 seconds
-      } else {
-        console.log("Didn't got success response");
-        toast.error("It seems server is down", {
-          position: "top-center",
-          autoClose: 1000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-        setTimeout(() => {
-          window.location.reload(true);
-        }, 1000); // Redirect after 3 seconds
-      }
-    });
+      });
   };
 
-  const handleOnSelectTimePopupReminder = (e, field) => {
-    setAddProjectRequest({
-      ...addProjectRequest,
-      [field]: e.target.value,
-    });
-  }
+  const memberOptions = users.employees.map((employee) => ({
+    value: employee.id,
+    label: employee.name,
+  }));
 
   return (
     <div className="content-wrapper">
@@ -132,7 +202,7 @@ const AddProject = () => {
                         type="text"
                         className="form-control"
                         id="name"
-                        placeholder="Masukkan nama projek"
+                        placeholder="Enter project name"
                         name="name"
                         onChange={handleUserInput}
                         value={addProjectRequest.name}
@@ -147,202 +217,72 @@ const AddProject = () => {
                         id="description"
                         rows="3"
                         name="description"
-                        placeholder="Masukkan deskripsi projek"
+                        placeholder="Enter project description"
                         onChange={handleUserInput}
                         value={addProjectRequest.description}
                       />
                     </div>
+
                     <div className="mb-3">
-                      <label htmlFor="description" className="form-label">
-                        Project Requirement
+                      <label htmlFor="managerId" className="form-label">
+                        Project Manager
                       </label>
-                      <textarea
+                      <select
                         className="form-control"
-                        id="requirement"
-                        rows="3"
-                        name="requirement"
-                        placeholder="Masukkan persyaratan projek"
+                        id="managerId"
+                        name="managerId"
                         onChange={handleUserInput}
-                        value={addProjectRequest.requirement}
+                      >
+                        <option value="">-- Select Manager --</option>
+                        {users.managers &&
+                          users.managers.map((manager) => (
+                            <option key={manager.id} value={manager.id}>
+                              {manager.name}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="startDate" className="form-label">
+                        Start Date
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="startDate"
+                        name="startDate"
+                        onChange={handleUserInput}
+                        value={addProjectRequest.startDate}
                       />
                     </div>
 
-                    <hr />
-
-                    <h5>Timeline</h5>
-
-                    <div className="row">
-                      <div className="col-sm-6">
-                        <div className="mb-3">
-                          <label htmlFor="name" className="form-label">
-                            Start
-                          </label>
-
-                          <div className="row">
-                            <div className="col-sm-8">
-                              <input
-                                type="date"
-                                className="form-control"
-                                id="startDate"
-                                placeholder="select start date.."
-                                name="startDate"
-                                onChange={handleUserInput}
-                                value={addProjectRequest.startDate}
-                              />
-                            </div>
-                            <div className="col-sm-4">
-                              <input
-                                type="time"
-                                className="form-control"
-                                id="startTime"
-                                placeholder="select start time.."
-                                name="startTime"
-                                onChange={handleUserInput}
-                                value={addProjectRequest.startTime}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="col-sm-6">
-                        <div className="mb-3">
-                          <label htmlFor="name" className="form-label">
-                            Deadline
-                          </label>
-
-                          <div className="row">
-                            <div className="col-sm-8">
-                              <input
-                                type="date"
-                                className="form-control"
-                                id="deadlineDate"
-                                placeholder="select deadline date.."
-                                name="deadlineDate"
-                                onChange={handleUserInput}
-                                value={addProjectRequest.deadlineDate}
-                              />
-                            </div>
-                            <div className="col-sm-4">
-                              <input
-                                type="time"
-                                className="form-control"
-                                id="deadlineTime"
-                                placeholder="select deadline date.."
-                                name="deadlineTime"
-                                onChange={handleUserInput}
-                                value={addProjectRequest.deadlineTime}
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <hr />
-
-                    <h5>
-                      Deadline Reminders <small>(in minutes before deadline)</small>
-                    </h5>
-
-                    <div className="row">
-                      <div className="col-sm-3">
-                        <div className="mb-3">
-                          <label htmlFor="name" className="form-label">
-                            With Email
-                          </label>
-
-                          <div className="row">
-                            <div className="col-md-6">
-                              <input
-                                type="number"
-                                className="form-control"
-                                id="reminderEmail"
-                                name="reminderEmail"
-                                onChange={handleUserInput}
-                                value={addProjectRequest.reminderEmail}
-                              />
-                            </div>
-                            <div className="col-md-6">
-                              <select className="form-control" onChange={(e) => handleOnSelectTimePopupReminder(e, 'reminderEmail')}>
-                                <option value={0}>-- Select Time --</option>
-                                <option value={10}>10 minutes before</option>
-                                <option value={15}>15 minutes before</option>
-                                <option value={30}>30 minutes before</option>
-                                <option value={60}>1 hour before</option>
-                                <option value={1 * 24 * 60}>1 day before</option>
-                                <option value={2 * 24 * 60}>2 days before</option>
-                                <option value={7 * 24 * 60}>1 week before</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="col-sm-3">
-                        <div className="mb-3">
-                          <label htmlFor="name" className="form-label">
-                            With Popup
-                          </label>
-
-                          <div className="row">
-                            <div className="col-md-6">
-                              <input
-                                type="number"
-                                className="form-control"
-                                id="reminderPopup"
-                                name="reminderPopup"
-                                onChange={handleUserInput}
-                                value={addProjectRequest.reminderPopup}
-                              />
-                            </div>
-                            <div className="col-md-6">
-                            <select className="form-control" onChange={(e) => handleOnSelectTimePopupReminder(e, 'reminderPopup')}>
-                                <option value={0}>-- Select Time --</option>
-                                <option value={10}>10 minutes before</option>
-                                <option value={15}>15 minutes before</option>
-                                <option value={30}>30 minutes before</option>
-                                <option value={60}>1 hour before</option>
-                                <option value={1 * 24 * 60}>1 day before</option>
-                                <option value={2 * 24 * 60}>2 days before</option>
-                                <option value={7 * 24 * 60}>1 week before</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                    <div className="mb-3">
+                      <label htmlFor="deadlineDate" className="form-label">
+                        Deadline Date
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="deadlineDate"
+                        name="deadlineDate"
+                        onChange={handleUserInput}
+                        value={addProjectRequest.deadlineDate}
+                      />
                     </div>
 
                     <div className="mb-3">
-                      <label htmlFor="name" className="form-label">
-                        Project Documents
+                      <label htmlFor="memberIds" className="form-label">
+                        Project Members
                       </label>
-                      <input
-                        type="file"
-                        multiple
-                        className="form-control"
-                        id="documents"
-                        placeholder="Upload documents"
-                        name="documents"
-                        onChange={(e) => setDocuments(e.target.files)}
-                      ></input>
+                      <Select
+                        id="memberIds"
+                        name="memberIds"
+                        options={memberOptions}
+                        isMulti
+                        onChange={handleMemberSelectChange}
+                      />
                     </div>
-
-                    {documents.length > 0 && (
-                      <div className="mb-3">
-                        <div className="row">
-                          <div className="col-md-6">
-                            <ul className="nav flex-column">
-                              {[...documents].map((file, index) => (
-                                <li className="nav-item" key={index}>
-                                  {file.name} - {file.type}
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                   <div className="card-footer">
                     <input

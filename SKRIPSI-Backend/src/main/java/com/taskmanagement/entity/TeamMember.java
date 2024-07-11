@@ -1,4 +1,5 @@
 package com.taskmanagement.entity;
+
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -34,21 +36,15 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @EntityListeners(value = { AuditingEntityListener.class, AuditLoggingListener.class })
-@Table(name = "story")
-public class Story {
+@Table(name = "team_member")
+public class TeamMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sprintId")
-    private int id; 
+    @Column(name = "team_member_id")
+    private int id;
 
     @Column
-    private String code;
-
-    @Column
-    private String name;
-
-    @Column
-    private String status;
+    private boolean isActive;
 
     @CreatedDate
     @Column
@@ -63,4 +59,8 @@ public class Story {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

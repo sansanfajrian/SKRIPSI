@@ -36,8 +36,9 @@ public class Constants {
 	
 	public enum ProjectStatus {
 		COMPLETED("Completed"),
+		STARTED("Started"),
 		PENDING("Pending"),
-		WORKING("Working");
+		WORKING("On Progress");
 		
 		private String status;
 
