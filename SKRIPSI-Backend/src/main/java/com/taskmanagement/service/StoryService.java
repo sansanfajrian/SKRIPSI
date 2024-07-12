@@ -48,8 +48,16 @@ public class StoryService {
     }
 
     public StoryRequestDTO getStory(int storyId){
-        Story story = storyRepository.findById(storyId).get();
-        return modelMapper.map(story, StoryRequestDTO.class);
+        Story story = storyRepository.findById(storyId).orElseThrow(() -> new RuntimeException("Story not found"));
+    
+        // Map the entity to StoryRequestDTO
+        StoryRequestDTO storyRequestDTO = modelMapper.map(story, StoryRequestDTO.class);
+        
+        // Set the storyId and projectId manually
+        storyRequestDTO.setStoryId(story.getId());
+        storyRequestDTO.setProjectId(story.getProject().getId());
+        
+        return storyRequestDTO;
     }
 
     @Transactional

@@ -26,12 +26,15 @@ import com.taskmanagement.dto.CommonApiResponse;
 import com.taskmanagement.dto.ProjectDto;
 import com.taskmanagement.dto.ProjectFetchDTO;
 import com.taskmanagement.dto.ProjectResponseDto;
+import com.taskmanagement.dto.SprintResponseDTO;
 import com.taskmanagement.dto.TeamMemberProjectResponseDTO;
+import com.taskmanagement.dto.UsersResponseDto;
 import com.taskmanagement.entity.Project;
 import com.taskmanagement.entity.TeamMember;
 import com.taskmanagement.entity.User;
 import com.taskmanagement.service.CalendarService;
 import com.taskmanagement.service.ProjectService;
+import com.taskmanagement.service.SprintService;
 import com.taskmanagement.service.TeamMemberService;
 import com.taskmanagement.service.UserService;
 import com.taskmanagement.utility.Constants.ProjectStatus;
@@ -52,6 +55,9 @@ public class ProjectController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private SprintService sprintService;
 
     @Autowired
     private TeamMemberService teamMemberService;
@@ -286,6 +292,18 @@ public class ProjectController {
             response.setResponseMessage("Failed to delete project: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/{projectId}/members")
+    public ResponseEntity<List<UsersResponseDto>> getProjectMembers(@PathVariable int projectId) {
+        List<UsersResponseDto> members = projectService.getProjectMembers(projectId);
+        return ResponseEntity.ok(members);
+    }
+
+    @GetMapping("/{projectId}/sprints")
+    public ResponseEntity<List<SprintResponseDTO>> getProjectSprints(@PathVariable int projectId) {
+        List<SprintResponseDTO> sprints = sprintService.getProjectSprints(projectId);
+        return ResponseEntity.ok(sprints);
     }
 
     @GetMapping("/calendars")

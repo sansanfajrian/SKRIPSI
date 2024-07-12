@@ -170,10 +170,10 @@ const ViewAllManagers = () => {
                     {records.map((manager, i) => {
                       return (
                         <tr key={i}>
-                          <td>
+                          <td className="text-center">
                             <b>{manager.name}</b>
                           </td>
-                          <td>
+                          <td className="text-center">
                             <b>{manager.emailId}</b>
                           </td>
                           <td className="text-center">

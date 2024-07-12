@@ -9,6 +9,9 @@ import UpdateProjectStatus from "./ProjectComponent/UpdateProjectStatus";
 import ViewAllEmployeeProjects from "./ProjectComponent/ViewAllEmployeeProjects";
 import ViewAllManagerProjects from "./ProjectComponent/ViewAllManagerProjects";
 import ViewAllProjects from "./ProjectComponent/ViewAllProjects";
+import AddRetrospective from './RetrospectiveComponent/AddRetrospective';
+import EditRetrospective from './RetrospectiveComponent/EditRetrospective';
+import ViewAllRetrospectives from "./RetrospectiveComponent/ViewAllRetrospectives";
 import AddSprint from './SprintComponent/AddSprint';
 import EditSprint from './SprintComponent/EditSprint';
 import ViewAllSprints from './SprintComponent/ViewAllSprints';
@@ -56,6 +59,9 @@ export default function Content() {
         <Route path="/user/admin/story/all" element={<ViewAllStories />} />
         <Route path="/user/admin/story/add" element={<AddStory />} />
         <Route path="/user/admin/story/edit/:id" element={<EditStory />} />
+        <Route path="/user/admin/retrospective/all" element={<ViewAllRetrospectives />} />
+        <Route path="/user/admin/retrospective/add" element={<AddRetrospective />} />
+        <Route path="/user/admin/retrospective/edit/:id" element={<EditRetrospective />} />
         <Route
           path="/user/manager/project/all"
           element={<ViewAllManagerProjects />}

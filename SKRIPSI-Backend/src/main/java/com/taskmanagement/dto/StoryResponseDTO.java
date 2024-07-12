@@ -21,5 +21,7 @@ public class StoryResponseDTO {
 
     private String status;
 
+    private int projectId;
+    
     private String projectName;
 }

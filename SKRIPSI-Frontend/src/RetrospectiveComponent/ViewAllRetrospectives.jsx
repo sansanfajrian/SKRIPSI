@@ -1,59 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import ConfirmDialog from "../ConfirmDialog";
 import { API_BASE_URL } from "../constants";
 import { request } from "../util/APIUtils";
 
-const ViewAllStories = () => {
-  const [allStories, setAllStories] = useState([]);
-  const [storyName, setStoryName] = useState("");
-  const [storyId, setStoryId] = useState("");
-  const [deleteStoryId, setDeleteStoryId] = useState("");
+const ViewAllRetrospectives = () => {
+  const [allRetrospectives, setAllRetrospectives] = useState([]);
+  const [retrospectiveId, setRetrospectiveId] = useState("");
+  const [deleteRetrospectiveId, setDeleteRetrospectiveId] = useState("");
   const navigate = useNavigate();
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 5;
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
-  const records = allStories.slice(firstIndex, lastIndex);
-  const npage = Math.ceil(allStories.length / recordsPerPage);
+  const records = allRetrospectives.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(allRetrospectives.length / recordsPerPage);
   const numbers = [...Array(npage + 1).keys()].slice(1);
 
   useEffect(() => {
-    const getAllStories = async () => {
-      const allStories = await retrieveAllStories();
-      if (allStories) {
-        setAllStories(allStories);
+    const getAllRetrospectives = async () => {
+      const retrospectives = await retrieveAllRetrospectives();
+      if (retrospectives) {
+        setAllRetrospectives(retrospectives);
       }
     };
-    getAllStories();
+    getAllRetrospectives();
   }, []);
 
-  const retrieveAllStories = () => {
-    request({
-      url: API_BASE_URL + "/api/story/fetch",
+  const retrieveAllRetrospectives = async () => {
+    const retrospectives = await request({
+      url: API_BASE_URL + "/api/retrospective/fetch",
       method: "GET",
     })
       .then((response) => {
         console.log(response);
-        setAllStories(response);
+        return response;
       })
       .catch((error) => {
         console.log(error);
       });
+
+    return retrospectives;
   };
 
-  const getStoriesByName = async () => {
-    const allStories = await retrieveStoriesByName();
-    if (allStories) {
-      setAllStories(allStories);
+  const searchRetrospectiveById = async () => {
+    const retrospectives = await retrieveRetrospectivesById();
+    if (retrospectives) {
+      setAllRetrospectives(retrospectives);
     }
   };
 
-  const retrieveStoriesByName = async () => {
-    const Stories = await request({
-      url: API_BASE_URL + "/api/story/search?storyName=" + storyName,
+  const retrieveRetrospectivesById = async () => {
+    const retrospectives = await request({
+      url:
+        API_BASE_URL +
+        "/api/retrospective/search/id?retrospectiveId=" +
+        (retrospectiveId === "" ? 0 : retrospectiveId),
       method: "GET",
     })
       .then((response) => {
@@ -63,57 +66,29 @@ const ViewAllStories = () => {
         console.log(error);
       });
 
-    return Stories;
+    return retrospectives;
   };
 
-  const searchStoryByName = (e) => {
-    getStoriesByName();
-    setStoryName("");
+  const searchRetrospective = (e) => {
+    searchRetrospectiveById();
+    setRetrospectiveId("");
     e.preventDefault();
   };
 
-  const getStoriesById = async () => {
-    const allStories = await retrieveStoriesById();
-    if (allStories) {
-      setAllStories(allStories);
-    }
+  const editRetrospective = (retrospectiveId) => {
+    navigate(`/user/admin/retrospective/edit/${retrospectiveId}`);
   };
 
-  const retrieveStoriesById = async () => {
-    const Stories = await request({
-      url: API_BASE_URL + "/api/story/search/id?storyId=" + (storyId === "" ? 0 : storyId),
-      method: "GET",
-    })
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    return Stories;
-  };
-
-  const searchStoryById = (e) => {
-    getStoriesById();
-    setStoryId("");
-    e.preventDefault();
-  };
-
-  const editStory = (storyId) => {
-    navigate(`/user/admin/story/edit/${storyId}`);
-  };
-
-  const handleDelete = (storyId) => {
+  const handleDelete = (retrospectiveId) => {
     setDialogOpen(true);
-    setDeleteStoryId(storyId);
+    setDeleteRetrospectiveId(retrospectiveId);
   };
 
   const handleConfirm = () => {
     setDialogOpen(false);
-    deleteStory(deleteStoryId)
+    deleteRetrospective(deleteRetrospectiveId)
       .then(() => {
-        toast.warning("Story deleted successfully", {
+        toast.warning("Retrospective deleted successfully", {
           position: "top-center",
           autoClose: 1000,
           hideProgressBar: false,
@@ -135,31 +110,22 @@ const ViewAllStories = () => {
     setDialogOpen(false);
   };
 
-  const deleteStory = (storyId) => {
+  const deleteRetrospective = (retrospectiveId) => {
     return request({
-      url: API_BASE_URL + "/api/story/delete/" + storyId,
+      url: API_BASE_URL + "/api/retrospective/delete/" + retrospectiveId,
       method: "DELETE",
     })
       .then((response) => {
         console.log(response);
-        setAllStories(allStories.filter(story => story.storyId !== storyId));
+        setAllRetrospectives(
+          allRetrospectives.filter(
+            (retrospective) => retrospective.retrospectiveId !== retrospectiveId
+          )
+        );
       })
       .catch((error) => {
         console.log(error);
       });
-  };
-
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case "started":
-        return <span className="badge badge-primary">Started</span>;
-      case "in progress":
-        return <span className="badge badge-warning">In Progress</span>;
-      case "completed":
-        return <span className="badge badge-success">Completed</span>;
-      default:
-        return <span className="badge badge-secondary">{status}</span>;
-    }
   };
 
   return (
@@ -171,21 +137,26 @@ const ViewAllStories = () => {
           <div className="row">
             <div className="col-12">
               <div
-                className="card form-card ms-2 me-2 mb-5 custom-bg border-color"
+                className="card form-card ms-2 me-2 mb-5 custom-bg border-color "
                 style={{ height: "45rem" }}
               >
                 <div className="card-header">
                   <div className="container-fluid">
                     <div className="row">
                       <div className="col-sm-6">
-                        <h1>All Stories</h1>
+                        <h1>All Retrospectives</h1>
                       </div>
                       <div className="col-sm-6">
-                        <ol className="breadcrumb float-sm-right" style={{ backgroundColor: "transparent" }}>
+                        <ol
+                          className="breadcrumb float-sm-right"
+                          style={{ backgroundColor: "transparent" }}
+                        >
                           <li className="breadcrumb-item">
                             <a href="#">Home</a>
                           </li>
-                          <li className="breadcrumb-item active">All Stories</li>
+                          <li className="breadcrumb-item active">
+                            All Retrospectives
+                          </li>
                         </ol>
                       </div>
                     </div>
@@ -197,38 +168,11 @@ const ViewAllStories = () => {
                       <form className="row g-3">
                         <div className="col-auto">
                           <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Enter Story Name..."
-                            onChange={(e) => setStoryName(e.target.value)}
-                            value={storyName}
-                          />
-                        </div>
-                        <div className="col-auto">
-                          <button
-                            type="submit"
-                            className="btn mb-3"
-                            onClick={searchStoryByName}
-                            style={{
-                              backgroundColor: "#3393df",
-                              color: "white",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            Search
-                          </button>
-                        </div>
-                      </form>
-                    </div>
-                    <div className="col-auto">
-                      <form className="row g-3">
-                        <div className="col-auto">
-                          <input
                             type="number"
                             className="form-control"
-                            placeholder="Enter Story Id..."
-                            onChange={(e) => setStoryId(e.target.value)}
-                            value={storyId}
+                            placeholder="Enter Retrospective Id..."
+                            onChange={(e) => setRetrospectiveId(e.target.value)}
+                            value={retrospectiveId}
                             required
                           />
                         </div>
@@ -236,7 +180,7 @@ const ViewAllStories = () => {
                           <button
                             type="submit"
                             className="btn bg-color mb-3"
-                            onClick={searchStoryById}
+                            onClick={searchRetrospective}
                             style={{
                               backgroundColor: "#3393df",
                               color: "white",
@@ -253,51 +197,75 @@ const ViewAllStories = () => {
                     <table className="table table-bordered table-hover">
                       <thead className="table-bordered bg-color custom-bg-text border-color">
                         <tr className="text-center">
-                          <th scope="col">Project Name</th>
-                          <th scope="col">Story Name</th>
-                          <th scope="col">Code</th>
+                          <th scope="col">Project</th>
+                          <th scope="col">Sprint</th>
+                          <th scope="col">From</th>
+                          <th scope="col">To</th>
                           <th scope="col">Status</th>
                           <th scope="col">Action</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {records.map((story, i) => (
+                        {records.map((retrospective, i) => (
                           <tr key={i}>
                             <td className="text-center">
-                              <b>{story.projectName}</b>
+                              <b>{retrospective.projectName}</b>
                             </td>
                             <td className="text-center">
-                              <b>{story.name}</b>
+                              <b>{retrospective.sprintName}</b>
                             </td>
                             <td className="text-center">
-                              <b>{story.code}</b>
+                              <b>{retrospective.from}</b>
                             </td>
                             <td className="text-center">
-                              <b>{getStatusLabel(story.status)}</b>
+                              <b>{retrospective.to}</b>
+                            </td>
+                            <td className="text-center">
+                              <span
+                                className={`badge ${
+                                  retrospective.status === "Start"
+                                    ? "bg-primary"
+                                    : retrospective.status === "Continue"
+                                    ? "bg-warning"
+                                    : retrospective.status === "Stop"
+                                    ? "bg-danger"
+                                    : ""
+                                }`}
+                              >
+                                {retrospective.status}
+                              </span>
                             </td>
                             <td className="text-center">
                               <div>
                                 <button
-                                  onClick={() => editStory(story.storyId)}
+                                  onClick={() =>
+                                    editRetrospective(
+                                      retrospective.retrospectiveId
+                                    )
+                                  }
                                   className="btn btn-sm bg-color custom-bg-text mx-1"
                                   style={{
                                     backgroundColor: "#f4a62a",
                                     color: "white",
                                     fontWeight: "bold",
                                   }}
-                                  title="Edit Story"
+                                  title="Edit Retrospective"
                                 >
                                   <i className="nav-icon fas fa-edit" />
                                 </button>
                                 <button
-                                  onClick={() => handleDelete(story.storyId)}
+                                  onClick={() =>
+                                    handleDelete(
+                                      retrospective.retrospectiveId
+                                    )
+                                  }
                                   className="btn btn-sm bg-color custom-bg-text"
                                   style={{
                                     backgroundColor: "#df3333",
                                     color: "white",
                                     fontWeight: "bold",
                                   }}
-                                  title="Remove Story"
+                                  title="Remove Retrospective"
                                 >
                                   <i className="nav-icon fas fa-trash" />
                                 </button>
@@ -318,17 +286,21 @@ const ViewAllStories = () => {
                         </a>
                       </li>
                       {numbers.map((n, i) => (
-                        <li className={`page-item ${currentPage === n ? "active" : ""}`} key={i}>
-                          <a href="#" className="page-link" onClick={() => changeCPage(n)}>
+                        <li
+                          className={`page-item ${
+                            currentPage === n ? "active" : ""
+                          }`}
+                          key={i}
+                        >
+                          <a
+                            href="#"
+                            className="page-link"
+                            onClick={() => changeCPage(n)}
+                          >
                             {n}
                           </a>
                         </li>
                       ))}
-                      <li className="page-item">
-                        <a href="#" className="page-link" onClick={nextPage}>
-                          Next
-                        </a>
-                      </li>
                     </ul>
                   </nav>
                 </div>
@@ -337,10 +309,8 @@ const ViewAllStories = () => {
           </div>
         </div>
       </section>
-      <ConfirmDialog isOpen={isDialogOpen} onConfirm={handleConfirm} onCancel={handleCancel} />
     </div>
   );
-
   function prePage() {
     if (currentPage !== 1) {
       setCurrentPage(currentPage - 1);
@@ -358,4 +328,4 @@ const ViewAllStories = () => {
   }
 };
 
-export default ViewAllStories;
+export default ViewAllRetrospectives;

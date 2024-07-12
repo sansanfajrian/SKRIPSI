@@ -289,13 +289,13 @@ const ViewAllProjects = () => {
                       <tbody>
                         {records.map((project, i) => (
                           <tr key={i}>
-                            <td>
+                            <td className="text-center">
                               <b>{project.name}</b>
                             </td>
-                            <td>
+                            <td className="text-center">
                               <b>{project.managerName}</b>
                             </td>
-                            <td>
+                            <td className="text-center">
                               {project.teamMembers.map((member, index) => (
                                 <div key={index} className="d-flex align-items-center mb-1">
                                   <b><b>-</b> {member.name}</b>

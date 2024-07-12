@@ -22,5 +22,7 @@ public class SprintResponseDTO {
 
     private String endDate;
     
+    private int projectId;
+
     private String projectName;
 }

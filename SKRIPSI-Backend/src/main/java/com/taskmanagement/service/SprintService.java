@@ -49,7 +49,12 @@ public class SprintService {
 
     public SprintDTO getSprint(int sprintId){
         Sprint sprint = sprintRepository.findById(sprintId).get();
-        return modelMapper.map(sprint, SprintDTO.class);
+        SprintDTO sprintDTO = modelMapper.map(sprint, SprintDTO.class);
+    
+        sprintDTO.setSprintId(sprint.getId());
+        sprintDTO.setProjectId(sprint.getProject().getId());
+        
+        return sprintDTO;
     }
 
     @Transactional
@@ -71,6 +76,13 @@ public class SprintService {
     private Project findProjectById(int id) {
         return projectRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Not Found"));
+    }
+
+    public List<SprintResponseDTO> getProjectSprints(int projectId) {
+        List<Sprint> sprints = sprintRepository.findByProjectId(projectId);
+        return sprints.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     private SprintResponseDTO convertToDTO(Sprint sprint) {

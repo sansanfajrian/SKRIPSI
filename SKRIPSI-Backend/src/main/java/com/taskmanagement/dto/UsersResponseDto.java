@@ -9,6 +9,19 @@ import lombok.Data;
 @Data
 public class UsersResponseDto extends CommonApiResponse {
 	
-	private List<User> users;
+	private int id;
 
+	private String name;
+
+	private String emailId;
+	
+	private String password;
+	
+	private String role;
+	
+	private boolean status;
+
+	private String imageUrl;
+
+	private List<User> users;
 }

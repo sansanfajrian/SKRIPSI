@@ -20,6 +20,14 @@ public class RetrospectiveResponseDTO {
 
     private String description;
 
+    private int fromId;
+
+    private int toId;
+
+    private int projectId;
+
+    private int sprintId;
+
     private String from;
 
     private String to;

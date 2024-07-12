@@ -3,16 +3,22 @@ package com.taskmanagement.service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.taskmanagement.dao.DocMetadataDao;
 import com.taskmanagement.dao.ProjectDao;
+import com.taskmanagement.dao.UserDao;
+import com.taskmanagement.dto.UsersResponseDto;
 import com.taskmanagement.entity.DocMetadata;
 import com.taskmanagement.entity.Project;
+import com.taskmanagement.entity.User;
 
 @Service
 public class ProjectService {
@@ -22,6 +28,12 @@ public class ProjectService {
 
 	@Autowired
 	private DocMetadataDao docMetadataDao;
+
+	@Autowired
+    private UserDao userRepository;
+	
+	@Autowired
+	private ModelMapper modelMapper;
 
 	@Transactional
 	public Project addProject(Project project) {
@@ -76,4 +88,25 @@ public class ProjectService {
 	public void deleteProjectDocuments(Integer[] deletedDocumentsId) {
 		docMetadataDao.deleteByIdIn(Arrays.asList(deletedDocumentsId));
 	}
+
+	public List<UsersResponseDto> getProjectMembers(int projectId) {
+        Project project = projectDao.findById(projectId)
+            .orElseThrow(() -> new EntityNotFoundException("Project not found"));
+
+			List<UsersResponseDto> membersDto = project.getTeamMember().stream()
+            .map(teamMember -> {
+                User user = teamMember.getUser();
+                if (user == null) {
+                    throw new EntityNotFoundException("User not found for team member: " + teamMember.getId());
+                }
+
+				UsersResponseDto dto = new UsersResponseDto();
+				dto.setId(user.getId());
+				dto.setName(user.getName());
+                return modelMapper.map(user, UsersResponseDto.class);
+            })
+            .collect(Collectors.toList());
+
+        return membersDto;
+    }
 }

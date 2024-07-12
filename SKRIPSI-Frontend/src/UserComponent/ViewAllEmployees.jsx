@@ -172,10 +172,10 @@ const ViewAllEmployees = () => {
                     {allEmployees.map((employee, index) => {
                       return (
                         <tr key={index}>
-                          <td>
+                          <td className="text-center">
                             <b>{employee.name}</b>
                           </td>
-                          <td>
+                          <td className="text-center">
                             <b>{employee.emailId}</b>
                           </td>
                           <td className="text-center" width="10%">

@@ -240,17 +240,20 @@ const ViewAllSprints = () => {
                     <table className="table table-bordered table-hover">
                       <thead className="table-bordered bg-color custom-bg-text border-color">
                         <tr className="text-center">
+                          <th scope="col">Project</th>
                           <th scope="col">Sprint Name</th>
                           <th scope="col">Start Date</th>
                           <th scope="col">End Date</th>
-                          <th scope="col">Project</th>
                           <th scope="col">Action</th>
                         </tr>
                       </thead>
                       <tbody>
                         {records.map((sprint, i) => (
                           <tr key={i}>
-                            <td>
+                            <td className="text-center">
+                              <b>{sprint.projectName}</b>
+                            </td>
+                            <td className="text-center">
                               <b>{sprint.name}</b>
                             </td>
                             <td className="text-center">
@@ -258,9 +261,6 @@ const ViewAllSprints = () => {
                             </td>
                             <td className="text-center">
                               <b>{sprint.endDate}</b>
-                            </td>
-                            <td className="text-center">
-                              <b>{sprint.projectName}</b>
                             </td>
                             <td className="text-center">
                               <div>

@@ -12,4 +12,5 @@ import com.taskmanagement.entity.Sprint;
 @Repository
 public interface SprintDao extends JpaRepository<Sprint, Integer> {
     List<Sprint> findAll();
+    List<Sprint> findByProjectId(Integer projectId);
 }

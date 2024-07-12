@@ -1,11 +1,8 @@
-import { useState, useRef, useEffect } from "react";
-import axios from "axios";
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import $ from "jquery";
 import "datatables.net-bs4";
-import { request } from "../util/APIUtils";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "../constants";
+import { request } from "../util/APIUtils";
 
 const ViewAllEmployeeProjects = () => {
   const employee = JSON.parse(sessionStorage.getItem("active-employee"));
@@ -181,25 +178,25 @@ const ViewAllEmployeeProjects = () => {
                     {allProjects.map((project) => {
                       return (
                         <tr>
-                          <td>
+                          <td className="text-center">
                             <b>{project.name}</b>
                           </td>
-                          <td>
+                          <td className="text-center">
                             <b>{project.description}</b>
                           </td>
-                          <td>
+                          <td className="text-center">
                             <b>{project.requirement}</b>
                           </td>
                           <td className="text-center">
                             <b>{project.assignedToManager}</b>
                           </td>
-                          <td>
+                          <td className="text-center">
                             <b>{project.managerName}</b>
                           </td>
                           <td className="text-center">
                             <b>{project.assignedToEmployee}</b>
                           </td>
-                          <td>
+                          <td className="text-center">
                             <b>{project.employeeName}</b>
                           </td>
                           <td className="text-center">
