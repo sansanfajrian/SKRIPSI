@@ -60,4 +60,10 @@ public class TeamMember {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    public TeamMember(Project project, User user, boolean isActive) {
+        this.project = project;
+        this.user = user;
+        this.isActive = isActive;
+    }
 }

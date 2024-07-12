@@ -164,6 +164,7 @@ public class ProjectController {
             List<TeamMemberProjectResponseDTO> teamMembers = teamMembersByTeam.stream().map(member -> {
                 User user = member.getUser();
                 TeamMemberProjectResponseDTO memberDto = new TeamMemberProjectResponseDTO();
+                memberDto.setId(user.getId());
                 memberDto.setName(user.getName());
                 memberDto.setImageUrl(user.getImageUrl());
                 return memberDto;
@@ -233,12 +234,12 @@ public class ProjectController {
         }
     }
 
-    @PutMapping("update/{id}")
+    @PutMapping("edit/{id}")
     @ApiOperation(value = "API to update project")
     public ResponseEntity<CommonApiResponse> updateProject(@PathVariable("id") int id, @RequestBody ProjectDto updateProjectRequest) {
         LOG.info("Received request for updating the project: {}", updateProjectRequest);
         CommonApiResponse response = new CommonApiResponse();
-        try {            
+        try {
             Project existingProject = projectService.getProjectById(id);
             if (existingProject == null) {
                 response.setSuccess(false);
@@ -251,19 +252,53 @@ public class ProjectController {
             existingProject.setDescription(updateProjectRequest.getDescription());
             existingProject.setManagerId(updateProjectRequest.getManagerId());
             existingProject.setStatus(updateProjectRequest.getProjectStatus());
+            existingProject.setStartDate(updateProjectRequest.getStartDate());
+            existingProject.setDeadlineDate(updateProjectRequest.getDeadlineDate());
 
-            // Save updated project
+            
             Project savedProject = projectService.updateProject(existingProject);
-            response.setSuccess(true);
-            response.setResponseMessage("Project Updated Successfully");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
+            // Update team members
+            if (updateProjectRequest != null && updateProjectRequest.getMemberIds() != null && savedProject != null) {
+                List<Integer> newMemberIds = updateProjectRequest.getMemberIds();
+                List<TeamMember> existingTeamMembers = teamMemberService.findByProjectId(id);
+
+                // Remove team members not in the new list
+                List<TeamMember> teamMembersToDelete = existingTeamMembers.stream()
+                        .filter(member -> !newMemberIds.contains(member.getUser().getId()))
+                        .collect(Collectors.toList());
+                teamMemberService.deleteAll(teamMembersToDelete);
+
+                // Add or update new team members
+                List<TeamMember> teamMembersToAddOrUpdate = newMemberIds.stream()
+                        .filter(userId -> existingTeamMembers.stream().noneMatch(member -> member.getUser().getId() == userId))
+                        .map(userId -> new TeamMember(savedProject, userService.getUserId(userId), true))
+                        .collect(Collectors.toList());
+                teamMemberService.saveAll(teamMembersToAddOrUpdate);
+            } else {
+                // Handle case where updateProjectRequest or memberIds is null
+                throw new IllegalArgumentException("MemberIds cannot be null in updateProjectRequest");
+            }
+            
+            // Update calendar event
+            if(savedProject != null){
+                calendarService.updateProjectEvent(savedProject);
+                response.setSuccess(true);
+                response.setResponseMessage("Project Updated Successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else{
+                response.setSuccess(false);
+                response.setResponseMessage("Project Update Failed");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (IOException | GeneralSecurityException e) {
             // Handle any unexpected exception
             response.setSuccess(false);
             response.setResponseMessage("Failed to update project: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+
 
     @DeleteMapping("delete/{id}")
     @ApiOperation(value = "API to delete project")
@@ -278,15 +313,22 @@ public class ProjectController {
                 response.setResponseMessage("Project not found for id: " + id);
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
-
+    
+            // Delete project from database
             projectService.deleteProjectById(id);
+    
+            // Delete event from Google Calendar if eventId is present
+            if (existingProject.getGoogleCalendarEventId() != null) {
+                calendarService.deleteEvent(existingProject.getGoogleCalendarEventId());
+            }
+    
             response.setSuccess(true);
             response.setResponseMessage("Project Deleted Successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (IOException | GeneralSecurityException e) {
             // Log the exception details for debugging
             LOG.error("Failed to delete project with id: {}", id, e);
-
+    
             // Handle any unexpected exception
             response.setSuccess(false);
             response.setResponseMessage("Failed to delete project: " + e.getMessage());
@@ -333,35 +375,6 @@ public class ProjectController {
                 .build();
     }
 
-    // private void handleTeamAndMembers(ProjectDto updateProjectRequest, Project savedProject) {
-    //     Team team = savedProject.getTeam();
-    //     if (team == null) {
-    //         team = new Team();
-    //         team.setName("Team " + savedProject.getName());
-    //         team.setActive(true);
-    //         team.setProject(savedProject);
-    //         savedProject.setTeam(team);
-    //     } else {
-    //         team.setName("Team " + savedProject.getName());
-    //         Team savedTeam = teamService.saveTeam(team);
-    //         if (updateProjectRequest.getMemberIds() != null && !updateProjectRequest.getMemberIds().isEmpty() && team != null) {
-    //             teamMemberService.removeAllByTeamId(team.getId());
-
-    //             for (Integer memberId : updateProjectRequest.getMemberIds()) {
-    //                 User user = userService.getUserId(memberId);
-    //                 if (user != null) {
-    //                     TeamMember teamMember = new TeamMember();
-    //                     teamMember.setUser(user);
-    //                     teamMember.setTeam(team);
-    //                     teamMember.setActive(true);
-    //                     teamMember.setStartDate(updateProjectRequest.getStartDate());
-    //                     teamMember.setEndDate(updateProjectRequest.getDeadlineDate());
-    //                     teamMemberService.saveTeamMember(teamMember);
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
 
 
     // @PostMapping("add")

@@ -31,7 +31,17 @@ public class TeamMemberService {
     }
 
     @Transactional
+    public void saveAll(List<TeamMember> teamMembers) {
+        teamMemberRepository.saveAll(teamMembers);
+    }
+
+    @Transactional
     public void deleteTeamMemberById(int id) {
         teamMemberRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void deleteAll(List<TeamMember> teamMembers) {
+        teamMemberRepository.deleteAll(teamMembers);
     }
 }

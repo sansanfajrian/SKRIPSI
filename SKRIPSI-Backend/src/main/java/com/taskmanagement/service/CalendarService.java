@@ -10,6 +10,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +46,11 @@ public class CalendarService {
 
     @Autowired
     private TeamMemberService teamMemberService;
+
+    @Autowired
+    private ProjectService projectService;
+
+    Logger LOG = LoggerFactory.getLogger(CalendarService.class);
 
     private static final String APPLICATION_NAME = "Task Management System Calendar";
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
@@ -89,33 +96,33 @@ public class CalendarService {
     public void addProjectToEvent(Project project) throws IOException, GeneralSecurityException {
         User user = userService.getUserId(project.getManagerId());
         Calendar service = getCalendarService();
-
+    
         Event event = new Event()
                 .setSummary("Project: " + project.getName())
                 .setDescription("Description: " + project.getDescription());
-
+    
         DateTime startDateTime = new DateTime(project.getStartDate() + "T" + project.getStartTime() + ":00+07:00");
         EventDateTime start = new EventDateTime()
                 .setDateTime(startDateTime)
                 .setTimeZone("Asia/Jakarta");
         event.setStart(start);
-
+    
         DateTime endDateTime = new DateTime(project.getDeadlineDate() + "T" + project.getDeadlineTime() + ":00+07:00");
         EventDateTime end = new EventDateTime()
                 .setDateTime(endDateTime)
                 .setTimeZone("Asia/Jakarta");
         event.setEnd(end);
-
+    
         // Fetch team members using TeamMemberService
         List<TeamMember> teamMembers = teamMemberService.findByProjectId(project.getId());
-
+    
         // Map team members to EventAttendee
         List<EventAttendee> attendees = teamMembers.stream()
                 .map(member -> new EventAttendee().setEmail(member.getUser().getEmailId()))
                 .collect(Collectors.toList());
         attendees.add(new EventAttendee().setEmail(user.getEmailId()));
         event.setAttendees(attendees);
-
+    
         EventReminder[] reminderOverrides = new EventReminder[]{
                 new EventReminder().setMethod("email").setMinutes(project.getReminderEmail()),
                 new EventReminder().setMethod("popup").setMinutes(project.getReminderPopup())
@@ -124,57 +131,85 @@ public class CalendarService {
                 .setUseDefault(false)
                 .setOverrides(Arrays.asList(reminderOverrides));
         event.setReminders(reminders);
-
+    
         String calendarId = "primary";
-        service.events().insert(calendarId, event).execute();
+        // Insert the event into the calendar
+        Event createdEvent = service.events().insert(calendarId, event).execute();
+    
+        // Optionally, you can retrieve the generated eventId
+        String eventId = createdEvent.getId();
+
+        // Optionally, log the eventId for debugging or informational purposes
+        LOG.info("Event created with ID: " + eventId);
+
+        project.setGoogleCalendarEventId(eventId);
+        projectService.updateProject(project);
     }
 
     public void updateProjectEvent(Project project) throws IOException, GeneralSecurityException {
         User user = userService.getUserId(project.getManagerId());
         Calendar service = getCalendarService();
-        
+    
         String calendarId = "primary";
-        String eventId = "Project_" + project.getId(); // Example: You can define an eventId for your project
-        
-        // Fetch existing event from calendar
-        Event event = service.events().get(calendarId, eventId).execute();
+        String eventId = project.getGoogleCalendarEventId(); // Ensure this ID matches your event ID generation logic
     
-        if (event != null) {
-            event.setSummary("Project: " + project.getName());
-            event.setDescription("Description: " + project.getDescription());
+        try {
+            // Fetch existing event from calendar
+            Event event = service.events().get(calendarId, eventId).execute();
     
-            DateTime startDateTime = new DateTime(project.getStartDate() + "T" + project.getStartTime() + ":00+07:00");
-            EventDateTime start = new EventDateTime()
-                    .setDateTime(startDateTime)
-                    .setTimeZone("Asia/Jakarta");
-            event.setStart(start);
+            if (event != null) {
+                event.setSummary("Project: " + project.getName());
+                event.setDescription("Description: " + project.getDescription());
     
-            DateTime endDateTime = new DateTime(project.getDeadlineDate() + "T" + project.getDeadlineTime() + ":00+07:00");
-            EventDateTime end = new EventDateTime()
-                    .setDateTime(endDateTime)
-                    .setTimeZone("Asia/Jakarta");
-            event.setEnd(end);
+                DateTime startDateTime = new DateTime(project.getStartDate() + "T" + project.getStartTime() + ":00+07:00");
+                EventDateTime start = new EventDateTime()
+                        .setDateTime(startDateTime)
+                        .setTimeZone("Asia/Jakarta");
+                event.setStart(start);
     
-            // Fetch team members using TeamMemberService
-            List<TeamMember> teamMembers = teamMemberService.findByProjectId(project.getId());
+                DateTime endDateTime = new DateTime(project.getDeadlineDate() + "T" + project.getDeadlineTime() + ":00+07:00");
+                EventDateTime end = new EventDateTime()
+                        .setDateTime(endDateTime)
+                        .setTimeZone("Asia/Jakarta");
+                event.setEnd(end);
     
-            // Map team members to EventAttendee
-            List<EventAttendee> attendees = teamMembers.stream()
-                    .map(member -> new EventAttendee().setEmail(member.getUser().getEmailId()))
-                    .collect(Collectors.toList());
-            attendees.add(new EventAttendee().setEmail(user.getEmailId()));
-            event.setAttendees(attendees);
+                // Fetch team members using TeamMemberService
+                List<TeamMember> teamMembers = teamMemberService.findByProjectId(project.getId());
     
-            EventReminder[] reminderOverrides = new EventReminder[]{
-                    new EventReminder().setMethod("email").setMinutes(project.getReminderEmail()),
-                    new EventReminder().setMethod("popup").setMinutes(project.getReminderPopup())
-            };
-            Event.Reminders reminders = new Event.Reminders()
-                    .setUseDefault(false)
-                    .setOverrides(Arrays.asList(reminderOverrides));
-            event.setReminders(reminders);
-            
-            service.events().update(calendarId, event.getId(), event).execute();
+                // Map team members to EventAttendee
+                List<EventAttendee> attendees = teamMembers.stream()
+                        .map(member -> new EventAttendee().setEmail(member.getUser().getEmailId()))
+                        .collect(Collectors.toList());
+                attendees.add(new EventAttendee().setEmail(user.getEmailId()));
+                event.setAttendees(attendees);
+    
+                EventReminder[] reminderOverrides = new EventReminder[]{
+                        new EventReminder().setMethod("email").setMinutes(project.getReminderEmail()),
+                        new EventReminder().setMethod("popup").setMinutes(project.getReminderPopup())
+                };
+                Event.Reminders reminders = new Event.Reminders()
+                        .setUseDefault(false)
+                        .setOverrides(Arrays.asList(reminderOverrides));
+                event.setReminders(reminders);
+    
+                service.events().update(calendarId, event.getId(), event).execute();
+            } else {
+                System.err.println("Event with ID " + eventId + " not found in calendar " + calendarId);
+                throw new IOException("Event not found in calendar");
+            }
+        } catch (IOException e) {
+            System.err.println("Error updating Google Calendar event: " + e.getMessage());
+            throw e; // Rethrow the exception to propagate it upwards
         }
+    }
+    
+    public void deleteEvent(String eventId) throws IOException, GeneralSecurityException {
+        Calendar service = getCalendarService();
+        String calendarId = "primary";
+        
+        service.events().delete(calendarId, eventId).execute();
+        
+        // Optionally log the deletion
+        LOG.info("Event deleted successfully with ID: {}", eventId);
     }
 }

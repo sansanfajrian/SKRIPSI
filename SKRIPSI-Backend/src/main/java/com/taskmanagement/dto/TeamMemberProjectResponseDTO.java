@@ -14,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TeamMemberProjectResponseDTO {
+    private int id;
     private String name;
     private String imageUrl;
 }

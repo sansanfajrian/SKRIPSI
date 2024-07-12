@@ -13,16 +13,24 @@ const EditProject = () => {
     name: "",
     description: "",
     managerId: "",
-    projectStatus: "", // Updated to be managed via Select component
+    startDate: "",
+    startTime: "08:00", // Default start time set to 08:00
+    deadlineDate: "",
+    deadlineTime: "08:00", // Default deadline time set to 08:00
+    reminderEmail: 10, // Default reminder email set to 10
+    reminderPopup: 10, // Default reminder popup set to 10
+    memberIds: [],
+    projectStatus: "",
   });
 
   const [users, setUsers] = useState({
     managers: [],
+    employees: [],
   });
 
   useEffect(() => {
     fetchProjectDetails();
-    fetchManagers();
+    fetchUsers();
   }, []);
 
   const fetchProjectDetails = () => {
@@ -37,6 +45,9 @@ const EditProject = () => {
             name: projectDetails.name || "",
             description: projectDetails.description || "",
             managerId: projectDetails.managerId || "",
+            startDate: projectDetails.startDate || "",
+            deadlineDate: projectDetails.deadlineDate || "",
+            memberIds: projectDetails.teamMembers.map((member) => member.id) || [],
             projectStatus: projectDetails.projectStatus || "",
           });
         } else {
@@ -82,15 +93,29 @@ const EditProject = () => {
     }
   };
 
-  const fetchManagers = () => {
-    retrieveAllManagers()
-      .then((managers) => {
+  const retrieveAllEmployees = async () => {
+    try {
+      const response = await request({
+        url: `${API_BASE_URL}/api/user/employee/all`,
+        method: "GET",
+      });
+      return response.users;
+    } catch (error) {
+      console.error("Error fetching employees:", error);
+      throw error;
+    }
+  };
+
+  const fetchUsers = () => {
+    Promise.all([retrieveAllManagers(), retrieveAllEmployees()])
+      .then(([managers, employees]) => {
         setUsers({
           managers: managers,
+          employees: employees,
         });
       })
       .catch((error) => {
-        console.error("Error fetching managers:", error);
+        console.error("Error fetching users:", error);
       });
   };
 
@@ -101,17 +126,41 @@ const EditProject = () => {
     });
   };
 
+  const handleMemberSelectChange = (selectedOptions) => {
+    const selectedMemberIds = selectedOptions.map((option) => option.value);
+    setEditProjectRequest({
+      ...editProjectRequest,
+      memberIds: selectedMemberIds,
+    });
+  };
+
   const validateForm = () => {
-    const { name, description, managerId, projectStatus } = editProjectRequest;
-    return name && description && managerId && projectStatus;
+    const {
+      name,
+      description,
+      managerId,
+      startDate,
+      deadlineDate,
+      projectStatus,
+    } = editProjectRequest;
+    return (
+      name &&
+      description &&
+      managerId &&
+      startDate &&
+      deadlineDate &&
+      projectStatus &&
+      editProjectRequest.memberIds.length > 0
+    );
   };
 
   const updateProject = (e) => {
     e.preventDefault();
 
     const accessToken = localStorage.getItem("accessToken");
+    console.log(JSON.stringify(editProjectRequest));
     request({
-      url: `${API_BASE_URL}/api/project/update/${id}`,
+      url: `${API_BASE_URL}/api/project/edit/${id}`,
       method: "PUT",
       body: JSON.stringify(editProjectRequest),
       headers: {
@@ -165,6 +214,11 @@ const EditProject = () => {
     { value: "In Progress", label: "In Progress" },
     { value: "Completed", label: "Completed" },
   ];
+
+  const memberOptions = users.employees.map((employee) => ({
+    value: employee.id,
+    label: employee.name,
+  }));
 
   return (
     <div className="content-wrapper">
@@ -258,17 +312,65 @@ const EditProject = () => {
                     </div>
 
                     <div className="mb-3">
+                      <label htmlFor="startDate" className="form-label">
+                        Start Date
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="startDate"
+                        name="startDate"
+                        onChange={handleProjectInput}
+                        value={editProjectRequest.startDate}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="deadlineDate" className="form-label">
+                        Deadline Date
+                      </label>
+                      <input
+                        type="date"
+                        className="form-control"
+                        id="deadlineDate"
+                        name="deadlineDate"
+                        onChange={handleProjectInput}
+                        value={editProjectRequest.deadlineDate}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label htmlFor="memberIds" className="form-label">
+                        Team Members
+                      </label>
+                      <Select
+                        options={memberOptions}
+                        isMulti
+                        required
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        value={memberOptions.filter((option) =>
+                          editProjectRequest.memberIds.includes(option.value)
+                        )}
+                        onChange={handleMemberSelectChange}
+                      />
+                    </div>
+
+                    <div className="mb-3">
                       <label htmlFor="projectStatus" className="form-label">
                         Project Status
                       </label>
                       <Select
                         options={statusOptions}
+                        required
                         className="basic-multi-select"
                         classNamePrefix="select"
-                        required
-                        value={statusOptions.find(
-                          (option) => option.value === editProjectRequest.projectStatus
-                        )}
+                        value={{
+                          value: editProjectRequest.projectStatus,
+                          label: editProjectRequest.projectStatus,
+                        }}
                         onChange={(selectedOption) =>
                           setEditProjectRequest({
                             ...editProjectRequest,
@@ -278,20 +380,19 @@ const EditProject = () => {
                       />
                     </div>
                   </div>
-
                   <div className="card-footer">
-                    <input
+                    <button
                       type="submit"
-                      className="btn float-right"
-                      value="Update Project"
+                      className="btn btn-primary float-right"
+                      disabled={!validateForm()}
                       style={{
                         backgroundColor: "#3393df",
                         color: "white",
                         fontWeight: "bold",
                       }}
-                      disabled={!validateForm()}
-                    />
-                    <ToastContainer />
+                    >
+                      Update Project
+                    </button>
                   </div>
                 </form>
               </div>
@@ -299,6 +400,7 @@ const EditProject = () => {
           </div>
         </div>
       </section>
+
       <ToastContainer />
     </div>
   );

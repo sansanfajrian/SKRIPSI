@@ -90,20 +90,6 @@ const AddProject = () => {
     const accessToken = localStorage.getItem("accessToken");
     console.log(accessToken);
 
-    const formData = new FormData();
-    formData.append("name", addProjectRequest.name);
-    formData.append("description", addProjectRequest.description);
-    formData.append("managerId", addProjectRequest.managerId);
-    formData.append("startDate", addProjectRequest.startDate);
-    formData.append("startTime", addProjectRequest.startTime);
-    formData.append("deadlineDate", addProjectRequest.deadlineDate);
-    formData.append("deadlineTime", addProjectRequest.deadlineTime);
-    formData.append("reminderEmail", addProjectRequest.reminderEmail);
-    formData.append("reminderPopup", addProjectRequest.reminderPopup);
-    addProjectRequest.memberIds.forEach((memberId) => {
-      formData.append("memberIds", memberId);
-    });
-
     console.log(JSON.stringify(addProjectRequest));
 
     request({
