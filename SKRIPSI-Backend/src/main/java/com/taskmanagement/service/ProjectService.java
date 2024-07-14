@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 
 import com.taskmanagement.dao.DocMetadataDao;
 import com.taskmanagement.dao.ProjectDao;
-import com.taskmanagement.dao.UserDao;
+import com.taskmanagement.dao.StoryDao;
+import com.taskmanagement.dto.StoryResponseDTO;
 import com.taskmanagement.dto.UsersResponseDto;
 import com.taskmanagement.entity.DocMetadata;
 import com.taskmanagement.entity.Project;
+import com.taskmanagement.entity.Story;
 import com.taskmanagement.entity.User;
 
 @Service
@@ -30,7 +32,7 @@ public class ProjectService {
 	private DocMetadataDao docMetadataDao;
 
 	@Autowired
-    private UserDao userRepository;
+    private StoryDao storyRepository;
 	
 	@Autowired
 	private ModelMapper modelMapper;
@@ -63,22 +65,7 @@ public class ProjectService {
 	public List<Project> getAllProjectsByProjectName(String projectName) {
 		return projectDao.findByNameContainingIgnoreCase(projectName);
 	}
-	
-	// public List<Project> getAllProjectsByProjectNameAndManagerId(String projectName, int managerId) {
-	// 	return projectDao.findByNameContainingIgnoreCaseAndManagerId(projectName, managerId);
-	// }
-	
-	// public List<Project> getAllProjectsByProjectNameAndEmployeeId(String projectName, int employeeId) {
-	// 	return projectDao.findByNameContainingIgnoreCaseAndEmployeeId(projectName, employeeId);
-	// }
-	
-	// public List<Project> getAllProjectsByEmployeeId(int employeeId) {
-	// 	return projectDao.findByEmployeeId(employeeId);
-	// }
-	
-	// public List<Project> getAllProjectsByManagerId(int managerId) {
-	// 	return projectDao.findByManagerId(managerId);
-	// }
+
 
 	public List<DocMetadata> getAllProjectDocMetadata(Integer[] docMetadataIds) {
 		return docMetadataDao.findAllById(Arrays.asList(docMetadataIds));
@@ -108,5 +95,21 @@ public class ProjectService {
             .collect(Collectors.toList());
 
         return membersDto;
+	}
+
+	public List<StoryResponseDTO> getProjectStories(int projectId) {
+        // Contoh implementasi, sesuaikan dengan struktur proyek Anda
+        Project project = projectDao.findById(projectId).orElseThrow(() -> new EntityNotFoundException("Project not found"));
+        List<Story> stories = storyRepository.findByProject(project);
+		return stories.stream()
+                .map(story -> {
+                    StoryResponseDTO dto = modelMapper.map(story, StoryResponseDTO.class);
+                    if (story.getProject() != null) {
+                        dto.setStoryId(story.getId());
+                        dto.setProjectName(story.getProject().getName());
+                    }
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }

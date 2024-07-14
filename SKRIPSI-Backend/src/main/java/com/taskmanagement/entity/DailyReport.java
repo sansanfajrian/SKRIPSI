@@ -1,8 +1,5 @@
 package com.taskmanagement.entity;
-import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,13 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,36 +26,55 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "story")
-public class Story {
+@Table(name = "daily_report")
+public class DailyReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sprintId")
-    private int id; 
+    @Column(name = "daily_report_id")
+    private int id;
 
     @Column
-    private String code;
+	private String taskDetails;
 
     @Column
-    private String name;
+	private String notes;
 
     @Column
     private String status;
 
-    @CreatedDate
     @Column
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private Date createdTime;
+    private float addEffort;
 
-    @LastModifiedDate
     @Column
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private Date lastModifiedTime;
+    private float actEffort;
+
+    @Column
+    private float estEffort;
+
+    @Column
+    private float acmAddEffort;
+
+    @Column
+    private float acmActEffort;
+
+    @Column
+    private float currTaskProgress;
+
+    @Column
+    private float initTaskProgress;
+
+    @Column
+    private int userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "backlog_id")
+    private Backlog backlog;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sprint_id")
+    private Sprint sprint;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
-
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Backlog> backlog;
 }

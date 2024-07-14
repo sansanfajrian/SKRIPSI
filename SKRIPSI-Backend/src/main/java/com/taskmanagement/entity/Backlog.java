@@ -1,6 +1,7 @@
 package com.taskmanagement.entity;
-import java.util.Date;
+
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,11 +15,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,7 +22,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
 @Data
 @Getter
 @Setter
@@ -35,36 +30,67 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "story")
-public class Story {
+@Table(name = "backlog")
+public class Backlog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sprintId")
-    private int id; 
+    @Column(name = "backlog_id")
+    private int id;
+
+    @Column(length = 50)
+	private String code;
+
+    @Column(length = 100)
+	private String name;
 
     @Column
-    private String code;
+    private String notes;
 
     @Column
-    private String name;
+    private float estEffort;
+
+    @Column
+    private float addEffort;
+
+    @Column
+    private float actEffort;
+
+    @Column
+    private float prog;
 
     @Column
     private String status;
 
-    @CreatedDate
     @Column
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private Date createdTime;
+	private String startDate;
 
-    @LastModifiedDate
     @Column
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-    private Date lastModifiedTime;
+	private String planEndDate;
+
+    @Column
+	private String doneDate;
+
+    @Column
+    private int plannedPicId;
+
+    @Column
+    private int rlzPicId;
+
+    @OneToMany
+	private Set<DocMetadata> docMetadata;
+
+    @OneToMany(mappedBy = "backlog", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DailyReport> dailyReports;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "story_id")
+    private Story story;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sprint_id")
+    private Sprint sprint;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id")
     private Project project;
-
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Backlog> backlog;
 }

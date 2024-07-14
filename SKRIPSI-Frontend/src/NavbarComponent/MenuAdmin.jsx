@@ -125,6 +125,29 @@ const MenuAdmin = () => {
               </li>
               <li className="nav-item has-treeview">
                 <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-tasks" />
+                  <p>
+                    Backlog
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/admin/backlog/add" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Backlog Item</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/admin/backlog/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Backlog Items</p>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
                   <i className="nav-icon fas fa-sync-alt" />
                   <p>
                     Retrospective

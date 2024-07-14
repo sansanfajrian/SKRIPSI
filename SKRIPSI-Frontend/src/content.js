@@ -1,6 +1,9 @@
-import React from 'react';
-import { Route, Routes } from "react-router-dom";
+import React, { useEffect } from 'react';
+import { Route, Routes, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
+import AddBacklog from './BacklogComponent/AddBacklog';
+import EditBacklog from './BacklogComponent/EditBacklog';
+import ViewAllBacklogs from "./BacklogComponent/ViewAllBacklogs";
 import AddProject from "./ProjectComponent/AddProject";
 import AssignProjectToEmployee from "./ProjectComponent/AssignProjectToEmployee";
 import AssignProjectToManager from "./ProjectComponent/AssignProjectToManager";
@@ -33,6 +36,18 @@ import ContactUs from "./page/ContactUs";
 import HomePage from "./page/HomePage";
 
 export default function Content() {
+  const navigate = useNavigate();
+  const requireAuth = () => {
+    const accessToken = localStorage.getItem('ACCESS_TOKEN');
+    if (!accessToken) {
+        // Redirect to login page or home page if not authenticated
+        navigate('/user/login');
+    }
+    };
+
+    useEffect(() => {
+        requireAuth(); // Check authentication on component mount
+    }, []);
     return (
       
       <div className="wrapper">
@@ -62,6 +77,9 @@ export default function Content() {
         <Route path="/user/admin/retrospective/all" element={<ViewAllRetrospectives />} />
         <Route path="/user/admin/retrospective/add" element={<AddRetrospective />} />
         <Route path="/user/admin/retrospective/edit/:id" element={<EditRetrospective />} />
+        <Route path="/user/admin/backlog/all" element={<ViewAllBacklogs />} />
+        <Route path="/user/admin/backlog/add" element={<AddBacklog />} />
+        <Route path="/user/admin/backlog/edit/:id" element={<EditBacklog />} />
         <Route
           path="/user/manager/project/all"
           element={<ViewAllManagerProjects />}
