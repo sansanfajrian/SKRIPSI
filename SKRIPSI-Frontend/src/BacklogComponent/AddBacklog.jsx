@@ -73,6 +73,7 @@ const AddBacklog = () => {
         url: API_BASE_URL + `/api/project/${addBacklogRequest.projectId}/stories`,
         method: "GET",
       }).then((response) => {
+        console.log(response);
         if (response && Array.isArray(response)) {
           setStories(response);
         } else {
@@ -440,7 +441,7 @@ const AddBacklog = () => {
                         <option value="">Select Story</option>
                         {stories.map((story) => (
                           <option key={story.storyId} value={story.storyId}>
-                            {story.name}
+                            {story.storyName}
                           </option>
                         ))}
                       </select>

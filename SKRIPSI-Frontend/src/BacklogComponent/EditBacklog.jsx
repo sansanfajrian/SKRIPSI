@@ -515,7 +515,7 @@ const EditBacklog = () => {
                         <option value="">Select Story</option>
                         {stories.map((story) => (
                           <option key={story.storyId} value={story.storyId}>
-                            {story.name}
+                            {story.storyName}
                           </option>
                         ))}
                       </select>

@@ -37,7 +37,7 @@ import lombok.ToString;
 public class Retrospective {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "retrospectiveId")
+    @Column(name = "retrospective_id")
     private int id; 
 
     @Column(length = 50)

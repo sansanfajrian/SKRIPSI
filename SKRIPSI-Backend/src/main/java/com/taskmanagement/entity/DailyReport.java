@@ -63,8 +63,9 @@ public class DailyReport {
     @Column
     private float initTaskProgress;
 
-    @Column
-    private int userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "backlog_id")

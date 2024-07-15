@@ -39,7 +39,7 @@ import lombok.ToString;
 public class Story {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sprintId")
+    @Column(name = "story_id")
     private int id; 
 
     @Column

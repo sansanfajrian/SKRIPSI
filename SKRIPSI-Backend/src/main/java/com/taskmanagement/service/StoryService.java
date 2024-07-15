@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.taskmanagement.dao.ProjectDao;
 import com.taskmanagement.dao.StoryDao;
+import com.taskmanagement.dto.StoryDropdownResponseDTO;
 import com.taskmanagement.dto.StoryRequestDTO;
 import com.taskmanagement.dto.StoryResponseDTO;
 import com.taskmanagement.entity.Project;
@@ -82,12 +83,34 @@ public class StoryService {
                 .orElseThrow(() -> new EntityNotFoundException("Not Found"));
     }
 
+    public List<StoryResponseDTO> getAllStoriesForCurrentUser(Pageable pageable, Integer userId) {
+        Page<Story> storiesPage = storyRepository.findByTeamMembersUserId(userId, pageable);
+        return storiesPage.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     private StoryResponseDTO convertToDTO(Story story) {
         StoryResponseDTO dto = modelMapper.map(story, StoryResponseDTO.class);
         if (story.getProject() != null) {
             dto.setStoryId(story.getId());
+            dto.setProjectId(story.getProject().getId());
             dto.setProjectName(story.getProject().getName());
         }
         return dto;
+    }
+
+     public List<StoryDropdownResponseDTO> findDropdownsByProjectId(int projectId) {
+        List<Story> stories = storyRepository.findByProjectId(projectId);
+
+        return stories.stream()
+                .map(story -> {
+                    StoryDropdownResponseDTO dto = new StoryDropdownResponseDTO();
+                    dto.setStoryId(story.getId());
+                    dto.setStoryCode(story.getCode());
+                    dto.setStoryName(story.getName());
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }

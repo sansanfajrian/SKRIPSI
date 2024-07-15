@@ -5,8 +5,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +43,16 @@ public class BacklogController {
         return ResponseEntity.ok(backlogs);
     }
 
+    @GetMapping("fetch/employee")
+    public ResponseEntity<List<BacklogResponseDTO>> getAllBacklogsForCurrentUser(Pageable pageable, @AuthenticationPrincipal UserPrincipal currentUser) {
+        try {
+            List<BacklogResponseDTO> backlogs = backlogService.getAllBacklogsForCurrentUser(pageable, currentUser.getId());
+            return ResponseEntity.ok(backlogs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("get/{id}")
     public ResponseEntity<BacklogResponseDTO> getBacklog(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
         BacklogResponseDTO backlogResponseDTO = backlogService.getBacklogById(id);
@@ -68,16 +80,21 @@ public class BacklogController {
         backlogRequestDTO.setProjectId(projectId);
         LOG.info("Received request for adding the backlog" + backlogRequestDTO);
         
-        // try {
-            BacklogResponseDTO responseDTO = backlogService.addBacklog(backlogRequestDTO, documents);
+        try {
+            if (documents != null) {
+               BacklogResponseDTO responseDTO = backlogService.addBacklog(backlogRequestDTO, documents);
+            } else {
+                // Call service method with null documents array
+                BacklogResponseDTO responseDTO = backlogService.addBacklog(backlogRequestDTO, null);
+            }
             response.setSuccess(true);
             response.setResponseMessage("Backlog Added Successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        // } catch (Exception e) {
-        //     response.setSuccess(false);
-        //     response.setResponseMessage("An error occurred while adding the backlog."+ e.getMessage());
-        //     return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        // }
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setResponseMessage("An error occurred while adding the backlog."+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PutMapping("edit/{id}")
@@ -109,16 +126,16 @@ public class BacklogController {
         backlogRequestDTO.setProjectId(projectId);
 
         CommonApiResponse response = new CommonApiResponse();
-        // try {
+        try {
             BacklogResponseDTO responseDTO = backlogService.updateBacklog(id, backlogRequestDTO, documents, deletedDocumentIds);
             response.setSuccess(true);
             response.setResponseMessage("Backlog edited Successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
-        // } catch (Exception e) {
-        //     response.setSuccess(false);
-        //     response.setResponseMessage("An error occurred while editing the backlog."+ e.getMessage());
-        //     return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        // }
+        } catch (Exception e) {
+            response.setSuccess(false);
+            response.setResponseMessage("An error occurred while editing the backlog."+ e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("delete/{id}")

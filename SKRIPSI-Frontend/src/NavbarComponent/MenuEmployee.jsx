@@ -1,17 +1,15 @@
-import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import logo from "../images/task_logo.png";
-import avatar from "../images/user.png";
-import RoleNav from "./RoleNav";
-
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom'; // Import Link from react-router-dom
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import avatar from '../images/user.png';
 
 const MenuEmployee = () => {
   let navigate = useNavigate();
 
   const user = JSON.parse(sessionStorage.getItem("active-employee"));
   console.log(user);
-  
+  console.log(localStorage.getItem("accessToken"));
   const username = JSON.parse(sessionStorage.getItem("username"));
 
   const employeeLogout = () => {
@@ -54,23 +52,121 @@ const MenuEmployee = () => {
           {/* Sidebar Menu */}
           <nav className="mt-2">
             <ul className="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-              
-              <li className="nav-item">
-                <Link to="/user/employee/project/all" className="nav-link">
-                  <i className="nav-icon far fa-folder" />
+            <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-project-diagram" />
                   <p>
-                    My Project
-                    <span className="badge badge-info right">2</span>
+                    Project
+                    <i className="right fas fa-angle-left" />
                   </p>
-                </Link>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/employee/project/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Project</p>
+                    </Link>
+                  </li>
+                </ul>
               </li>
-              <li className="nav-item">
-                <Link to="/user/change/menu-password" className="nav-link">
-                  <i className="nav-icon fas fa-key" />
+              {/* Sprint */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-running" />
                   <p>
-                    Change Password
+                    Sprint
+                    <i className="right fas fa-angle-left" />
                   </p>
-                </Link>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/employee/sprint/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Sprint</p>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              {/* Story */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-book" />
+                  <p>
+                    Story
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/employee/story/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Stories</p>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-tasks" />
+                  <p>
+                    Backlog
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/employee/backlog/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Backlog Items</p>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-sync-alt" />
+                  <p>
+                    Retrospective
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/employee/retrospective/add" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Retrospective</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/employee/retrospective/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Retrospectives</p>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-tasks" />
+                  <p>
+                    Daily Report
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/employee/dailyreport/add" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Daily Report</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/employee/dailyreport/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Daily Reports</p>
+                    </Link>
+                  </li>
+                </ul>
               </li>
               <li className="nav-item">
                 <Link to="" onClick={employeeLogout} className="nav-link">
@@ -81,7 +177,6 @@ const MenuEmployee = () => {
                 </Link>
                 <ToastContainer />
               </li>
-              
             </ul>
           </nav>
           {/* /.sidebar-menu */}

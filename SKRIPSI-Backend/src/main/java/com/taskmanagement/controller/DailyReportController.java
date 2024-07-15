@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,91 +17,92 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.taskmanagement.dto.CommonApiResponse;
-import com.taskmanagement.dto.StoryRequestDTO;
-import com.taskmanagement.dto.StoryResponseDTO;
+import com.taskmanagement.dto.DailyReportRequestDTO;
+import com.taskmanagement.dto.DailyReportResponseDTO;
 import com.taskmanagement.security.CurrentUser;
 import com.taskmanagement.security.UserPrincipal;
-import com.taskmanagement.service.StoryService;
+import com.taskmanagement.service.DailyReportService;
 
 @RestController
-@RequestMapping("/api/story/")
+@RequestMapping("api/dailyreport/")
 @CrossOrigin(origins = "http://localhost:3000")
-public class StoryController {
-
+public class DailyReportController {
     @Autowired
-    private StoryService storyService;
+    private DailyReportService dailyReportService;
 
     @GetMapping("fetch")
-    ResponseEntity<List<StoryResponseDTO>> getAllStories(Pageable page, @CurrentUser UserPrincipal currentUser) {
+    ResponseEntity<List<DailyReportResponseDTO>> getAllDailyReports(Pageable page, @CurrentUser UserPrincipal currentUser) {
         try {
-            List<StoryResponseDTO> getAllStories = storyService.getAllStory(page);
-            return ResponseEntity.ok(getAllStories);
+            List<DailyReportResponseDTO> getAllDailyReports = dailyReportService.getAllDailyReports(page);
+            return ResponseEntity.ok(getAllDailyReports);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("fetch/employee")
-    public ResponseEntity<List<StoryResponseDTO>> getAllStoriesForCurrentUser(Pageable pageable, @AuthenticationPrincipal UserPrincipal currentUser) {
+    public ResponseEntity<List<DailyReportResponseDTO>> getDailyReportsByUser(Pageable page, @CurrentUser UserPrincipal currentUser) {
         try {
-            List<StoryResponseDTO> stories = storyService.getAllStoriesForCurrentUser(pageable, currentUser.getId());
-            return ResponseEntity.ok(stories);
+            List<DailyReportResponseDTO> dailyReportsByUser = dailyReportService.getDailyReportsByUserId(currentUser.getId(), page);
+            return ResponseEntity.ok(dailyReportsByUser);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PostMapping("add")
-    ResponseEntity<CommonApiResponse> createStory(@RequestBody StoryRequestDTO storyDTO, @CurrentUser UserPrincipal currentUser) {
+    ResponseEntity<CommonApiResponse> createDailyReport(@RequestBody DailyReportRequestDTO dailyReportDTO, @CurrentUser UserPrincipal currentUser) {
         CommonApiResponse response = new CommonApiResponse();
         try {
-            StoryRequestDTO createdStory = storyService.createStory(storyDTO);
+            dailyReportDTO.setUserId(currentUser.getId());
+            dailyReportService.createDailyReport(dailyReportDTO);
             response.setSuccess(true);
-            response.setResponseMessage("Story added successfully.");
+            response.setResponseMessage("Daily Report added successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setSuccess(false);
-            response.setResponseMessage("An error occurred while adding the story. " + e.getMessage());
+            response.setResponseMessage("An error occurred while adding the Daily Report. " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("get/{id}")
-    ResponseEntity<StoryRequestDTO> getStory(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
+    ResponseEntity<DailyReportResponseDTO> getDailyReport(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
         try {
-            StoryRequestDTO getStory = storyService.getStory(id);
-            return ResponseEntity.ok(getStory);
+            DailyReportResponseDTO getDailyReport = dailyReportService.getDailyReport(id);
+            return ResponseEntity.ok(getDailyReport);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("edit/{id}")
-    ResponseEntity<CommonApiResponse> editStory(@PathVariable("id") int id, @RequestBody StoryRequestDTO storyDTO, @CurrentUser UserPrincipal currentUser) {
+    ResponseEntity<CommonApiResponse> upddateDailyReport(@PathVariable("id") int id, @RequestBody DailyReportRequestDTO dailyReportDTO, @CurrentUser UserPrincipal currentUser) {
         CommonApiResponse response = new CommonApiResponse();
         try {
-            StoryRequestDTO editedStory = storyService.editStory(id, storyDTO);
+            dailyReportDTO.setUserId(currentUser.getId());
+            dailyReportService.updateDailyReport(id, dailyReportDTO);
             response.setSuccess(true);
-            response.setResponseMessage("Story edited successfully.");
+            response.setResponseMessage("Daily Report edited successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setSuccess(false);
-            response.setResponseMessage("An error occurred while editing the story. " + e.getMessage());
+            response.setResponseMessage("An error occurred while editing the Daily Report. " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("delete/{id}")
-    ResponseEntity<CommonApiResponse> deleteStory(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
+    ResponseEntity<CommonApiResponse> deleteDailyReport(@PathVariable("id") int id, @CurrentUser UserPrincipal currentUser) {
         CommonApiResponse response = new CommonApiResponse();
         try {
-            storyService.deleteStory(id);
+            dailyReportService.deleteDailyReport(id);
             response.setSuccess(true);
-            response.setResponseMessage("Story deleted successfully.");
+            response.setResponseMessage("Daily Report deleted successfully.");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             response.setSuccess(false);
-            response.setResponseMessage("An error occurred while deleting the story. " + e.getMessage());
+            response.setResponseMessage("An error occurred while deleting the Daily Report. " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -67,7 +67,7 @@ const EditRetrospective = () => {
 
   const fetchProjects = () => {
     request({
-      url: `${API_BASE_URL}/api/project/fetch`,
+      url: `${API_BASE_URL}/api/project/fetch/employee`,
       method: "GET",
     })
       .then((response) => {

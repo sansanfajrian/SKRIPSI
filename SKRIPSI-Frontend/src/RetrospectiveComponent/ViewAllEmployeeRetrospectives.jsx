@@ -30,7 +30,7 @@ const ViewAllRetrospectives = () => {
 
   const retrieveAllRetrospectives = async () => {
     const retrospectives = await request({
-      url: API_BASE_URL + "/api/retrospective/fetch",
+      url: API_BASE_URL + "/api/retrospective/fetch/employee",
       method: "GET",
     })
       .then((response) => {
@@ -237,18 +237,38 @@ const ViewAllRetrospectives = () => {
                             </td>
                             <td className="text-center">
                               <div>
-                              <button
-                                onClick={() => navigate(`/user/admin/retrospective/${retrospective.retrospectiveId}`)}
-                                className="btn btn-sm bg-color custom-bg-text mx-1"
-                                style={{
-                                  backgroundColor: "#2a67f4",
-                                  color: "white",
-                                  fontWeight: "bold",
-                                }}
-                                title="View retrospective"
-                              >
-                                <i className="nav-icon fas fa-info" />
-                              </button>
+                                <button
+                                  onClick={() =>
+                                    editRetrospective(
+                                      retrospective.retrospectiveId
+                                    )
+                                  }
+                                  className="btn btn-sm bg-color custom-bg-text mx-1"
+                                  style={{
+                                    backgroundColor: "#f4a62a",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                  }}
+                                  title="Edit Retrospective"
+                                >
+                                  <i className="nav-icon fas fa-edit" />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleDelete(
+                                      retrospective.retrospectiveId
+                                    )
+                                  }
+                                  className="btn btn-sm bg-color custom-bg-text"
+                                  style={{
+                                    backgroundColor: "#df3333",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                  }}
+                                  title="Remove Retrospective"
+                                >
+                                  <i className="nav-icon fas fa-trash" />
+                                </button>
                               </div>
                             </td>
                           </tr>

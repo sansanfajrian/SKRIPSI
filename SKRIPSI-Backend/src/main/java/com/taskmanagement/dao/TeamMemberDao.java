@@ -8,4 +8,5 @@ import com.taskmanagement.entity.TeamMember;
 
 public interface TeamMemberDao  extends JpaRepository<TeamMember, Integer> {
     List<TeamMember> findByProjectId(Integer projectId);
+    List<TeamMember> findByUserId(Integer userId);
 }

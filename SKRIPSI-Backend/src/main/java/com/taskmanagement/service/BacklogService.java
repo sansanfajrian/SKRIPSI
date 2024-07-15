@@ -13,6 +13,8 @@ import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +25,7 @@ import com.taskmanagement.dao.ProjectDao;
 import com.taskmanagement.dao.SprintDao;
 import com.taskmanagement.dao.StoryDao;
 import com.taskmanagement.dao.UserDao;
+import com.taskmanagement.dto.BacklogDropdownResponseDTO;
 import com.taskmanagement.dto.BacklogRequestDTO;
 import com.taskmanagement.dto.BacklogResponseDTO;
 import com.taskmanagement.dto.DocMetadataDto;
@@ -89,7 +92,7 @@ public class BacklogService {
         newBacklog.setSprint(findBySprintId(backlogRequestDTO.getSprintId()));
         newBacklog.setStory(findByStoryId(backlogRequestDTO.getStoryId()));
         
-        if(documents != null){
+        if(documents != null && documents.length > 0){
             Set<DocMetadata> docMetadataSet = new HashSet<>();
             Arrays.stream(documents).forEach(document -> {
                 String docId = UUID.randomUUID().toString();
@@ -242,4 +245,28 @@ public class BacklogService {
         return sprintRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Sprint not found with id: " + id));
     }
+
+    public List<BacklogDropdownResponseDTO> findDropdownsByProjectId(int projectId) {
+        List<Backlog> backlogs = backlogRepository.findByProjectId(projectId);
+
+        return backlogs.stream()
+                .map(backlog -> {
+                    BacklogDropdownResponseDTO dto = new BacklogDropdownResponseDTO();
+                    dto.setBacklogId(backlog.getId());
+                    dto.setCode(backlog.getCode());
+                    dto.setName(backlog.getName());
+                    dto.setProjectId(backlog.getProject().getId());
+                    dto.setSprintId(backlog.getSprint().getId());
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<BacklogResponseDTO> getAllBacklogsForCurrentUser(Pageable pageable, Integer userId) {
+        Page<Backlog> backlogsPage = backlogRepository.findBacklogsByTeamMembersUserId(userId, pageable);
+        return backlogsPage.getContent().stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
 }

@@ -22,20 +22,25 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.taskmanagement.config.MinioConfig;
+import com.taskmanagement.dto.BacklogDropdownResponseDTO;
 import com.taskmanagement.dto.CommonApiResponse;
 import com.taskmanagement.dto.ProjectDto;
 import com.taskmanagement.dto.ProjectFetchDTO;
 import com.taskmanagement.dto.ProjectResponseDto;
 import com.taskmanagement.dto.SprintResponseDTO;
-import com.taskmanagement.dto.StoryResponseDTO;
+import com.taskmanagement.dto.StoryDropdownResponseDTO;
 import com.taskmanagement.dto.TeamMemberProjectResponseDTO;
 import com.taskmanagement.dto.UsersResponseDto;
 import com.taskmanagement.entity.Project;
 import com.taskmanagement.entity.TeamMember;
 import com.taskmanagement.entity.User;
+import com.taskmanagement.security.CurrentUser;
+import com.taskmanagement.security.UserPrincipal;
+import com.taskmanagement.service.BacklogService;
 import com.taskmanagement.service.CalendarService;
 import com.taskmanagement.service.ProjectService;
 import com.taskmanagement.service.SprintService;
+import com.taskmanagement.service.StoryService;
 import com.taskmanagement.service.TeamMemberService;
 import com.taskmanagement.service.UserService;
 import com.taskmanagement.utility.Constants.ProjectStatus;
@@ -61,7 +66,13 @@ public class ProjectController {
     private SprintService sprintService;
 
     @Autowired
+    private StoryService storyService;
+
+    @Autowired
     private TeamMemberService teamMemberService;
+
+    @Autowired
+    private BacklogService backlogService;
 
     @Autowired
     private CalendarService calendarService;
@@ -125,6 +136,70 @@ public class ProjectController {
         }
     }
 
+    @GetMapping("/fetch/employee")
+    @ApiOperation(value = "API to fetch projects for current employee")
+    public ResponseEntity<ProjectFetchDTO> fetchEmployeeProjects(@CurrentUser UserPrincipal currentUser) {
+        try {
+            ProjectFetchDTO response = new ProjectFetchDTO();
+            
+            // Retrieve team member ID for the current user
+            int currentUserId = currentUser.getId();
+            List<TeamMember> teamMembers = teamMemberService.findByUserId(currentUserId);
+            
+            // Fetch projects related to the team members of the current user
+            List<Project> projects = teamMembers.stream()
+                    .map(TeamMember::getProject)
+                    .distinct() // Ensure unique projects
+                    .collect(Collectors.toList());
+
+            // Map projects to ProjectResponseDto
+            List<ProjectResponseDto> projectDtos = projects.stream().map(project -> {
+                ProjectResponseDto projectDto = new ProjectResponseDto();
+                projectDto.setId(project.getId());
+                projectDto.setName(project.getName());
+                projectDto.setDescription(project.getDescription());
+                projectDto.setStartDate(project.getStartDate());
+                projectDto.setStartTime(project.getStartTime());
+                projectDto.setDeadlineDate(project.getDeadlineDate());
+                projectDto.setDeadlineTime(project.getDeadlineTime());
+                projectDto.setReminderEmail(project.getReminderEmail());
+                projectDto.setReminderPopup(project.getReminderPopup());
+                projectDto.setProjectStatus(project.getStatus());
+                projectDto.setManagerId(project.getManagerId());
+
+                if (project.getManagerId() != 0) {
+                    User manager = userService.getUserId(project.getManagerId());
+                    projectDto.setManagerName(manager.getName());
+                    projectDto.setManagerImage(manager.getImageUrl());
+                }
+
+                // Fetch team members for the project
+                List<TeamMember> teamMembersByProject = teamMemberService.findByProjectId(project.getId());
+                List<TeamMemberProjectResponseDTO> teamMemberDtos = teamMembersByProject.stream().map(member -> {
+                    User user = member.getUser();
+                    TeamMemberProjectResponseDTO memberDto = new TeamMemberProjectResponseDTO();
+                    memberDto.setName(user.getName());
+                    memberDto.setImageUrl(user.getImageUrl());
+                    return memberDto;
+                }).collect(Collectors.toList());
+
+                projectDto.setTeamMembers(teamMemberDtos); // Set all team members for this project
+                return projectDto;
+            }).collect(Collectors.toList());
+
+            response.setProjects(projectDtos);
+            response.setSuccess(true);
+            response.setResponseMessage("Projects fetched successfully");
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            ProjectFetchDTO errorResponse = new ProjectFetchDTO();
+            errorResponse.setSuccess(false);
+            errorResponse.setResponseMessage("An error occurred while fetching project details.");
+            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     @GetMapping("/{id}")
     @ApiOperation(value = "Get project details by ID", authorizations = { @Authorization(value="jwtToken") })
     public ResponseEntity<ProjectResponseDto> fetchProjectById(@PathVariable Integer id) {
@@ -351,14 +426,25 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/stories")
-    public ResponseEntity<?> getProjectStories(@PathVariable int projectId) {
+    public ResponseEntity<List<StoryDropdownResponseDTO>> getProjectStories(@PathVariable int projectId) {
         try {
-            List<StoryResponseDTO> stories = projectService.getProjectStories(projectId);
+            List<StoryDropdownResponseDTO> stories = storyService.findDropdownsByProjectId(projectId);
             return ResponseEntity.ok(stories);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to fetch project stories.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping("/{projectId}/backlog")
+    public ResponseEntity<List<BacklogDropdownResponseDTO>> getBacklogsByProjectId(@PathVariable int projectId) {
+        try {
+            List<BacklogDropdownResponseDTO> backlogs = backlogService.findDropdownsByProjectId(projectId);
+            return ResponseEntity.ok(backlogs);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 
     @GetMapping("/calendars")
     @ApiOperation(value = "API to fetch all calendars")

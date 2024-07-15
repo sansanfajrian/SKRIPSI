@@ -110,4 +110,12 @@ public class RetrospectiveService {
         dto.setTo(userRepository.findById(retrospective.getToId()).orElse(new User()).getName());
         return dto;
     }
+
+    public List<RetrospectiveResponseDTO> getAllRetrospectivesForCurrentUser(Pageable pageable, Integer userId) {
+        // Assuming you have SprintRepository that can fetch sprints based on team members' userId
+        Page<Retrospective> retrospectivePage = retrospectiveRepository.findByTeamMembersUserId(userId, pageable);
+        return retrospectivePage.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
 }

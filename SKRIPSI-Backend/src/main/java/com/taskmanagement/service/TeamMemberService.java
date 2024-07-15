@@ -44,4 +44,8 @@ public class TeamMemberService {
     public void deleteAll(List<TeamMember> teamMembers) {
         teamMemberRepository.deleteAll(teamMembers);
     }
+
+    public List<TeamMember> findByUserId(int userId) {
+        return teamMemberRepository.findByUserId(userId);
+    }
 }

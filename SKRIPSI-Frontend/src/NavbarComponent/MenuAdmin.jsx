@@ -156,12 +156,6 @@ const MenuAdmin = () => {
                 </a>
                 <ul className="nav nav-treeview">
                   <li className="nav-item">
-                    <Link to="/user/admin/retrospective/add" className="nav-link">
-                      <i className="far fa-circle nav-icon" />
-                      <p>Add Retrospective</p>
-                    </Link>
-                  </li>
-                  <li className="nav-item">
                     <Link to="/user/admin/retrospective/all" className="nav-link">
                       <i className="far fa-circle nav-icon" />
                       <p>All Retrospectives</p>

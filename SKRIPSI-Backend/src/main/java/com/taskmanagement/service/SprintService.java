@@ -50,7 +50,6 @@ public class SprintService {
     public SprintDTO getSprint(int sprintId){
         Sprint sprint = sprintRepository.findById(sprintId).get();
         SprintDTO sprintDTO = modelMapper.map(sprint, SprintDTO.class);
-    
         sprintDTO.setSprintId(sprint.getId());
         sprintDTO.setProjectId(sprint.getProject().getId());
         
@@ -89,8 +88,21 @@ public class SprintService {
         SprintResponseDTO dto = modelMapper.map(sprint, SprintResponseDTO.class);
         if (sprint.getProject() != null) {
             dto.setSprintId(sprint.getId());
+            dto.setProjectId(sprint.getProject().getId());
             dto.setProjectName(sprint.getProject().getName());
         }
         return dto;
+    }
+
+    public List<Sprint> findByProjectIdAndBacklogId(int projectId, int backlogId) {
+        return sprintRepository.findByProjectIdAndBacklogId(projectId, backlogId);
+    }
+
+    public List<SprintResponseDTO> getAllSprintsForCurrentUser(Pageable pageable, Integer userId) {
+        // Assuming you have SprintRepository that can fetch sprints based on team members' userId
+        List<Sprint> sprints = sprintRepository.findSprintsByTeamMembersUserId(userId, pageable);
+        return sprints.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }
