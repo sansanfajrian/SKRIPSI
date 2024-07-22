@@ -50,5 +50,7 @@ public class DailyReportResponseDTO {
 
     private int backlogId;
 
+    private String backlogCode;
+
     private String backlogName;
 }

@@ -10,6 +10,10 @@ import AddDailyReport from './DailyReportComponent/AddDailyReport';
 import EditDailyReport from './DailyReportComponent/EditDailyReport';
 import ViewAllDailyReports from './DailyReportComponent/ViewAllDailyReports';
 import ViewAllEmployeeDailyReports from './DailyReportComponent/ViewAllEmployeeDailyReports';
+import AddIssue from './IssueComponent/AddIssue';
+import EditIssue from './IssueComponent/EditIssue';
+import ViewAllEmployeeIssues from './IssueComponent/ViewAllEmployeeIssues';
+import ViewAllIssues from './IssueComponent/ViewAllIssues';
 import AddProject from "./ProjectComponent/AddProject";
 import AssignProjectToEmployee from "./ProjectComponent/AssignProjectToEmployee";
 import AssignProjectToManager from "./ProjectComponent/AssignProjectToManager";
@@ -97,6 +101,12 @@ export default function Content() {
         <Route path="/user/employee/dailyreport/all" element={<ViewAllEmployeeDailyReports />} />
         <Route path="/user/employee/dailyreport/add" element={<AddDailyReport />} />
         <Route path="/user/employee/dailyreport/edit/:id" element={<EditDailyReport />} /> 
+        <Route path="/user/admin/issue/all" element={<ViewAllIssues />} />
+        <Route path="/user/admin/issue/add" element={<AddIssue />} />
+        <Route path="/user/admin/issue/edit/:id" element={<EditIssue />} /> 
+        <Route path="/user/employee/issue/all" element={<ViewAllEmployeeIssues />} />
+        <Route path="/user/employee/issue/add" element={<AddIssue />} />
+        <Route path="/user/employee/issue/edit/:id" element={<EditIssue />} /> 
         <Route
           path="/user/manager/project/all"
           element={<ViewAllManagerProjects />}

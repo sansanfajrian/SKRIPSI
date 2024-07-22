@@ -168,6 +168,30 @@ const MenuEmployee = () => {
                   </li>
                 </ul>
               </li>
+              {/* Issue */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-exclamation-circle" />
+                  <p>
+                    Issue
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/employee/issue/add" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Issue</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/employee/issue/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Issues</p>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
               <li className="nav-item">
                 <Link to="" onClick={employeeLogout} className="nav-link">
                   <i className="nav-icon fas fa-arrow-right" />

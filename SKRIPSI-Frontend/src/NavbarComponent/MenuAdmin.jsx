@@ -148,6 +148,23 @@ const MenuAdmin = () => {
               </li>
               <li className="nav-item has-treeview">
                 <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-tasks" />
+                  <p>
+                    Daily Report
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/admin/dailyreport/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Daily Reports</p>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
                   <i className="nav-icon fas fa-sync-alt" />
                   <p>
                     Retrospective
@@ -159,6 +176,30 @@ const MenuAdmin = () => {
                     <Link to="/user/admin/retrospective/all" className="nav-link">
                       <i className="far fa-circle nav-icon" />
                       <p>All Retrospectives</p>
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+              {/* Issue */}
+              <li className="nav-item has-treeview">
+                <a href="#" className="nav-link">
+                  <i className="nav-icon fas fa-exclamation-circle" />
+                  <p>
+                    Issue
+                    <i className="right fas fa-angle-left" />
+                  </p>
+                </a>
+                <ul className="nav nav-treeview">
+                  <li className="nav-item">
+                    <Link to="/user/admin/issue/add" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>Add Issue</p>
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/user/admin/issue/all" className="nav-link">
+                      <i className="far fa-circle nav-icon" />
+                      <p>All Issues</p>
                     </Link>
                   </li>
                 </ul>

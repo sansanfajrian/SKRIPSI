@@ -263,6 +263,13 @@ public class DailyReportService {
     }
 
     private DailyReportResponseDTO convertToDTO(DailyReport dailyReport) {
-        return modelMapper.map(dailyReport, DailyReportResponseDTO.class);
+        DailyReportResponseDTO dto = modelMapper.map(dailyReport, DailyReportResponseDTO.class);
+        dto.setDailyReportId(dailyReport.getId());
+        dto.setUserName(dailyReport.getUser().getName());
+        dto.setBacklogCode(dailyReport.getBacklog().getCode());
+        dto.setBacklogName(dailyReport.getBacklog().getName());
+        dto.setProjectName(dailyReport.getProject().getName());
+        dto.setSprintName(dailyReport.getSprint().getName());
+        return dto;
     }
 }

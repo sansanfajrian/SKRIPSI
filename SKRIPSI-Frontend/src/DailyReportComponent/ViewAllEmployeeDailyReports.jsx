@@ -209,7 +209,9 @@ const ViewAllDailyReports = () => {
                       <thead className="table-bordered bg-color custom-bg-text border-color">
                         <tr className="text-center">
                           <th scope="col">Project</th>
-                          <th scope="col">Sprint</th>
+                          <th scope="col">Sprint</th>                          
+                          <th scope="col">User Name</th>
+                          <th scope="col">Task</th>
                           <th scope="col">Task Details</th>
                           <th scope="col">Notes</th>
                           <th scope="col">Status</th>
@@ -220,8 +222,6 @@ const ViewAllDailyReports = () => {
                           <th scope="col">ACM Act Effort</th>
                           <th scope="col">Curr Task Progress (%)</th>
                           <th scope="col">Init Task Progress (%)</th>
-                          <th scope="col">User Name</th>
-                          <th scope="col">Backlog Name</th>
                           <th scope="col">Actions</th>
                         </tr>
                       </thead>
@@ -233,6 +233,12 @@ const ViewAllDailyReports = () => {
                             </td>
                             <td className="text-center">
                               <b>{dailyReport.sprintName}</b>
+                            </td>
+                            <td className="text-center">
+                              <b>{dailyReport.userName}</b>
+                            </td>
+                            <td className="text-center">
+                              <b>{dailyReport.backlogCode} - {dailyReport.backlogName}</b>
                             </td>
                             <td className="text-center">
                               <b>{dailyReport.taskDetails}</b>
@@ -277,12 +283,6 @@ const ViewAllDailyReports = () => {
                             </td>
                             <td className="text-center">
                               <b>{Math.floor(dailyReport.initTaskProgress)}%</b>
-                            </td>
-                            <td className="text-center">
-                              <b>{dailyReport.userName}</b>
-                            </td>
-                            <td className="text-center">
-                              <b>{dailyReport.backlogName}</b>
                             </td>
                             <td className="text-center">
                               <button
